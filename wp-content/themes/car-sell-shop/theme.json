@@ -33,6 +33,16 @@
       "name": "single-cars-list",
       "title": "Cars List",
       "postTypes": ["post"]
+    },
+    {
+      "name": "page-my-custom-template",
+      "title": "My Custom Template",
+      "postTypes": ["page"]
+    },
+    {
+      "name": "my-custom-template",
+      "title": "My Custom Template",
+      "postTypes": ["page"]
     }
   ]
 }
