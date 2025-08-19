@@ -1,3 +1,13 @@
+<IfModule mod_negotiation.c>
+Options -MultiViews
+</IfModule>
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+# Ensure REST API routes work even if general WP rewrites are not applied
+RewriteRule ^wp-json/?$ index.php?rest_route=/ [L]
+RewriteRule ^wp-json/(.*)$ index.php?rest_route=/$1 [L,QSA]
+</IfModule>
 
 # BEGIN WordPress
 # The directives (lines) between "BEGIN WordPress" and "END WordPress" are
