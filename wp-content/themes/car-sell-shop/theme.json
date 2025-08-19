@@ -1,0 +1,40 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/theme.json",
+  "version": 2,
+  "title": "Car Sell Shop",
+  "description": "A block theme for showcasing and selling cars.",
+  "settings": {
+    "layout": { "contentSize": "720px", "wideSize": "1200px" },
+    "typography": { "fluid": true },
+    "color": {
+      "palette": [
+        { "slug": "brand", "name": "Brand Blue", "color": "#1e3a8a" },
+        { "slug": "accent", "name": "Accent Red", "color": "#dc2626" },
+        { "slug": "neutral", "name": "Neutral", "color": "#111827" }
+      ]
+    }
+  },
+  "styles": {
+    "color": { "text": "#111827" },
+    "typography": { "fontSize": "16px" },
+    "blocks": {
+      "core/post-title": { "color": { "text": "#1e3a8a" } },
+      "core/button": { "color": { "background": "#1e3a8a", "text": "#ffffff" } }
+    }
+  },
+  "templateTypes": ["single", "page", "archive", "index"],
+  "customTemplates": [
+    {
+      "name": "page-cars",
+      "title": "Cars List",
+      "postTypes": ["page", "post"]
+    },
+    {
+      "name": "single-cars-list",
+      "title": "Cars List",
+      "postTypes": ["post"]
+    }
+  ]
+}
+
+

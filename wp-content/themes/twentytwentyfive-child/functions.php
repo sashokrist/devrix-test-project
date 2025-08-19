@@ -26,6 +26,7 @@ add_action( 'wp_enqueue_scripts', 'twentytwentyfive_child_enqueue_styles' );
 
 /**
  * Register the 'car' custom post type and 'brand' taxonomy.
+ * Kept for backward compatibility. Prefer the plugin 'Car Sell Shop Core'.
  */
 function car_rent_register_content_types() {
     // Register Car post type.
@@ -88,13 +89,18 @@ function car_rent_register_content_types() {
 
     register_taxonomy( 'brand', array( 'car' ), $brand_args );
 }
-add_action( 'init', 'car_rent_register_content_types' );
+// Avoid duplicate registration if the plugin is active.
+if ( ! defined( 'CAR_SELL_SHOP_CORE_LOADED' ) ) {
+    add_action( 'init', 'car_rent_register_content_types' );
+}
 
 /**
  * Flush rewrite rules on theme switch to register CPT/tax permalinks.
  */
 function car_rent_flush_rewrite_on_switch() {
-    car_rent_register_content_types();
+    if ( ! defined( 'CAR_SELL_SHOP_CORE_LOADED' ) ) {
+        car_rent_register_content_types();
+    }
     flush_rewrite_rules();
 }
 add_action( 'after_switch_theme', 'car_rent_flush_rewrite_on_switch' );
