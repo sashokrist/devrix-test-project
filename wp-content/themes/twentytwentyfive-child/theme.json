@@ -13,6 +13,18 @@
     },
     "typography": {
       "fontSize": "16px"
+    },
+    "blocks": {
+      "core/post-title": {
+        "color": {
+          "text": "#0000ff"
+        }
+      },
+      "core/post-content": {
+        "color": {
+          "text": "#ff0000"
+        }
+      }
     }
   }
 }
