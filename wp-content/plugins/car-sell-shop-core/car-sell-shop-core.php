@@ -75,6 +75,59 @@ add_action( 'init', function () {
     register_taxonomy( 'brand', array( 'car' ), $brand_args );
 } );
 
+/**
+ * Custom hooks for Car Sell Shop.
+ *
+ * Hooks provided:
+ * - Action:  car_sell_shop/car_saved( int $post_id, WP_Post $post, bool $is_update )
+ * - Filter:  car_sell_shop/car_archive_orderby( string $orderby ) → default 'date'
+ * - Filter:  car_sell_shop/car_archive_order( string $order ) → default 'DESC'
+ * - Filter:  car_sell_shop/car_title( string $title, int $post_id )
+ * - Filter:  car_sell_shop/after_car_content_html( string $html ) → append to single car content
+ */
+
+// Fire a custom action whenever a Car is saved (create/update from admin, REST, or CLI).
+add_action( 'save_post_car', function ( $post_id, $post, $update ) {
+    /**
+     * @fires car_sell_shop/car_saved
+     */
+    do_action( 'car_sell_shop/car_saved', $post_id, $post, (bool) $update );
+}, 10, 3 );
+
+// Let integrators control Cars archive sorting via filters.
+add_action( 'pre_get_posts', function ( WP_Query $query ) {
+    if ( is_admin() || ! $query->is_main_query() ) {
+        return;
+    }
+
+    if ( $query->is_post_type_archive( 'car' ) ) {
+        $orderby = apply_filters( 'car_sell_shop/car_archive_orderby', 'date' );
+        $order   = apply_filters( 'car_sell_shop/car_archive_order', 'DESC' );
+        $query->set( 'orderby', $orderby );
+        $query->set( 'order', $order );
+    }
+} );
+
+// Allow filtering of Car titles only for the 'car' post type.
+add_filter( 'the_title', function ( $title, $post_id ) {
+    $post = get_post( $post_id );
+    if ( $post && $post->post_type === 'car' ) {
+        return apply_filters( 'car_sell_shop/car_title', $title, $post_id );
+    }
+    return $title;
+}, 10, 2 );
+
+// Append custom HTML after the content on single Car pages.
+add_filter( 'the_content', function ( $content ) {
+    if ( is_singular( 'car' ) && is_main_query() ) {
+        $extra = apply_filters( 'car_sell_shop/after_car_content_html', '' );
+        if ( ! empty( $extra ) ) {
+            $content .= $extra;
+        }
+    }
+    return $content;
+}, 10 );
+
 register_activation_hook( __FILE__, function () {
     // Ensure rewrites for CPT/tax are registered and flushed.
     do_action( 'init' );
