@@ -1,0 +1,20 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/theme.json",
+  "version": 2,
+  "title": "Twenty Twenty-Five Child",
+  "description": "Child theme for Twenty Twenty-Five.",
+  "styles": {
+    "color": {
+      "palette": [
+        { "slug": "primary", "color": "#2b8a3e", "name": "Primary" },
+        { "slug": "secondary", "color": "#1f3b4d", "name": "Secondary" },
+        { "slug": "contrast", "color": "#111111", "name": "Contrast" }
+      ]
+    },
+    "typography": {
+      "fontSize": "16px"
+    }
+  }
+}
+
+

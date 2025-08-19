@@ -57,6 +57,16 @@ define( 'SECURE_AUTH_SALT', '%5s1|]Db_)nPL)z9J%,jFCW$oiYJ:EN[1OxAL&MpIeLqd4|Yp3Y
 define( 'LOGGED_IN_SALT',   'QyGVEHq@Br-6:!1JwJfqC;S[Q$l|GG9$z!Z%4#=Iy:v}!ples|WL}P=j9q,K}wc2' );
 define( 'NONCE_SALT',       '#F{w7p]#gTT&t]TOui0/bAL(1hs!x;%5oI.tthT%:?Qgq*n&D$_>%?REPF9*MBYN' );
 
+/* Write plugins/themes directly, no FTP */
+define('FS_METHOD', 'direct');
+
+/* Put WP’s temp files in a writable place */
+define('WP_TEMP_DIR', __DIR__ . '/wp-content/tmp');
+
+/* Optional: explicit chmod defaults */
+define('FS_CHMOD_DIR',  0775);
+define('FS_CHMOD_FILE', 0664);
+
 /**#@-*/
 
 /**
