@@ -5,7 +5,13 @@
  * Load theme text domain for translations
  */
 function car_sell_shop_load_textdomain() {
-    load_theme_textdomain( 'car-sell-shop', get_template_directory() . '/languages' );
+    // Load from theme directory first, then fallback to global languages directory
+    $loaded = load_theme_textdomain( 'car-sell-shop', get_template_directory() . '/languages' );
+    
+    // If not loaded from theme directory, try global languages directory
+    if ( ! $loaded ) {
+        load_theme_textdomain( 'car-sell-shop', WP_CONTENT_DIR . '/languages/themes' );
+    }
 }
 add_action( 'after_setup_theme', 'car_sell_shop_load_textdomain' );
 
@@ -163,15 +169,68 @@ add_action( 'password_reset', 'notify_admin_password_reset', 10, 2 );
 
 /**
  * Prepend "This is my filter" to content on singular posts only
+ * Uses a custom filter to allow other developers to modify the text
  */
 function prepend_filter_text( $content ) {
     // Only modify content on singular post pages
     if ( is_singular( 'post' ) && is_main_query() ) {
-        return __( 'This is my filter', 'car-sell-shop' ) . $content;
+        // Get the filter text with a custom hook for extensibility
+        $filter_text = apply_filters( 'car_sell_shop_filter_text', __( 'This is my filter', 'car-sell-shop' ) );
+        return $filter_text . $content;
     }
     return $content;
 }
 add_filter( 'the_content', 'prepend_filter_text', 10, 1 );
+
+/**
+ * Example: How to use the custom filter to modify the filter text
+ * This demonstrates how other developers can hook into your custom filter
+ */
+function modify_filter_text_example( $filter_text ) {
+    // Change the text to "This is my extendable filter"
+    return __( 'This is my extendable filter', 'car-sell-shop' );
+}
+add_filter( 'car_sell_shop_filter_text', 'modify_filter_text_example' );
+
+/**
+ * Custom Hook Documentation and Examples
+ * 
+ * The 'car_sell_shop_filter_text' filter allows other developers to modify
+ * the text that appears before post content on singular post pages.
+ * 
+ * Hook Name: car_sell_shop_filter_text
+ * Hook Type: Filter
+ * Parameters: $filter_text (string) - The current filter text
+ * Returns: string - The modified filter text
+ * 
+ * Usage Examples:
+ * 
+ * 1. Simple text replacement:
+ * add_filter( 'car_sell_shop_filter_text', function( $text ) {
+ *     return 'Custom text here';
+ * });
+ * 
+ * 2. Conditional text based on user role:
+ * add_filter( 'car_sell_shop_filter_text', function( $text ) {
+ *     if ( current_user_can( 'administrator' ) ) {
+ *         return 'Admin only text';
+ *     }
+ *     return $text;
+ * });
+ * 
+ * 3. Adding HTML markup:
+ * add_filter( 'car_sell_shop_filter_text', function( $text ) {
+ *     return '<strong>' . $text . '</strong>';
+ * });
+ * 
+ * 4. Multiple filters (they execute in order):
+ * add_filter( 'car_sell_shop_filter_text', function( $text ) {
+ *     return $text . ' - Modified by Plugin A';
+ * });
+ * add_filter( 'car_sell_shop_filter_text', function( $text ) {
+ *     return $text . ' - Modified by Plugin B';
+ * });
+ */
 
 /**
  * Append "<div>Two</div>" to content on singular posts only
@@ -616,7 +675,325 @@ function add_profile_settings_highlight() {
 }
 add_action( 'wp_footer', 'add_profile_settings_highlight' );
 
-// Uncomment the line below to test email functionality on every page load
-// add_action( 'init', 'test_email_functionality' );
+/**
+ * Custom Action Hook for My Custom Template
+ * 
+ * This action hook is fired right after the content is displayed in the "My Custom Template".
+ * Other developers can hook into this action to add custom functionality.
+ * 
+ * Hook Name: car_sell_shop_after_custom_template_content
+ * Hook Type: Action
+ * Location: My Custom Template (after post content, before post author)
+ * 
+ * Usage Examples:
+ * 
+ * 1. Add custom HTML content:
+ * add_action( 'car_sell_shop_after_custom_template_content', function() {
+ *     echo '<div class="custom-content">This is custom content added via action hook!</div>';
+ * });
+ * 
+ * 2. Add social sharing buttons:
+ * add_action( 'car_sell_shop_after_custom_template_content', function() {
+ *     echo '<div class="social-sharing">Share this page: [Facebook] [Twitter] [LinkedIn]</div>';
+ * });
+ * 
+ * 3. Add related posts:
+ * add_action( 'car_sell_shop_after_custom_template_content', function() {
+ *     // Add related posts logic here
+ *     echo '<div class="related-posts">Related Posts: ...</div>';
+ * });
+ * 
+ * 4. Add custom analytics tracking:
+ * add_action( 'car_sell_shop_after_custom_template_content', function() {
+ *     echo '<script>console.log("Custom template content viewed");</script>';
+ * });
+ */
+
+/**
+ * Example: Add custom content after the content in My Custom Template
+ * This demonstrates how other developers can hook into the custom action
+ */
+function car_sell_shop_custom_template_content_example() {
+    // Only show on pages using the My Custom Template
+    if ( is_page_template( 'my-custom-template' ) || is_page_template( 'page-my-custom' ) ) {
+        echo '<div class="custom-template-info">';
+        echo '<h3>' . __( 'Custom Template Information', 'car-sell-shop' ) . '</h3>';
+        echo '<p>' . __( 'This content was added via the custom action hook: car_sell_shop_after_custom_template_content', 'car-sell-shop' ) . '</p>';
+        echo '<p>' . __( 'Current page ID:', 'car-sell-shop' ) . ' ' . get_the_ID() . '</p>';
+        echo '<p>' . __( 'Page author:', 'car-sell-shop' ) . ' ' . get_the_author() . '</p>';
+        echo '</div>';
+    }
+}
+add_action( 'car_sell_shop_after_custom_template_content', 'car_sell_shop_custom_template_content_example' );
+
+/**
+ * Example: Add social sharing buttons after content
+ */
+function car_sell_shop_add_social_sharing() {
+    if ( is_page_template( 'my-custom-template' ) || is_page_template( 'page-my-custom' ) ) {
+        $current_url = get_permalink();
+        $page_title = get_the_title();
+        
+        echo '<div class="social-sharing-buttons">';
+        echo '<h4>' . __( 'Share this page:', 'car-sell-shop' ) . '</h4>';
+        echo '<a href="https://www.facebook.com/sharer/sharer.php?u=' . urlencode( $current_url ) . '" target="_blank" class="social-button facebook">Facebook</a>';
+        echo '<a href="https://twitter.com/intent/tweet?url=' . urlencode( $current_url ) . '&text=' . urlencode( $page_title ) . '" target="_blank" class="social-button twitter">Twitter</a>';
+        echo '<a href="https://www.linkedin.com/sharing/share-offsite/?url=' . urlencode( $current_url ) . '" target="_blank" class="social-button linkedin">LinkedIn</a>';
+        echo '</div>';
+    }
+}
+add_action( 'car_sell_shop_after_custom_template_content', 'car_sell_shop_add_social_sharing' );
+
+/**
+ * Add CSS styles for the custom action hook content
+ */
+function car_sell_shop_custom_template_styles() {
+    if ( is_page_template( 'my-custom-template' ) || is_page_template( 'page-my-custom' ) ) {
+        ?>
+        <style>
+        .custom-action-hook-container {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-left: 4px solid #0073aa;
+            border-radius: 4px;
+        }
+        
+        .custom-template-info {
+            margin-bottom: 2rem;
+        }
+        
+        .custom-template-info h3 {
+            color: #0073aa;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .custom-template-info p {
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+        
+        .social-sharing-buttons {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #ddd;
+        }
+        
+        .social-sharing-buttons h4 {
+            margin-bottom: 1rem;
+            color: #333;
+            font-size: 1.2rem;
+        }
+        
+        .social-button {
+            display: inline-block;
+            margin-right: 1rem;
+            padding: 0.5rem 1rem;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .social-button.facebook {
+            background: #1877f2;
+            color: white;
+        }
+        
+        .social-button.twitter {
+            background: #1da1f2;
+            color: white;
+        }
+        
+        .social-button.linkedin {
+            background: #0077b5;
+            color: white;
+        }
+        
+        .social-button:hover {
+            opacity: 0.8;
+            transform: translateY(-2px);
+        }
+        </style>
+        <?php
+    }
+}
+add_action( 'wp_head', 'car_sell_shop_custom_template_styles' );
+
+/**
+ * Add professional navigation styling
+ */
+function car_sell_shop_navigation_styles() {
+    ?>
+    <style>
+    /* Professional Navigation Styling */
+    .wp-block-navigation {
+        background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin: 1rem 0;
+        padding: 0.5rem 1rem;
+    }
+
+    .wp-block-navigation__container {
+        display: flex;
+        align-items: center;
+        gap: 0;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    .wp-block-navigation-item {
+        position: relative;
+        margin: 0;
+    }
+
+    .wp-block-navigation-item__content {
+        display: block;
+        padding: 0.75rem 1.25rem;
+        color: #ffffff !important;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.95rem;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .wp-block-navigation-item__content:hover {
+        background: rgba(255, 255, 255, 0.15);
+        color: #ffffff !important;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .wp-block-navigation-item__content:active {
+        transform: translateY(0);
+    }
+
+    /* Active/Current page styling */
+    .wp-block-navigation-item.current-menu-item .wp-block-navigation-item__content {
+        background: rgba(255, 255, 255, 0.2);
+        color: #ffffff !important;
+        font-weight: 600;
+    }
+
+    /* Separator between nav items */
+    .wp-block-navigation-item:not(:last-child)::after {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 1px;
+        height: 60%;
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Profile Settings special styling */
+    .menu-item-profile-settings .wp-block-navigation-item__content {
+        background: rgba(34, 197, 94, 0.8);
+        color: #ffffff !important;
+        font-weight: 600;
+    }
+
+    .menu-item-profile-settings .wp-block-navigation-item__content:hover {
+        background: rgba(34, 197, 94, 1);
+        transform: translateY(-1px);
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+        .wp-block-navigation__container {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .wp-block-navigation-item:not(:last-child)::after {
+            display: none;
+        }
+
+        .wp-block-navigation-item__content {
+            width: 100%;
+            text-align: center;
+        }
+    }
+
+    /* Site title styling */
+    .wp-block-site-title a {
+        color: #1e3a8a !important;
+        font-size: 2rem;
+        font-weight: 700;
+        text-decoration: none;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .wp-block-site-title a:hover {
+        color: #3b82f6 !important;
+        text-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Header container styling */
+    .wp-block-group:has(.wp-block-site-title) {
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        border-bottom: 3px solid #1e3a8a;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    </style>
+    <?php
+}
+add_action( 'wp_head', 'car_sell_shop_navigation_styles' );
+
+/**
+ * Register custom block for action hook content
+ */
+function car_sell_shop_register_custom_block() {
+    register_block_type( 'car-sell-shop/custom-action-hook', array(
+        'editor_script' => 'car-sell-shop-custom-block',
+        'render_callback' => 'car_sell_shop_render_custom_block',
+        'attributes' => array(
+            'content' => array(
+                'type' => 'string',
+                'default' => ''
+            )
+        )
+    ) );
+}
+add_action( 'init', 'car_sell_shop_register_custom_block' );
+
+/**
+ * Render callback for custom block
+ */
+function car_sell_shop_render_custom_block( $attributes ) {
+    ob_start();
+    ?>
+    <div class="custom-action-hook-container">
+        <?php do_action( 'car_sell_shop_after_custom_template_content' ); ?>
+    </div>
+    <?php
+    return ob_get_clean();
+}
+
+/**
+ * Enqueue block editor script
+ */
+function car_sell_shop_enqueue_block_editor_script() {
+    wp_enqueue_script(
+        'car-sell-shop-custom-block',
+        get_template_directory_uri() . '/js/custom-block.js',
+        array( 'wp-blocks', 'wp-element', 'wp-editor' ),
+        '1.0.0',
+        true
+    );
+}
+add_action( 'enqueue_block_editor_assets', 'car_sell_shop_enqueue_block_editor_script' );
+
+/**
+ * Uncomment the line below to test email functionality on every page load
+ * add_action( 'init', 'test_email_functionality' );
+ */
 
 

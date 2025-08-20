@@ -5,10 +5,15 @@
 	<!-- wp:post-title {"level":1} /-->
 	<!-- wp:post-featured-image {"aspectRatio":"16/9"} /-->
 	<!-- wp:post-content {"layout":{"type":"constrained"}} /-->
+	
+	<!-- wp:html -->
+	<div class="custom-action-hook-container">
+		<?php do_action( 'car_sell_shop_after_custom_template_content' ); ?>
+	</div>
+	<!-- /wp:html -->
+	
 	<!-- wp:post-author {"showAvatar":false,"showBio":false} /-->
 </main>
 <!-- /wp:group -->
 
 <!-- wp:template-part {"slug":"footer"} /-->
-
-
