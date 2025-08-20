@@ -281,6 +281,231 @@ add_action('init', function() {
 // Uncomment the line below to test email functionality on every page load
 // add_action( 'init', 'test_email_functionality' );
 
+/**
+ * Custom Navigation Menu Item for Profile Settings
+ * Adds a "Profile Settings" menu item for logged-in users only
+ */
+
+// Add custom menu item for logged-in users
+add_filter( 'wp_nav_menu_items', function( $items, $args ) {
+    // Check if user is logged in
+    if ( is_user_logged_in() ) {
+        // Create profile settings link
+        $profile_link = admin_url( 'profile.php' );
+        $profile_item = sprintf(
+            '<li class="menu-item menu-item-profile-settings"><a href="%s" class="wp-block-navigation-item__content">%s</a></li>',
+            esc_url( $profile_link ),
+            esc_html__( 'Profile Settings', 'car-sell-shop' )
+        );
+        
+        // Add the profile settings item to the menu
+        $items .= $profile_item;
+    }
+    
+    return $items;
+}, 10, 2 );
+
+// Alternative method: Add menu item using wp_nav_menu_objects filter
+add_filter( 'wp_nav_menu_objects', function( $menu_items, $args ) {
+    // Only modify primary navigation
+    if ( $args->theme_location === 'primary' || $args->menu_class === 'wp-block-navigation__container' ) {
+        // Check if user is logged in
+        if ( is_user_logged_in() ) {
+            // Create a custom menu item object
+            $profile_item = (object) array(
+                'ID'               => 'profile-settings',
+                'title'            => __( 'Profile Settings', 'car-sell-shop' ),
+                'url'              => admin_url( 'profile.php' ),
+                'menu_item_parent' => 0,
+                'db_id'            => 'profile-settings',
+                'classes'          => array( 'menu-item', 'menu-item-profile-settings' ),
+                'xfn'              => '',
+                'target'           => '',
+                'current'          => is_admin() && $_SERVER['PHP_SELF'] === '/wp-admin/profile.php',
+                'current_item_ancestor' => false,
+                'current_item_parent' => false,
+                'menu_order'       => 999, // Add at the end
+                'object'           => 'custom',
+                'object_id'        => 'profile-settings',
+                'type'             => 'custom',
+                'type_label'       => __( 'Custom Link', 'car-sell-shop' ),
+            );
+            
+            // Add the item to the menu
+            $menu_items[] = $profile_item;
+        }
+    }
+    
+    return $menu_items;
+}, 10, 2 );
+
+// For block themes: Add profile settings link using JavaScript
+add_action( 'wp_footer', function() {
+    if ( is_user_logged_in() ) {
+        ?>
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Target the specific navigation container found in the HTML
+            const navContainer = document.querySelector('.wp-block-navigation__container');
+            
+            if (navContainer) {
+                // Create profile settings link
+                const profileLink = document.createElement('li');
+                profileLink.className = 'wp-block-pages-list__item wp-block-navigation-item open-on-hover-click menu-item-profile-settings';
+                profileLink.innerHTML = `
+                    <a href="<?php echo admin_url('profile.php'); ?>" class="wp-block-pages-list__item__link wp-block-navigation-item__content">
+                        <?php echo esc_html__('Profile Settings', 'car-sell-shop'); ?>
+                    </a>
+                `;
+                
+                // Add to navigation
+                navContainer.appendChild(profileLink);
+                console.log('Profile Settings menu item added successfully');
+            } else {
+                console.log('Navigation container not found');
+            }
+        });
+        </script>
+        <?php
+    }
+} );
+
+// For block themes: Add profile settings link using WordPress filters
+add_filter( 'wp_nav_menu_items', function( $items, $args ) {
+    // Check if user is logged in
+    if ( is_user_logged_in() ) {
+        // Create profile settings link
+        $profile_link = admin_url( 'profile.php' );
+        $profile_item = sprintf(
+            '<li class="wp-block-pages-list__item wp-block-navigation-item open-on-hover-click menu-item-profile-settings"><a href="%s" class="wp-block-pages-list__item__link wp-block-navigation-item__content">%s</a></li>',
+            esc_url( $profile_link ),
+            esc_html__( 'Profile Settings', 'car-sell-shop' )
+        );
+        
+        // Add the profile settings item to the menu
+        $items .= $profile_item;
+    }
+    
+    return $items;
+}, 10, 2 );
+
+// Alternative: Use wp_nav_menu_objects filter for more control
+add_filter( 'wp_nav_menu_objects', function( $menu_items, $args ) {
+    // Check if user is logged in
+    if ( is_user_logged_in() ) {
+        // Create a custom menu item object
+        $profile_item = (object) array(
+            'ID'               => 'profile-settings',
+            'title'            => __( 'Profile Settings', 'car-sell-shop' ),
+            'url'              => admin_url( 'profile.php' ),
+            'menu_item_parent' => 0,
+            'db_id'            => 'profile-settings',
+            'classes'          => array( 'wp-block-pages-list__item', 'wp-block-navigation-item', 'open-on-hover-click', 'menu-item-profile-settings' ),
+            'xfn'              => '',
+            'target'           => '',
+            'current'          => is_admin() && $_SERVER['PHP_SELF'] === '/wp-admin/profile.php',
+            'current_item_ancestor' => false,
+            'current_item_parent' => false,
+            'menu_order'       => 999, // Add at the end
+            'object'           => 'custom',
+            'object_id'        => 'profile-settings',
+            'type'             => 'custom',
+            'type_label'       => __( 'Custom Link', 'car-sell-shop' ),
+        );
+        
+        // Add the item to the menu
+        $menu_items[] = $profile_item;
+    }
+    
+    return $menu_items;
+}, 10, 2 );
+
+// Add a test endpoint to check navigation menu status
+add_action('init', function() {
+    if (isset($_GET['test_navigation'])) {
+        echo "<h1>Navigation Menu Test</h1>";
+        
+        echo "<h2>User Status:</h2>";
+        echo "<p>User logged in: " . (is_user_logged_in() ? "✅ YES" : "❌ NO") . "</p>";
+        
+        if (is_user_logged_in()) {
+            $current_user = wp_get_current_user();
+            echo "<p>Current user: " . $current_user->display_name . " (ID: " . $current_user->ID . ")</p>";
+            echo "<p>Profile URL: " . admin_url('profile.php') . "</p>";
+            
+            echo "<h2>Navigation Menu:</h2>";
+            echo "<p>✅ Profile Settings menu item should be visible in the navigation</p>";
+            echo "<p>🔗 <a href='" . admin_url('profile.php') . "'>Go to Profile Settings</a></p>";
+        } else {
+            echo "<p>❌ Profile Settings menu item will NOT be visible (user not logged in)</p>";
+            echo "<p>🔗 <a href='" . wp_login_url() . "'>Login to see the menu item</a></p>";
+        }
+        
+        echo "<h2>Instructions:</h2>";
+        echo "<ol>";
+        echo "<li>Make sure you are logged in to WordPress</li>";
+        echo "<li>Visit the homepage: <a href='http://localhost/'>http://localhost/</a></li>";
+        echo "<li>Look for 'Profile Settings' in the navigation menu</li>";
+        echo "<li>Click on it to go to your profile settings page</li>";
+        echo "</ol>";
+        
+        echo "<p><a href='http://localhost/'>← Back to Homepage</a></p>";
+        exit;
+    }
+});
+
+// Add CSS styles for the profile settings menu item
+add_action( 'wp_head', function() {
+    if ( is_user_logged_in() ) {
+        ?>
+        <style>
+        .menu-item-profile-settings {
+            /* Inherit styles from existing menu items */
+            display: inline-block;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .menu-item-profile-settings a {
+            /* Match existing navigation styles */
+            text-decoration: none;
+            color: inherit;
+            padding: 0.5rem 1rem;
+            display: block;
+        }
+        
+        .menu-item-profile-settings a:hover {
+            /* Add hover effect */
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Highlight current page */
+        .menu-item-profile-settings.current-menu-item a {
+            font-weight: bold;
+        }
+        </style>
+        <?php
+    }
+} );
+
+// Add JavaScript to highlight current page
+add_action( 'wp_footer', function() {
+    if ( is_user_logged_in() ) {
+        ?>
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if we're on the profile page
+            if (window.location.href.includes('profile.php')) {
+                const profileMenuItem = document.querySelector('.menu-item-profile-settings');
+                if (profileMenuItem) {
+                    profileMenuItem.classList.add('current-menu-item');
+                }
+            }
+        });
+        </script>
+        <?php
+    }
+} );
 
 
 /**
