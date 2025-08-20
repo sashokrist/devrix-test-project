@@ -1,0 +1,89 @@
+# Copyright (C) 2025 Your Name
+# This file is distributed under the same license as the Car Sell Shop theme.
+msgid ""
+msgstr ""
+"Project-Id-Version: Car Sell Shop 1.0.1\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/theme/car-sell-shop\n"
+"Last-Translator: Your Name <your.email@example.com>\n"
+"Language-Team: Bulgarian <bg@li.org>\n"
+"Language: bg_BG\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2025-08-20T12:52:43+00:00\n"
+"PO-Revision-Date: 2025-08-20T12:55:00+00:00\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: car-sell-shop\n"
+
+#. Theme Name of the theme
+#: style.css
+msgid "Car Sell Shop"
+msgstr "Авто Продажби"
+
+#. Theme URI of the theme
+#. Author URI of the theme
+#: style.css
+msgid "https://example.com/"
+msgstr "https://example.com/"
+
+#. Description of the theme
+#: style.css
+msgid "A block theme for showcasing and selling cars."
+msgstr "Блок тема за показване и продажба на автомобили."
+
+#. Author of the theme
+#: style.css
+msgid "Your Name"
+msgstr "Вашето Име"
+
+#: functions.php:141
+msgid "This is my filter"
+msgstr "Това е моят филтър"
+
+#: functions.php:298
+#: functions.php:317
+#: functions.php:357
+#: functions.php:382
+#: functions.php:399
+msgid "Profile Settings"
+msgstr "Настройки на профила"
+
+#: functions.php:331
+#: functions.php:413
+msgid "Custom Link"
+msgstr "Персонализирана връзка"
+
+#: theme.json
+msgctxt "Style variation name"
+msgid "Car Sell Shop"
+msgstr "Авто Продажби"
+
+#: theme.json
+msgctxt "Style variation description"
+msgid "A block theme for showcasing and selling cars."
+msgstr "Блок тема за показване и продажба на автомобили."
+
+#: theme.json
+msgctxt "Color name"
+msgid "Brand Blue"
+msgstr "Фирмен син"
+
+#: theme.json
+msgctxt "Color name"
+msgid "Accent Red"
+msgstr "Акцентиран червен"
+
+#: theme.json
+msgctxt "Color name"
+msgid "Neutral"
+msgstr "Неутрален"
+
+#: theme.json
+msgctxt "Custom template name"
+msgid "Cars List"
+msgstr "Списък с автомобили"
+
+#: theme.json
+msgctxt "Custom template name"
+msgid "My Custom Template"
+msgstr "Моят персонализиран шаблон"

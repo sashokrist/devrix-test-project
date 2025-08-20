@@ -1,33 +1,54 @@
 <?php
 // Examples: how to use the custom hooks from Car Sell Shop Core.
 
-// 1) Listen when a Car is saved (create/update) and log it.
-add_action( 'car_sell_shop/car_saved', function ( $post_id, $post, $is_update ) {
+/**
+ * Load theme text domain for translations
+ */
+function car_sell_shop_load_textdomain() {
+    load_theme_textdomain( 'car-sell-shop', get_template_directory() . '/languages' );
+}
+add_action( 'after_setup_theme', 'car_sell_shop_load_textdomain' );
+
+/**
+ * Log when a Car is saved (create/update)
+ */
+function car_sell_shop_log_car_saved( $post_id, $post, $is_update ) {
     error_log( sprintf( '[Car Sell Shop] Car %d saved (update: %s).', $post_id, $is_update ? 'yes' : 'no' ) );
-} , 10, 3 );
+}
+add_action( 'car_sell_shop/car_saved', 'car_sell_shop_log_car_saved', 10, 3 );
 
-// 2) Change the Cars archive sort to newest first by modified date.
-add_filter( 'car_sell_shop/car_archive_orderby', function () {
+/**
+ * Change the Cars archive sort to newest first by modified date
+ */
+function car_sell_shop_archive_orderby() {
     return 'modified';
-} );
+}
+add_filter( 'car_sell_shop/car_archive_orderby', 'car_sell_shop_archive_orderby' );
 
-add_filter( 'car_sell_shop/car_archive_order', function () {
+function car_sell_shop_archive_order() {
     return 'DESC';
-} );
+}
+add_filter( 'car_sell_shop/car_archive_order', 'car_sell_shop_archive_order' );
 
-// 3) Prefix Car titles with the brand name if available.
-add_filter( 'car_sell_shop/car_title', function ( $title, $post_id ) {
+/**
+ * Prefix Car titles with the brand name if available
+ */
+function car_sell_shop_prefix_car_title( $title, $post_id ) {
     $brands = wp_get_post_terms( $post_id, 'brand', array( 'fields' => 'names' ) );
     if ( ! is_wp_error( $brands ) && ! empty( $brands ) ) {
         return sprintf( '%s — %s', $title, implode( ', ', $brands ) );
     }
     return $title;
-}, 10, 2 );
+}
+add_filter( 'car_sell_shop/car_title', 'car_sell_shop_prefix_car_title', 10, 2 );
 
-// 4) Append a CTA after the Car content.
-add_filter( 'car_sell_shop/after_car_content_html', function () {
+/**
+ * Append a CTA after the Car content
+ */
+function car_sell_shop_append_cta() {
     return '<div class="car-cta"><a class="wp-element-button" href="#contact">Request a Quote</a></div>';
-} );
+}
+add_filter( 'car_sell_shop/after_car_content_html', 'car_sell_shop_append_cta' );
 
 /**
  * Send email to admin when user updates their profile
@@ -80,8 +101,10 @@ function notify_admin_user_profile_updated( $user_id, $old_user_data ) {
 // Hook into user profile update actions
 add_action( 'profile_update', 'notify_admin_user_profile_updated', 10, 2 );
 
-// Also hook into user registration 
-add_action( 'user_register', function( $user_id ) {
+/**
+ * Send email to admin when new user registers
+ */
+function notify_admin_user_registered( $user_id ) {
     $user = get_userdata( $user_id );
     $admin_email = get_option( 'admin_email' );
     
@@ -104,10 +127,13 @@ add_action( 'user_register', function( $user_id ) {
     );
     
     wp_mail( $admin_email, $subject, $message );
-} );
+}
+add_action( 'user_register', 'notify_admin_user_registered' );
 
-// Hook into password reset 
-add_action( 'password_reset', function( $user, $new_pass ) {
+/**
+ * Send email to admin when user resets password
+ */
+function notify_admin_password_reset( $user, $new_pass ) {
     $admin_email = get_option( 'admin_email' );
     
     $subject = 'User Password Reset - Car Sell Shop';
@@ -127,48 +153,61 @@ add_action( 'password_reset', function( $user, $new_pass ) {
     );
     
     wp_mail( $admin_email, $subject, $message );
-}, 10, 2 );
+}
+add_action( 'password_reset', 'notify_admin_password_reset', 10, 2 );
 
 /**
  * WordPress Filter Priority Exercise
  * Demonstrates how filters execute in priority order
  */
 
-// 1. Prepend "This is my filter" to content on singular posts only
-add_filter( 'the_content', function( $content ) {
+/**
+ * Prepend "This is my filter" to content on singular posts only
+ */
+function prepend_filter_text( $content ) {
     // Only modify content on singular post pages
     if ( is_singular( 'post' ) && is_main_query() ) {
-        return "This is my filter" . $content;
+        return __( 'This is my filter', 'car-sell-shop' ) . $content;
     }
     return $content;
-}, 10, 1 );
+}
+add_filter( 'the_content', 'prepend_filter_text', 10, 1 );
 
-// 2. Append "<div>Two</div>" to content on singular posts only
-add_filter( 'the_content', function( $content ) {
+/**
+ * Append "<div>Two</div>" to content on singular posts only
+ */
+function append_div_two( $content ) {
     // Only modify content on singular post pages
     if ( is_singular( 'post' ) && is_main_query() ) {
         return $content . '<div>Two</div>';
     }
     return $content;
-}, 10, 1 );
+}
+add_filter( 'the_content', 'append_div_two', 10, 1 );
 
-// 3. Append "<div>One</div>" BEFORE the "Two" div (higher priority = runs first)
-add_filter( 'the_content', function( $content ) {
+/**
+ * Append "<div>One</div>" BEFORE the "Two" div (higher priority = runs first)
+ */
+function append_div_one( $content ) {
     // Only modify content on singular post pages
     if ( is_singular( 'post' ) && is_main_query() ) {
         return $content . '<div>One</div>';
     }
     return $content;
-}, 5, 1 ); // Priority 5 (runs before priority 10)
+}
+add_filter( 'the_content', 'append_div_one', 5, 1 ); // Priority 5 (runs before priority 10)
 
-// 4. Append "<div>Three</div>" AFTER the "Two" div (lower priority = runs after)
-add_filter( 'the_content', function( $content ) {
+/**
+ * Append "<div>Three</div>" AFTER the "Two" div (lower priority = runs after)
+ */
+function append_div_three( $content ) {
     // Only modify content on singular post pages
     if ( is_singular( 'post' ) && is_main_query() ) {
         return $content . '<div>Three</div>';
     }
     return $content;
-}, 15, 1 ); // Priority 15 (runs after priority 10)
+}
+add_filter( 'the_content', 'append_div_three', 15, 1 ); // Priority 15 (runs after priority 10)
 
 /**
  * Expected Result on singular post pages:
@@ -186,14 +225,17 @@ add_filter( 'the_content', function( $content ) {
  * Configure WordPress to use a test email setup
  */
 
-// For development: Log emails instead of sending them
-add_action( 'wp_mail_failed', function( $error ) {
+/**
+ * Log email errors for debugging
+ */
+function log_email_errors( $error ) {
     error_log( '[Email Error] ' . $error->get_error_message() );
-} );
+}
+add_action( 'wp_mail_failed', 'log_email_errors' );
 
-
-
-// Test email function that can be called manually
+/**
+ * Test email function that can be called manually
+ */
 function test_email_functionality() {
     $admin_email = get_option( 'admin_email' );
     $subject = 'Test Email - Car Sell Shop';
@@ -208,7 +250,9 @@ function test_email_functionality() {
     return $result;
 }
 
-// Manual test function - call this via WP-CLI or browser
+/**
+ * Manual test function - call this via WP-CLI or browser
+ */
 function manual_email_test() {
     echo "Testing email functionality...\n";
     $result = test_email_functionality();
@@ -216,7 +260,9 @@ function manual_email_test() {
     return $result;
 }
 
-// Simple email test function
+/**
+ * Simple email test function
+ */
 function simple_email_test() {
     echo "=== EMAIL TEST ===\n";
     
@@ -239,8 +285,10 @@ function simple_email_test() {
     return $result;
 }
 
-// Add a test endpoint for email testing
-add_action('init', function() {
+/**
+ * Add a test endpoint for email testing
+ */
+function add_email_test_endpoint() {
     if (isset($_GET['test_email']) && current_user_can('administrator')) {
         echo "<h1>Email Test Results</h1>";
         echo "<pre>";
@@ -276,18 +324,57 @@ add_action('init', function() {
         echo "<p><a href='http://localhost/'>Back to Home</a></p>";
         exit;
     }
-});
+}
+add_action('init', 'add_email_test_endpoint');
 
-// Uncomment the line below to test email functionality on every page load
-// add_action( 'init', 'test_email_functionality' );
+/**
+ * Mailtrap SMTP Configuration
+ * Configure WordPress to use Mailtrap for email testing
+ */
+function mailtrap($phpmailer) {
+    $phpmailer->isSMTP();
+    $phpmailer->Host = 'sandbox.smtp.mailtrap.io';
+    $phpmailer->SMTPAuth = true;
+    $phpmailer->Port = 2525;
+    $phpmailer->Username = 'b3afe85cc6bd7e';
+    $phpmailer->Password = '6f636f14b6c7e7';
+    
+    // Add debugging
+    $phpmailer->SMTPDebug = 0; // Set to 0 to disable debugging for now
+    $phpmailer->Debugoutput = function( $str, $level ) {
+        error_log( "[SMTP Debug] $str" );
+    };
+    
+    // Set secure connection
+    $phpmailer->SMTPSecure = false; // No SSL for port 2525
+    
+    // Set timeout
+    $phpmailer->Timeout = 30;
+    $phpmailer->SMTPKeepAlive = true;
+}
+
+// Apply SMTP configuration in multiple ways to ensure it works
+add_action('phpmailer_init', 'mailtrap');
+add_action( 'wp_mail_failed', 'log_email_errors' );
+
+// Force SMTP configuration to be applied early
+add_action('plugins_loaded', function() {
+    add_action('phpmailer_init', 'mailtrap');
+}, 1);
+
+add_action('init', function() {
+    add_action('phpmailer_init', 'mailtrap');
+}, 1);
 
 /**
  * Custom Navigation Menu Item for Profile Settings
  * Adds a "Profile Settings" menu item for logged-in users only
  */
 
-// Add custom menu item for logged-in users
-add_filter( 'wp_nav_menu_items', function( $items, $args ) {
+/**
+ * Add custom menu item for logged-in users
+ */
+function add_profile_settings_menu_item( $items, $args ) {
     // Check if user is logged in
     if ( is_user_logged_in() ) {
         // Create profile settings link
@@ -303,10 +390,13 @@ add_filter( 'wp_nav_menu_items', function( $items, $args ) {
     }
     
     return $items;
-}, 10, 2 );
+}
+add_filter( 'wp_nav_menu_items', 'add_profile_settings_menu_item', 10, 2 );
 
-// Alternative method: Add menu item using wp_nav_menu_objects filter
-add_filter( 'wp_nav_menu_objects', function( $menu_items, $args ) {
+/**
+ * Alternative method: Add menu item using wp_nav_menu_objects filter
+ */
+function add_profile_settings_menu_object( $menu_items, $args ) {
     // Only modify primary navigation
     if ( $args->theme_location === 'primary' || $args->menu_class === 'wp-block-navigation__container' ) {
         // Check if user is logged in
@@ -337,10 +427,13 @@ add_filter( 'wp_nav_menu_objects', function( $menu_items, $args ) {
     }
     
     return $menu_items;
-}, 10, 2 );
+}
+add_filter( 'wp_nav_menu_objects', 'add_profile_settings_menu_object', 10, 2 );
 
-// For block themes: Add profile settings link using JavaScript
-add_action( 'wp_footer', function() {
+/**
+ * For block themes: Add profile settings link using JavaScript
+ */
+function add_profile_settings_javascript() {
     if ( is_user_logged_in() ) {
         ?>
         <script>
@@ -368,10 +461,13 @@ add_action( 'wp_footer', function() {
         </script>
         <?php
     }
-} );
+}
+add_action( 'wp_footer', 'add_profile_settings_javascript' );
 
-// For block themes: Add profile settings link using WordPress filters
-add_filter( 'wp_nav_menu_items', function( $items, $args ) {
+/**
+ * For block themes: Add profile settings link using WordPress filters
+ */
+function add_profile_settings_block_theme( $items, $args ) {
     // Check if user is logged in
     if ( is_user_logged_in() ) {
         // Create profile settings link
@@ -387,10 +483,13 @@ add_filter( 'wp_nav_menu_items', function( $items, $args ) {
     }
     
     return $items;
-}, 10, 2 );
+}
+add_filter( 'wp_nav_menu_items', 'add_profile_settings_block_theme', 10, 2 );
 
-// Alternative: Use wp_nav_menu_objects filter for more control
-add_filter( 'wp_nav_menu_objects', function( $menu_items, $args ) {
+/**
+ * Alternative: Use wp_nav_menu_objects filter for more control
+ */
+function add_profile_settings_menu_object_block( $menu_items, $args ) {
     // Check if user is logged in
     if ( is_user_logged_in() ) {
         // Create a custom menu item object
@@ -418,10 +517,13 @@ add_filter( 'wp_nav_menu_objects', function( $menu_items, $args ) {
     }
     
     return $menu_items;
-}, 10, 2 );
+}
+add_filter( 'wp_nav_menu_objects', 'add_profile_settings_menu_object_block', 10, 2 );
 
-// Add a test endpoint to check navigation menu status
-add_action('init', function() {
+/**
+ * Add a test endpoint to check navigation menu status
+ */
+function add_navigation_test_endpoint() {
     if (isset($_GET['test_navigation'])) {
         echo "<h1>Navigation Menu Test</h1>";
         
@@ -452,10 +554,13 @@ add_action('init', function() {
         echo "<p><a href='http://localhost/'>← Back to Homepage</a></p>";
         exit;
     }
-});
+}
+add_action('init', 'add_navigation_test_endpoint');
 
-// Add CSS styles for the profile settings menu item
-add_action( 'wp_head', function() {
+/**
+ * Add CSS styles for the profile settings menu item
+ */
+function add_profile_settings_styles() {
     if ( is_user_logged_in() ) {
         ?>
         <style>
@@ -486,10 +591,13 @@ add_action( 'wp_head', function() {
         </style>
         <?php
     }
-} );
+}
+add_action( 'wp_head', 'add_profile_settings_styles' );
 
-// Add JavaScript to highlight current page
-add_action( 'wp_footer', function() {
+/**
+ * Add JavaScript to highlight current page
+ */
+function add_profile_settings_highlight() {
     if ( is_user_logged_in() ) {
         ?>
         <script>
@@ -505,42 +613,10 @@ add_action( 'wp_footer', function() {
         </script>
         <?php
     }
-} );
-
-
-/**
- * Mailtrap SMTP Configuration
- * Configure WordPress to use Mailtrap for email testing
- */
-function mailtrap($phpmailer) {
-    $phpmailer->isSMTP();
-    $phpmailer->Host = 'sandbox.smtp.mailtrap.io';
-    $phpmailer->SMTPAuth = true;
-    $phpmailer->Port = 2525;
-    $phpmailer->Username = 'b3afe85cc6bd7e';
-    $phpmailer->Password = '6f636f14b6c7e7';
-    
-    // Add debugging
-    $phpmailer->SMTPDebug = 2; // Set to 2 for debugging
-    $phpmailer->Debugoutput = function( $str, $level ) {
-        error_log( "[SMTP Debug] $str" );
-    };
-    
-    // Set secure connection
-    $phpmailer->SMTPSecure = false; // No SSL for port 2525
-    
-    // Set timeout
-    $phpmailer->Timeout = 30;
-    $phpmailer->SMTPKeepAlive = true;
 }
+add_action( 'wp_footer', 'add_profile_settings_highlight' );
 
-// Apply SMTP configuration in all contexts
-add_action('phpmailer_init', 'mailtrap');
-
-// Also apply it early in the WordPress load process
-add_action('init', function() {
-    // Force SMTP configuration to be applied
-    add_action('phpmailer_init', 'mailtrap');
-}, 1);
+// Uncomment the line below to test email functionality on every page load
+// add_action( 'init', 'test_email_functionality' );
 
 

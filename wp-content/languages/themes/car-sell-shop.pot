@@ -1,0 +1,88 @@
+# Copyright (C) 2025 Your Name
+# This file is distributed under the same license as the Car Sell Shop theme.
+msgid ""
+msgstr ""
+"Project-Id-Version: Car Sell Shop 1.0.1\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/theme/car-sell-shop\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2025-08-20T12:52:43+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: car-sell-shop\n"
+
+#. Theme Name of the theme
+#: style.css
+msgid "Car Sell Shop"
+msgstr ""
+
+#. Theme URI of the theme
+#. Author URI of the theme
+#: style.css
+msgid "https://example.com/"
+msgstr ""
+
+#. Description of the theme
+#: style.css
+msgid "A block theme for showcasing and selling cars."
+msgstr ""
+
+#. Author of the theme
+#: style.css
+msgid "Your Name"
+msgstr ""
+
+#: functions.php:141
+msgid "This is my filter"
+msgstr ""
+
+#: functions.php:298
+#: functions.php:317
+#: functions.php:357
+#: functions.php:382
+#: functions.php:399
+msgid "Profile Settings"
+msgstr ""
+
+#: functions.php:331
+#: functions.php:413
+msgid "Custom Link"
+msgstr ""
+
+#: theme.json
+msgctxt "Style variation name"
+msgid "Car Sell Shop"
+msgstr ""
+
+#: theme.json
+msgctxt "Style variation description"
+msgid "A block theme for showcasing and selling cars."
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Brand Blue"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Accent Red"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Neutral"
+msgstr ""
+
+#: theme.json
+msgctxt "Custom template name"
+msgid "Cars List"
+msgstr ""
+
+#: theme.json
+msgctxt "Custom template name"
+msgid "My Custom Template"
+msgstr ""
