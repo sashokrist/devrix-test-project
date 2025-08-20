@@ -1,3 +1,102 @@
-[19-Aug-2025 16:16:00 UTC] [Car Sell Shop] Car 37 saved (update: no).
-[19-Aug-2025 16:17:00 UTC] [Car Sell Shop] Car 37 saved (update: yes).
-[19-Aug-2025 16:18:49 UTC] [Car Sell Shop] Car 37 saved (update: yes).
+[20-Aug-2025 10:17:03 UTC] [Email Attempt] Trying to send profile update email to akeremidarov@devrix.com for user 1
+[20-Aug-2025 10:17:03 UTC] [SMTP Debug] SERVER -> CLIENT: 220 smtp.mailtrap.io ESMTP ready
+
+[20-Aug-2025 10:17:03 UTC] [SMTP Debug] CLIENT -> SERVER: EHLO localhost
+
+[20-Aug-2025 10:17:03 UTC] [SMTP Debug] SERVER -> CLIENT: 250-smtp.mailtrap.io
+250-SIZE 5242880
+250-PIPELINING
+250-ENHANCEDSTATUSCODES
+250-8BITMIME
+250-DSN
+250-AUTH PLAIN LOGIN CRAM-MD5
+250 STARTTLS
+
+[20-Aug-2025 10:17:03 UTC] [SMTP Debug] CLIENT -> SERVER: STARTTLS
+
+[20-Aug-2025 10:17:04 UTC] [SMTP Debug] SERVER -> CLIENT: 220 2.0.0 Start TLS
+
+[20-Aug-2025 10:17:04 UTC] [SMTP Debug] CLIENT -> SERVER: EHLO localhost
+
+[20-Aug-2025 10:17:04 UTC] [SMTP Debug] SERVER -> CLIENT: 250-smtp.mailtrap.io
+250-SIZE 5242880
+250-PIPELINING
+250-ENHANCEDSTATUSCODES
+250-8BITMIME
+250-DSN
+250 AUTH PLAIN LOGIN CRAM-MD5
+
+[20-Aug-2025 10:17:04 UTC] [SMTP Debug] CLIENT -> SERVER: AUTH CRAM-MD5
+
+[20-Aug-2025 10:17:04 UTC] [SMTP Debug] SERVER -> CLIENT: 334 PDYwODQ2NTk1NC4xNzU1Njg1MDI0QHNtdHAubWFpbHRyYXAuaW8+
+
+[20-Aug-2025 10:17:04 UTC] [SMTP Debug] CLIENT -> SERVER: [credentials hidden]
+[20-Aug-2025 10:17:04 UTC] [SMTP Debug] SERVER -> CLIENT: 235 2.0.0 OK
+
+[20-Aug-2025 10:17:04 UTC] [SMTP Debug] CLIENT -> SERVER: MAIL FROM:<akeremidarov@devrix.com>
+
+[20-Aug-2025 10:17:05 UTC] [SMTP Debug] SERVER -> CLIENT: 250 2.1.0 Ok
+
+[20-Aug-2025 10:17:05 UTC] [SMTP Debug] CLIENT -> SERVER: RCPT TO:<akeremidarov@devrix.com>
+
+[20-Aug-2025 10:17:05 UTC] [SMTP Debug] SERVER -> CLIENT: 250 2.1.0 Ok
+
+[20-Aug-2025 10:17:05 UTC] [SMTP Debug] CLIENT -> SERVER: DATA
+
+[20-Aug-2025 10:17:05 UTC] [SMTP Debug] SERVER -> CLIENT: 354 Go ahead
+
+[20-Aug-2025 10:17:05 UTC] [SMTP Debug] CLIENT -> SERVER: Date: Wed, 20 Aug 2025 10:17:03 +0000
+
+[20-Aug-2025 10:17:05 UTC] [SMTP Debug] CLIENT -> SERVER: To: akeremidarov@devrix.com
+
+[20-Aug-2025 10:17:05 UTC] [SMTP Debug] CLIENT -> SERVER: From: Test project <akeremidarov@devrix.com>
+
+[20-Aug-2025 10:17:05 UTC] [SMTP Debug] CLIENT -> SERVER: Subject: User Profile Updated - Car Sell Shop
+
+[20-Aug-2025 10:17:05 UTC] [SMTP Debug] CLIENT -> SERVER: Message-ID: <ZRCJDOpYaMk6ZdlZXqJeoEXtbLKJzpCdwnig5iGE4M@localhost>
+
+[20-Aug-2025 10:17:05 UTC] [SMTP Debug] CLIENT -> SERVER: X-Mailer: WPMailSMTP/Mailer/smtp 4.5.0
+
+[20-Aug-2025 10:17:05 UTC] [SMTP Debug] CLIENT -> SERVER: MIME-Version: 1.0
+
+[20-Aug-2025 10:17:05 UTC] [SMTP Debug] CLIENT -> SERVER: Content-Type: text/plain; charset=UTF-8
+
+[20-Aug-2025 10:17:05 UTC] [SMTP Debug] CLIENT -> SERVER: 
+
+[20-Aug-2025 10:17:05 UTC] [SMTP Debug] CLIENT -> SERVER: A user has updated their profile on your Car Sell Shop website.
+
+[20-Aug-2025 10:17:05 UTC] [SMTP Debug] CLIENT -> SERVER: 
+
+[20-Aug-2025 10:17:05 UTC] [SMTP Debug] CLIENT -> SERVER: User Details:
+
+[20-Aug-2025 10:17:05 UTC] [SMTP Debug] CLIENT -> SERVER: - User ID: 1
+
+[20-Aug-2025 10:17:05 UTC] [SMTP Debug] CLIENT -> SERVER: - Username: sasho
+
+[20-Aug-2025 10:17:05 UTC] [SMTP Debug] CLIENT -> SERVER: - Display Name: sasho_dev
+
+[20-Aug-2025 10:17:05 UTC] [SMTP Debug] CLIENT -> SERVER: - Email: akeremidarov@devrix.com
+
+[20-Aug-2025 10:17:05 UTC] [SMTP Debug] CLIENT -> SERVER: - Role: administrator
+
+[20-Aug-2025 10:17:05 UTC] [SMTP Debug] CLIENT -> SERVER: - Profile updated at: 2025-08-20 10:17:03
+
+[20-Aug-2025 10:17:05 UTC] [SMTP Debug] CLIENT -> SERVER: 
+
+[20-Aug-2025 10:17:05 UTC] [SMTP Debug] CLIENT -> SERVER: You can view their profile at: http://localhost/wp-admin/user-edit.php?user_id=1
+
+[20-Aug-2025 10:17:05 UTC] [SMTP Debug] CLIENT -> SERVER: 
+
+[20-Aug-2025 10:17:05 UTC] [SMTP Debug] CLIENT -> SERVER: .
+
+[20-Aug-2025 10:17:05 UTC] [SMTP Debug] SERVER -> CLIENT: 250 2.0.0 Ok: queued
+
+[20-Aug-2025 10:17:05 UTC] [SMTP Debug] CLIENT -> SERVER: RSET
+
+[20-Aug-2025 10:17:05 UTC] [SMTP Debug] SERVER -> CLIENT: 250 2.0.0 OK
+
+[20-Aug-2025 10:17:05 UTC] [Email Success] Profile update notification sent to admin for user 1
+[20-Aug-2025 10:17:05 UTC] [SMTP Debug] CLIENT -> SERVER: QUIT
+
+[20-Aug-2025 10:17:05 UTC] [SMTP Debug] SERVER -> CLIENT: 221 2.0.0 Bye
+

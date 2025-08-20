@@ -1,0 +1,1 @@
+<?php require_once "wp-config.php"; require_once "wp-load.php"; echo "Testing wp_mail...\n"; $result = wp_mail("test@example.com", "Test Subject", "Test message from WordPress"); echo "Result: " . ($result ? "SUCCESS" : "FAILED") . "\n"; ?>
