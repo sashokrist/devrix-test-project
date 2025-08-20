@@ -1,0 +1,162 @@
+/**
+ * Students Plugin - Admin Styles
+ *
+ * @package Students
+ * @since 1.0.0
+ */
+
+/* Student Details Meta Box */
+#student_details .form-table th {
+    width: 150px;
+    padding: 15px 10px 15px 0;
+}
+
+#student_details .form-table td {
+    padding: 15px 10px;
+}
+
+#student_details input[type="text"],
+#student_details input[type="email"],
+#student_details input[type="tel"],
+#student_details input[type="date"],
+#student_details textarea {
+    width: 100%;
+    max-width: 400px;
+}
+
+#student_details textarea {
+    min-height: 80px;
+}
+
+/* Custom Columns */
+.column-student_id,
+.column-email {
+    width: 15%;
+}
+
+.column-course,
+.column-grade_level {
+    width: 20%;
+}
+
+/* Settings Page */
+.students-settings .form-table th {
+    width: 200px;
+}
+
+.students-settings .form-table input[type="number"] {
+    width: 100px;
+}
+
+/* Student List Enhancements */
+.post-type-student .wp-list-table .column-title {
+    width: 25%;
+}
+
+.post-type-student .wp-list-table .column-author {
+    width: 10%;
+}
+
+.post-type-student .wp-list-table .column-date {
+    width: 10%;
+}
+
+/* Student Photo Preview */
+.student-photo-preview {
+    max-width: 150px;
+    margin-top: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.student-photo-preview img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Admin Notices */
+.students-notice {
+    background: #fff;
+    border-left: 4px solid #0073aa;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+    margin: 5px 0 15px;
+    padding: 1px 12px;
+}
+
+.students-notice.success {
+    border-left-color: #46b450;
+}
+
+.students-notice.error {
+    border-left-color: #dc3232;
+}
+
+.students-notice.warning {
+    border-left-color: #ffb900;
+}
+
+/* Settings Section Styling */
+.students-settings .form-table {
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    border-radius: 4px;
+    margin-top: 20px;
+}
+
+.students-settings .form-table th {
+    background: #f9f9f9;
+    border-bottom: 1px solid #ccd0d4;
+}
+
+.students-settings .form-table td {
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.students-settings .form-table tr:last-child td,
+.students-settings .form-table tr:last-child th {
+    border-bottom: none;
+}
+
+/* Description Text */
+.students-settings .description {
+    color: #666;
+    font-style: italic;
+    margin-top: 5px;
+}
+
+/* Checkbox Styling */
+.students-settings input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+.students-settings .description {
+    display: inline-block;
+    margin-left: 0;
+}
+
+/* Responsive Admin */
+@media screen and (max-width: 782px) {
+    #student_details .form-table th,
+    #student_details .form-table td {
+        display: block;
+        width: 100%;
+        padding: 10px 0;
+    }
+    
+    #student_details .form-table th {
+        border-bottom: none;
+        padding-bottom: 5px;
+    }
+    
+    #student_details .form-table td {
+        padding-top: 5px;
+        padding-bottom: 15px;
+    }
+    
+    .students-settings .form-table th {
+        width: 100%;
+        display: block;
+    }
+}
