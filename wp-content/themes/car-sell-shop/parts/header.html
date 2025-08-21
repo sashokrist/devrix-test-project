@@ -1,7 +1,28 @@
 <!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|30"}}},"layout":{"type":"constrained"}} -->
 <div class="wp-block-group" style="padding-top:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--30)">
 	<!-- wp:site-title /-->
-	<!-- wp:navigation {"layout":{"type":"flex","justifyContent":"left"}} /-->
+	
+	<!-- wp:group {"className":"main-navigation","layout":{"type":"constrained"}} -->
+	<div class="wp-block-group main-navigation">
+		<!-- wp:group {"className":"nav-container","layout":{"type":"flex","justifyContent":"center","alignItems":"center"}} -->
+		<div class="wp-block-group nav-container">
+			<!-- wp:navigation {"className":"nav-menu","layout":{"type":"flex","justifyContent":"center","alignItems":"center"}} -->
+			<!-- wp:navigation-link {"label":"Students","url":"/students-page/","className":"nav-item"} /-->
+			<!-- wp:navigation-link {"label":"Course","url":"/course/","className":"nav-item"} /-->
+			<!-- wp:navigation-link {"label":"Grades","url":"/grade-level/","className":"nav-item"} /-->
+			<!-- /wp:navigation -->
+		</div>
+		<!-- /wp:group -->
+		
+		<!-- wp:group {"className":"nav-profile-section","layout":{"type":"flex","justifyContent":"flex-start"}} -->
+		<div class="wp-block-group nav-profile-section">
+			<!-- wp:navigation-link {"label":"Profile Settings","url":"/wp-admin/profile.php","className":"profile-settings-btn"} /-->
+		</div>
+		<!-- /wp:group -->
+		
+		<!-- wp:separator {"className":"nav-separator"} /-->
+	</div>
+	<!-- /wp:group -->
 </div>
 <!-- /wp:group -->
 

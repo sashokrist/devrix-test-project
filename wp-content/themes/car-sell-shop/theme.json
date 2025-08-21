@@ -22,7 +22,7 @@
       "core/button": { "color": { "background": "#1e3a8a", "text": "#ffffff" } }
     }
   },
-  "templateTypes": ["single", "page", "archive", "index", "page-my-custom"],
+  "templateTypes": ["single", "page", "archive", "index", "page-my-custom", "single-student", "archive-student", "page-course-archive", "page-grade-level-archive"],
   "customTemplates": [
     {
       "name": "page-cars",
@@ -37,6 +37,26 @@
     {
       "name": "page-my-custom",
       "title": "My Custom Template",
+      "postTypes": ["page"]
+    },
+    {
+      "name": "single-student",
+      "title": "Single Student",
+      "postTypes": ["student"]
+    },
+    {
+      "name": "archive-student",
+      "title": "Students Archive",
+      "postTypes": ["student"]
+    },
+    {
+      "name": "page-course-archive",
+      "title": "Course Archive",
+      "postTypes": ["page"]
+    },
+    {
+      "name": "page-grade-level-archive",
+      "title": "Grade Level Archive",
       "postTypes": ["page"]
     }
   ]

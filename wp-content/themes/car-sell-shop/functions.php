@@ -2,6 +2,21 @@
 // Examples: how to use the custom hooks from Car Sell Shop Core.
 
 /**
+ * Enqueue Students plugin styles
+ */
+function car_sell_shop_enqueue_students_styles() {
+    if ( is_post_type_archive( 'student' ) || is_singular( 'student' ) || is_tax( 'course' ) || is_tax( 'grade_level' ) ) {
+        wp_enqueue_style(
+            'car-sell-shop-students',
+            get_template_directory_uri() . '/assets/css/students.css',
+            array(),
+            '1.0.0'
+        );
+    }
+}
+add_action( 'wp_enqueue_scripts', 'car_sell_shop_enqueue_students_styles' );
+
+/**
  * Load theme text domain for translations
  */
 function car_sell_shop_load_textdomain() {
@@ -918,6 +933,125 @@ function car_sell_shop_navigation_styles() {
 
         .wp-block-navigation-item__content {
             width: 100%;
+            text-align: center;
+        }
+    }
+
+    /* Traditional navigation styling for PHP templates */
+    .main-navigation {
+        margin: 1rem 0;
+    }
+
+    .nav-container {
+        background: linear-gradient(135deg, #3b82f6 0%, #1e3a8a 100%);
+        padding: 1rem 2rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .nav-menu {
+        display: flex;
+        align-items: center;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        gap: 0;
+    }
+
+    .nav-item {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .nav-item:not(:last-child)::after {
+        content: '';
+        position: absolute;
+        right: -0.5rem;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 1px;
+        height: 1.5rem;
+        background: rgba(255, 255, 255, 0.3);
+    }
+
+    .nav-item a {
+        color: white !important;
+        text-decoration: none;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        text-transform: capitalize;
+        display: block;
+    }
+
+    .nav-item a:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateY(-1px);
+    }
+
+    .nav-item.active a {
+        background: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .nav-profile-section {
+        position: absolute;
+        bottom: -2.5rem;
+        left: 0;
+        padding-left: 1rem;
+    }
+
+    .profile-settings-btn {
+        background: #22c55e;
+        color: white !important;
+        text-decoration: none;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-block;
+    }
+
+    .profile-settings-btn:hover {
+        background: rgba(34, 197, 94, 1);
+        transform: translateY(-1px);
+        color: white !important;
+    }
+
+    /* Navigation separator line */
+    .nav-separator {
+        border: none;
+        height: 2px;
+        background: linear-gradient(90deg, #1e3a8a 0%, #3b82f6 50%, #1e3a8a 100%);
+        margin: 1rem 0;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Responsive design for traditional navigation */
+    @media (max-width: 768px) {
+        .nav-menu {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-item:not(:last-child)::after {
+            display: none;
+        }
+
+        .nav-item a {
+            width: 100%;
+            text-align: center;
+        }
+
+        .nav-profile-section {
+            position: static;
+            margin-top: 1rem;
             text-align: center;
         }
     }

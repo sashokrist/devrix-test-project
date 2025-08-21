@@ -28,6 +28,7 @@ class Students_Public {
         add_shortcode( 'student_profile', array( $this, 'student_profile_shortcode' ) );
         add_filter( 'single_template', array( $this, 'load_single_student_template' ) );
         add_filter( 'archive_template', array( $this, 'load_archive_student_template' ) );
+        add_filter( 'taxonomy_template', array( $this, 'load_taxonomy_templates' ) );
     }
 
     /**
@@ -266,9 +267,16 @@ class Students_Public {
      */
     public function load_single_student_template( $template ) {
         if ( is_singular( 'student' ) ) {
-            $new_template = STUDENTS_PLUGIN_DIR . 'templates/single-student.php';
-            if ( file_exists( $new_template ) ) {
-                return $new_template;
+            // First check if theme has a custom template
+            $theme_template = locate_template( array( 'single-student.php' ) );
+            if ( $theme_template ) {
+                return $theme_template;
+            }
+            
+            // Then check for plugin template
+            $plugin_template = STUDENTS_PLUGIN_DIR . 'templates/single-student.php';
+            if ( file_exists( $plugin_template ) ) {
+                return $plugin_template;
             }
         }
         return $template;
@@ -282,11 +290,52 @@ class Students_Public {
      */
     public function load_archive_student_template( $template ) {
         if ( is_post_type_archive( 'student' ) ) {
-            $new_template = STUDENTS_PLUGIN_DIR . 'templates/archive-student.php';
-            if ( file_exists( $new_template ) ) {
-                return $new_template;
+            // First check if theme has a custom template
+            $theme_template = locate_template( array( 'archive-student.php' ) );
+            if ( $theme_template ) {
+                return $theme_template;
+            }
+            
+            // Then check for plugin template
+            $plugin_template = STUDENTS_PLUGIN_DIR . 'templates/archive-student.php';
+            if ( file_exists( $plugin_template ) ) {
+                return $plugin_template;
             }
         }
+        return $template;
+    }
+
+    /**
+     * Load taxonomy templates
+     *
+     * @param string $template Template path
+     * @return string
+     */
+    public function load_taxonomy_templates( $template ) {
+        if ( is_tax( 'course' ) ) {
+            $theme_template = locate_template( array( 'taxonomy-course.php' ) );
+            if ( $theme_template ) {
+                return $theme_template;
+            }
+            
+            $plugin_template = STUDENTS_PLUGIN_DIR . 'templates/taxonomy-course.php';
+            if ( file_exists( $plugin_template ) ) {
+                return $plugin_template;
+            }
+        }
+        
+        if ( is_tax( 'grade_level' ) ) {
+            $theme_template = locate_template( array( 'taxonomy-grade_level.php' ) );
+            if ( $theme_template ) {
+                return $theme_template;
+            }
+            
+            $plugin_template = STUDENTS_PLUGIN_DIR . 'templates/taxonomy-grade_level.php';
+            if ( file_exists( $plugin_template ) ) {
+                return $plugin_template;
+            }
+        }
+        
         return $template;
     }
 }
