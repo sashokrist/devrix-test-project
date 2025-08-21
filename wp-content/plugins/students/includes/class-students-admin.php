@@ -28,6 +28,10 @@ class Students_Admin {
         add_filter( 'manage_student_posts_columns', array( $this, 'add_custom_columns' ) );
         add_action( 'manage_student_posts_custom_column', array( $this, 'display_custom_columns' ), 10, 2 );
         add_filter( 'manage_edit-student_sortable_columns', array( $this, 'make_columns_sortable' ) );
+        
+        // Add meta boxes
+        add_action( 'add_meta_boxes', array( $this, 'add_student_meta_boxes' ) );
+        add_action( 'save_post', array( $this, 'save_student_meta_boxes' ) );
     }
 
     /**
@@ -182,8 +186,9 @@ class Students_Admin {
             if ( 'title' === $key ) {
                 $new_columns['student_id'] = __( 'Student ID', 'students' );
                 $new_columns['email'] = __( 'Email', 'students' );
-                $new_columns['course'] = __( 'Course', 'students' );
-                $new_columns['grade_level'] = __( 'Grade Level', 'students' );
+                $new_columns['location'] = __( 'Location', 'students' );
+                $new_columns['class_grade'] = __( 'Class/Grade', 'students' );
+                $new_columns['status'] = __( 'Status', 'students' );
             }
         }
         
@@ -208,27 +213,34 @@ class Students_Admin {
                 echo esc_html( $email );
                 break;
                 
-            case 'course':
-                $terms = get_the_terms( $post_id, 'course' );
-                if ( $terms && ! is_wp_error( $terms ) ) {
-                    $course_names = array();
-                    foreach ( $terms as $term ) {
-                        $course_names[] = $term->name;
-                    }
-                    echo esc_html( implode( ', ', $course_names ) );
+            case 'location':
+                $country = get_post_meta( $post_id, '_student_country', true );
+                $city = get_post_meta( $post_id, '_student_city', true );
+                $location = array();
+                if ( ! empty( $city ) ) {
+                    $location[] = $city;
+                }
+                if ( ! empty( $country ) ) {
+                    $location[] = $country;
+                }
+                echo esc_html( implode( ', ', $location ) );
+                break;
+                
+            case 'class_grade':
+                $class_grade = get_post_meta( $post_id, '_student_class_grade', true );
+                echo esc_html( $class_grade );
+                break;
+                
+            case 'status':
+                $is_active = get_post_meta( $post_id, '_student_is_active', true );
+                if ( '1' === $is_active ) {
+                    echo '<span style="color: green; font-weight: bold;">' . __( 'Active', 'students' ) . '</span>';
+                } else {
+                    echo '<span style="color: red; font-weight: bold;">' . __( 'Inactive', 'students' ) . '</span>';
                 }
                 break;
                 
-            case 'grade_level':
-                $terms = get_the_terms( $post_id, 'grade_level' );
-                if ( $terms && ! is_wp_error( $terms ) ) {
-                    $grade_names = array();
-                    foreach ( $terms as $term ) {
-                        $grade_names[] = $term->name;
-                    }
-                    echo esc_html( implode( ', ', $grade_names ) );
-                }
-                break;
+
         }
     }
 
@@ -241,6 +253,118 @@ class Students_Admin {
     public function make_columns_sortable( $columns ) {
         $columns['student_id'] = 'student_id';
         $columns['email'] = 'email';
+        $columns['class_grade'] = 'class_grade';
+        $columns['status'] = 'status';
         return $columns;
+    }
+
+    /**
+     * Add meta boxes for student post type
+     */
+    public function add_student_meta_boxes() {
+        add_meta_box(
+            'student_personal_info',
+            __( 'Additional Information', 'students' ),
+            array( $this, 'render_personal_info_meta_box' ),
+            'student',
+            'normal',
+            'high'
+        );
+    }
+
+    /**
+     * Render personal information meta box
+     *
+     * @param WP_Post $post
+     */
+    public function render_personal_info_meta_box( $post ) {
+        // Add nonce for security
+        wp_nonce_field( 'student_meta_box_nonce', 'student_meta_box_nonce' );
+
+        // Get current values
+        $country = get_post_meta( $post->ID, '_student_country', true );
+        $city = get_post_meta( $post->ID, '_student_city', true );
+        $class_grade = get_post_meta( $post->ID, '_student_class_grade', true );
+        $is_active = get_post_meta( $post->ID, '_student_is_active', true );
+        ?>
+        <table class="form-table">
+            <tr>
+                <th scope="row">
+                    <label for="student_country"><?php _e( 'Country', 'students' ); ?></label>
+                </th>
+                <td>
+                    <input type="text" id="student_country" name="student_country" value="<?php echo esc_attr( $country ); ?>" class="regular-text" />
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">
+                    <label for="student_city"><?php _e( 'City', 'students' ); ?></label>
+                </th>
+                <td>
+                    <input type="text" id="student_city" name="student_city" value="<?php echo esc_attr( $city ); ?>" class="regular-text" />
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">
+                    <label for="student_class_grade"><?php _e( 'Class / Grade', 'students' ); ?></label>
+                </th>
+                <td>
+                    <input type="text" id="student_class_grade" name="student_class_grade" value="<?php echo esc_attr( $class_grade ); ?>" class="regular-text" />
+                    <p class="description"><?php _e( 'e.g., Grade 10, Class A, etc.', 'students' ); ?></p>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">
+                    <label for="student_is_active"><?php _e( 'Status', 'students' ); ?></label>
+                </th>
+                <td>
+                    <select id="student_is_active" name="student_is_active">
+                        <option value="1" <?php selected( $is_active, '1' ); ?>><?php _e( 'Active', 'students' ); ?></option>
+                        <option value="0" <?php selected( $is_active, '0' ); ?>><?php _e( 'Inactive', 'students' ); ?></option>
+                    </select>
+                    <p class="description"><?php _e( 'Whether the student is currently active or not', 'students' ); ?></p>
+                </td>
+            </tr>
+        </table>
+        <?php
+    }
+
+    /**
+     * Save student meta box data
+     *
+     * @param int $post_id
+     */
+    public function save_student_meta_boxes( $post_id ) {
+        // Check if nonce is valid
+        if ( ! isset( $_POST['student_meta_box_nonce'] ) || ! wp_verify_nonce( $_POST['student_meta_box_nonce'], 'student_meta_box_nonce' ) ) {
+            return;
+        }
+
+        // Check if user has permissions to save data
+        if ( ! current_user_can( 'edit_post', $post_id ) ) {
+            return;
+        }
+
+        // Check if not an autosave
+        if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+            return;
+        }
+
+        // Check if our custom fields are set
+        if ( isset( $_POST['student_country'] ) ) {
+            update_post_meta( $post_id, '_student_country', sanitize_text_field( $_POST['student_country'] ) );
+        }
+
+        if ( isset( $_POST['student_city'] ) ) {
+            update_post_meta( $post_id, '_student_city', sanitize_text_field( $_POST['student_city'] ) );
+        }
+
+        if ( isset( $_POST['student_class_grade'] ) ) {
+            update_post_meta( $post_id, '_student_class_grade', sanitize_text_field( $_POST['student_class_grade'] ) );
+        }
+
+        if ( isset( $_POST['student_is_active'] ) ) {
+            update_post_meta( $post_id, '_student_is_active', sanitize_text_field( $_POST['student_is_active'] ) );
+        }
     }
 }
