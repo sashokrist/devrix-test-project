@@ -189,6 +189,8 @@ class Students_Admin {
                 $new_columns['location'] = __( 'Location', 'students' );
                 $new_columns['class_grade'] = __( 'Class/Grade', 'students' );
                 $new_columns['status'] = __( 'Status', 'students' );
+                $new_columns['course'] = __( 'Course', 'students' );
+                $new_columns['grade_level'] = __( 'Grade Level', 'students' );
             }
         }
         
@@ -240,7 +242,27 @@ class Students_Admin {
                 }
                 break;
                 
-
+            case 'course':
+                $terms = get_the_terms( $post_id, 'course' );
+                if ( $terms && ! is_wp_error( $terms ) ) {
+                    $course_names = array();
+                    foreach ( $terms as $term ) {
+                        $course_names[] = $term->name;
+                    }
+                    echo esc_html( implode( ', ', $course_names ) );
+                }
+                break;
+                
+            case 'grade_level':
+                $terms = get_the_terms( $post_id, 'grade_level' );
+                if ( $terms && ! is_wp_error( $terms ) ) {
+                    $grade_names = array();
+                    foreach ( $terms as $term ) {
+                        $grade_names[] = $term->name;
+                    }
+                    echo esc_html( implode( ', ', $grade_names ) );
+                }
+                break;
         }
     }
 
