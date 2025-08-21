@@ -37,8 +37,8 @@
         <nav id="site-navigation" class="main-navigation">
             <div class="nav-container">
                 <ul class="nav-menu">
-                    <li class="nav-item <?php echo (is_post_type_archive('student') || is_page('students-page')) ? 'active' : ''; ?>">
-                        <a href="<?php echo esc_url(home_url('/students-page/')); ?>">Students</a>
+                    <li class="nav-item <?php echo (is_post_type_archive('student')) ? 'active' : ''; ?>">
+                        <a href="<?php echo esc_url(home_url('/students/')); ?>">Students</a>
                     </li>
                     <li class="nav-item <?php echo (is_tax('course') || is_page('course')) ? 'active' : ''; ?>">
                         <a href="<?php echo esc_url(home_url('/course/')); ?>">Course</a>

@@ -1130,4 +1130,16 @@ add_action( 'enqueue_block_editor_assets', 'car_sell_shop_enqueue_block_editor_s
  * add_action( 'init', 'test_email_functionality' );
  */
 
+/**
+ * Set posts per page for student archive
+ */
+function car_sell_shop_student_posts_per_page( $query ) {
+    if ( ! is_admin() && $query->is_main_query() && is_post_type_archive( 'student' ) ) {
+        $query->set( 'posts_per_page', 4 );
+        $query->set( 'orderby', 'title' );
+        $query->set( 'order', 'ASC' );
+    }
+}
+add_action( 'pre_get_posts', 'car_sell_shop_student_posts_per_page' );
+
 
