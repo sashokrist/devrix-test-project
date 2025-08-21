@@ -36,6 +36,12 @@ get_header(); ?>
                             $phone = get_post_meta( get_the_ID(), '_student_phone', true );
                             $dob = get_post_meta( get_the_ID(), '_student_dob', true );
                             $address = get_post_meta( get_the_ID(), '_student_address', true );
+                            
+                            // Get new meta box data
+                            $country = get_post_meta( get_the_ID(), '_student_country', true );
+                            $city = get_post_meta( get_the_ID(), '_student_city', true );
+                            $class_grade = get_post_meta( get_the_ID(), '_student_class_grade', true );
+                            $is_active = get_post_meta( get_the_ID(), '_student_is_active', true );
                             ?>
 
                             <div class="student-meta">
@@ -68,6 +74,33 @@ get_header(); ?>
                                         <strong>Address:</strong> <?php echo esc_html( $address ); ?>
                                     </div>
                                 <?php endif; ?>
+
+                                <?php if ( $country || $city ) : ?>
+                                    <div class="meta-item">
+                                        <strong>Location:</strong> 
+                                        <?php 
+                                        $location = array();
+                                        if ( $city ) $location[] = esc_html( $city );
+                                        if ( $country ) $location[] = esc_html( $country );
+                                        echo implode( ', ', $location );
+                                        ?>
+                                    </div>
+                                <?php endif; ?>
+
+                                <?php if ( $class_grade ) : ?>
+                                    <div class="meta-item">
+                                        <strong>Class/Grade:</strong> <?php echo esc_html( $class_grade ); ?>
+                                    </div>
+                                <?php endif; ?>
+
+                                <div class="meta-item">
+                                    <strong>Status:</strong> 
+                                    <?php if ( '1' === $is_active ) : ?>
+                                        <span style="color: green; font-weight: bold;"><?php esc_html_e( 'Active', 'car-sell-shop' ); ?></span>
+                                    <?php else : ?>
+                                        <span style="color: red; font-weight: bold;"><?php esc_html_e( 'Inactive', 'car-sell-shop' ); ?></span>
+                                    <?php endif; ?>
+                                </div>
                             </div>
 
                             <?php

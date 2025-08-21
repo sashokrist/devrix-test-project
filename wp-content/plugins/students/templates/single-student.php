@@ -33,9 +33,10 @@ get_header(); ?>
                             // Get student meta data
                             $student_id = get_post_meta( get_the_ID(), '_student_id', true );
                             $email = get_post_meta( get_the_ID(), '_student_email', true );
-                            $phone = get_post_meta( get_the_ID(), '_student_phone', true );
-                            $dob = get_post_meta( get_the_ID(), '_student_dob', true );
-                            $address = get_post_meta( get_the_ID(), '_student_address', true );
+                            $country = get_post_meta( get_the_ID(), '_student_country', true );
+                            $city = get_post_meta( get_the_ID(), '_student_city', true );
+                            $class_grade = get_post_meta( get_the_ID(), '_student_class_grade', true );
+                            $is_active = get_post_meta( get_the_ID(), '_student_is_active', true );
                             ?>
 
                             <div class="student-meta">
@@ -45,29 +46,38 @@ get_header(); ?>
                                     </div>
                                 <?php endif; ?>
 
-                                <?php if ( $email && Students_Plugin::get_option( 'show_email', false ) ) : ?>
+                                <?php if ( $email ) : ?>
                                     <div class="meta-item">
                                         <strong>Email:</strong> <a href="mailto:<?php echo esc_attr( $email ); ?>"><?php echo esc_html( $email ); ?></a>
                                     </div>
                                 <?php endif; ?>
 
-                                <?php if ( $phone ) : ?>
+                                <?php if ( $country || $city ) : ?>
                                     <div class="meta-item">
-                                        <strong>Phone:</strong> <a href="tel:<?php echo esc_attr( $phone ); ?>"><?php echo esc_html( $phone ); ?></a>
+                                        <strong>Location:</strong> 
+                                        <?php 
+                                        $location = array();
+                                        if ( $city ) $location[] = esc_html( $city );
+                                        if ( $country ) $location[] = esc_html( $country );
+                                        echo implode( ', ', $location );
+                                        ?>
                                     </div>
                                 <?php endif; ?>
 
-                                <?php if ( $dob ) : ?>
+                                <?php if ( $class_grade ) : ?>
                                     <div class="meta-item">
-                                        <strong>Date of Birth:</strong> <?php echo esc_html( date_i18n( get_option( 'date_format' ), strtotime( $dob ) ) ); ?>
+                                        <strong>Class/Grade:</strong> <?php echo esc_html( $class_grade ); ?>
                                     </div>
                                 <?php endif; ?>
 
-                                <?php if ( $address ) : ?>
-                                    <div class="meta-item">
-                                        <strong>Address:</strong> <?php echo esc_html( $address ); ?>
-                                    </div>
-                                <?php endif; ?>
+                                <div class="meta-item">
+                                    <strong>Status:</strong> 
+                                    <?php if ( '1' === $is_active ) : ?>
+                                        <span style="color: green; font-weight: bold;"><?php _e( 'Active', 'students' ); ?></span>
+                                    <?php else : ?>
+                                        <span style="color: red; font-weight: bold;"><?php _e( 'Inactive', 'students' ); ?></span>
+                                    <?php endif; ?>
+                                </div>
                             </div>
 
                             <?php

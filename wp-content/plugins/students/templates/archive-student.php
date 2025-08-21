@@ -47,6 +47,8 @@ get_header(); ?>
                             <?php
                             // Get student meta data
                             $student_id = get_post_meta( get_the_ID(), '_student_id', true );
+                            $class_grade = get_post_meta( get_the_ID(), '_student_class_grade', true );
+                            $is_active = get_post_meta( get_the_ID(), '_student_is_active', true );
                             $courses = get_the_terms( get_the_ID(), 'course' );
                             $grade_levels = get_the_terms( get_the_ID(), 'grade_level' );
                             ?>
@@ -57,6 +59,21 @@ get_header(); ?>
                                         <strong>ID:</strong> <?php echo esc_html( $student_id ); ?>
                                     </div>
                                 <?php endif; ?>
+
+                                <?php if ( $class_grade ) : ?>
+                                    <div class="meta-item">
+                                        <strong>Class/Grade:</strong> <?php echo esc_html( $class_grade ); ?>
+                                    </div>
+                                <?php endif; ?>
+
+                                <div class="meta-item">
+                                    <strong>Status:</strong> 
+                                    <?php if ( '1' === $is_active ) : ?>
+                                        <span style="color: green; font-weight: bold;"><?php _e( 'Active', 'students' ); ?></span>
+                                    <?php else : ?>
+                                        <span style="color: red; font-weight: bold;"><?php _e( 'Inactive', 'students' ); ?></span>
+                                    <?php endif; ?>
+                                </div>
 
                                 <?php if ( $courses && ! is_wp_error( $courses ) ) : ?>
                                     <div class="meta-item">

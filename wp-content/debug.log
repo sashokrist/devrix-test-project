@@ -1028,3 +1028,8 @@ Stack trace:
 [21-Aug-2025 12:12:57 UTC] [Email Success] Profile update notification sent to admin for user 1
 [21-Aug-2025 12:12:59 UTC] [Email Attempt] Trying to send profile update email to akeremidarov@devrix.com for user 1
 [21-Aug-2025 12:13:01 UTC] [Email Success] Profile update notification sent to admin for user 1
+[21-Aug-2025 15:36:03 UTC] Automatic updates starting...
+[21-Aug-2025 15:36:03 UTC]   Automatic plugin updates starting...
+[21-Aug-2025 15:36:03 UTC]   Automatic plugin updates complete.
+[21-Aug-2025 15:36:04 UTC] Automatic updates complete.
+[21-Aug-2025 15:47:18 UTC] PHP Deprecated:  File Theme without sidebar.php is <strong>deprecated</strong> since version 3.0.0 with no alternative available. Please include a sidebar.php template in your theme. in /var/www/html/wp-includes/functions.php on line 6121

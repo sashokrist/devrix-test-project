@@ -55,6 +55,8 @@ get_header();
                                 // Get student meta data
                                 $student_id = get_post_meta( get_the_ID(), '_student_id', true );
                                 $student_email = get_post_meta( get_the_ID(), '_student_email', true );
+                                $class_grade = get_post_meta( get_the_ID(), '_student_class_grade', true );
+                                $is_active = get_post_meta( get_the_ID(), '_student_is_active', true );
                                 ?>
 
                                 <?php if ( $student_id ) : ?>
@@ -68,6 +70,21 @@ get_header();
                                         <strong><?php esc_html_e( 'Email:', 'car-sell-shop' ); ?></strong> <?php echo esc_html( $student_email ); ?>
                                     </div>
                                 <?php endif; ?>
+
+                                <?php if ( $class_grade ) : ?>
+                                    <div class="meta-item">
+                                        <strong><?php esc_html_e( 'Class/Grade:', 'car-sell-shop' ); ?></strong> <?php echo esc_html( $class_grade ); ?>
+                                    </div>
+                                <?php endif; ?>
+
+                                <div class="meta-item">
+                                    <strong><?php esc_html_e( 'Status:', 'car-sell-shop' ); ?></strong> 
+                                    <?php if ( '1' === $is_active ) : ?>
+                                        <span style="color: green; font-weight: bold;"><?php esc_html_e( 'Active', 'car-sell-shop' ); ?></span>
+                                    <?php else : ?>
+                                        <span style="color: red; font-weight: bold;"><?php esc_html_e( 'Inactive', 'car-sell-shop' ); ?></span>
+                                    <?php endif; ?>
+                                </div>
                             </div>
 
                             <div class="student-taxonomies">
