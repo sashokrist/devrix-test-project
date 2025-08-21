@@ -1070,6 +1070,38 @@ function car_sell_shop_navigation_styles() {
         text-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
     }
 
+    /* Site branding centering */
+    .site-branding {
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+
+    .site-title {
+        text-align: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .site-title a {
+        color: #1e3a8a;
+        font-size: 2rem;
+        font-weight: 700;
+        text-decoration: none;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .site-title a:hover {
+        color: #3b82f6;
+        text-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .site-description {
+        text-align: center;
+        color: #6b7280;
+        font-size: 1.1rem;
+        margin: 0;
+        font-style: italic;
+    }
+
     /* Header container styling */
     .wp-block-group:has(.wp-block-site-title) {
         background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
