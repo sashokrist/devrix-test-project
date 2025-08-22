@@ -37,24 +37,37 @@ get_header(); ?>
                             $city = get_post_meta( get_the_ID(), '_student_city', true );
                             $class_grade = get_post_meta( get_the_ID(), '_student_class_grade', true );
                             $is_active = get_post_meta( get_the_ID(), '_student_is_active', true );
+                            
+                            // Ensure values are strings and properly sanitized for display
+                            $student_id = is_string( $student_id ) ? $student_id : '';
+                            $email = is_string( $email ) ? $email : '';
+                            $country = is_string( $country ) ? $country : '';
+                            $city = is_string( $city ) ? $city : '';
+                            $class_grade = is_string( $class_grade ) ? $class_grade : '';
+                            $is_active = is_string( $is_active ) ? $is_active : '0';
+                            
+                            // Validate is_active value
+                            if ( ! in_array( $is_active, array( '0', '1' ), true ) ) {
+                                $is_active = '0';
+                            }
                             ?>
 
                             <div class="student-meta">
                                 <?php if ( $student_id ) : ?>
                                     <div class="meta-item">
-                                        <strong>Student ID:</strong> <?php echo esc_html( $student_id ); ?>
+                                        <strong><?php esc_html_e( 'Student ID:', 'students' ); ?></strong> <?php echo esc_html( $student_id ); ?>
                                     </div>
                                 <?php endif; ?>
 
                                 <?php if ( $email ) : ?>
                                     <div class="meta-item">
-                                        <strong>Email:</strong> <a href="mailto:<?php echo esc_attr( $email ); ?>"><?php echo esc_html( $email ); ?></a>
+                                        <strong><?php esc_html_e( 'Email:', 'students' ); ?></strong> <a href="mailto:<?php echo esc_attr( $email ); ?>"><?php echo esc_html( $email ); ?></a>
                                     </div>
                                 <?php endif; ?>
 
                                 <?php if ( $country || $city ) : ?>
                                     <div class="meta-item">
-                                        <strong>Location:</strong> 
+                                        <strong><?php esc_html_e( 'Location:', 'students' ); ?></strong> 
                                         <?php 
                                         $location = array();
                                         if ( $city ) $location[] = esc_html( $city );
@@ -66,16 +79,16 @@ get_header(); ?>
 
                                 <?php if ( $class_grade ) : ?>
                                     <div class="meta-item">
-                                        <strong>Class/Grade:</strong> <?php echo esc_html( $class_grade ); ?>
+                                        <strong><?php esc_html_e( 'Class/Grade:', 'students' ); ?></strong> <?php echo esc_html( $class_grade ); ?>
                                     </div>
                                 <?php endif; ?>
 
                                 <div class="meta-item">
-                                    <strong>Status:</strong> 
+                                    <strong><?php esc_html_e( 'Status:', 'students' ); ?></strong> 
                                     <?php if ( '1' === $is_active ) : ?>
-                                        <span style="color: green; font-weight: bold;"><?php _e( 'Active', 'students' ); ?></span>
+                                        <span style="color: green; font-weight: bold;"><?php esc_html_e( 'Active', 'students' ); ?></span>
                                     <?php else : ?>
-                                        <span style="color: red; font-weight: bold;"><?php _e( 'Inactive', 'students' ); ?></span>
+                                        <span style="color: red; font-weight: bold;"><?php esc_html_e( 'Inactive', 'students' ); ?></span>
                                     <?php endif; ?>
                                 </div>
                             </div>
@@ -88,11 +101,11 @@ get_header(); ?>
 
                             <?php if ( $courses && ! is_wp_error( $courses ) ) : ?>
                                 <div class="student-taxonomies">
-                                    <strong>Courses:</strong>
+                                    <strong><?php esc_html_e( 'Courses:', 'students' ); ?></strong>
                                     <?php
                                     $course_names = array();
                                     foreach ( $courses as $course ) {
-                                        $course_names[] = '<a href="' . get_term_link( $course ) . '">' . esc_html( $course->name ) . '</a>';
+                                        $course_names[] = '<a href="' . esc_url( get_term_link( $course ) ) . '">' . esc_html( $course->name ) . '</a>';
                                     }
                                     echo implode( ', ', $course_names );
                                     ?>
@@ -101,11 +114,11 @@ get_header(); ?>
 
                             <?php if ( $grade_levels && ! is_wp_error( $grade_levels ) ) : ?>
                                 <div class="student-taxonomies">
-                                    <strong>Grade Level:</strong>
+                                    <strong><?php esc_html_e( 'Grade Level:', 'students' ); ?></strong>
                                     <?php
                                     $grade_names = array();
                                     foreach ( $grade_levels as $grade ) {
-                                        $grade_names[] = '<a href="' . get_term_link( $grade ) . '">' . esc_html( $grade->name ) . '</a>';
+                                        $grade_names[] = '<a href="' . esc_url( get_term_link( $grade ) ) . '">' . esc_html( $grade->name ) . '</a>';
                                     }
                                     echo implode( ', ', $grade_names );
                                     ?>

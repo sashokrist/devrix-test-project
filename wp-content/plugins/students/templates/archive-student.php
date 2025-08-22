@@ -51,27 +51,37 @@ get_header(); ?>
                             $is_active = get_post_meta( get_the_ID(), '_student_is_active', true );
                             $courses = get_the_terms( get_the_ID(), 'course' );
                             $grade_levels = get_the_terms( get_the_ID(), 'grade_level' );
+                            
+                            // Ensure values are strings and properly sanitized for display
+                            $student_id = is_string( $student_id ) ? $student_id : '';
+                            $class_grade = is_string( $class_grade ) ? $class_grade : '';
+                            $is_active = is_string( $is_active ) ? $is_active : '0';
+                            
+                            // Validate is_active value
+                            if ( ! in_array( $is_active, array( '0', '1' ), true ) ) {
+                                $is_active = '0';
+                            }
                             ?>
 
                             <div class="student-meta">
                                 <?php if ( $student_id ) : ?>
                                     <div class="meta-item">
-                                        <strong>ID:</strong> <?php echo esc_html( $student_id ); ?>
+                                        <strong><?php esc_html_e( 'ID:', 'students' ); ?></strong> <?php echo esc_html( $student_id ); ?>
                                     </div>
                                 <?php endif; ?>
 
                                 <?php if ( $class_grade ) : ?>
                                     <div class="meta-item">
-                                        <strong>Class/Grade:</strong> <?php echo esc_html( $class_grade ); ?>
+                                        <strong><?php esc_html_e( 'Class/Grade:', 'students' ); ?></strong> <?php echo esc_html( $class_grade ); ?>
                                     </div>
                                 <?php endif; ?>
 
                                 <div class="meta-item">
-                                    <strong>Status:</strong> 
+                                    <strong><?php esc_html_e( 'Status:', 'students' ); ?></strong> 
                                     <?php if ( '1' === $is_active ) : ?>
-                                        <span style="color: green; font-weight: bold;"><?php _e( 'Active', 'students' ); ?></span>
+                                        <span style="color: green; font-weight: bold;"><?php esc_html_e( 'Active', 'students' ); ?></span>
                                     <?php else : ?>
-                                        <span style="color: red; font-weight: bold;"><?php _e( 'Inactive', 'students' ); ?></span>
+                                        <span style="color: red; font-weight: bold;"><?php esc_html_e( 'Inactive', 'students' ); ?></span>
                                     <?php endif; ?>
                                 </div>
 

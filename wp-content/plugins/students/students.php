@@ -98,6 +98,7 @@ class Students_Plugin {
     private function load_dependencies() {
         // Load core files
         require_once STUDENTS_PLUGIN_DIR . 'includes/class-students-loader.php';
+        require_once STUDENTS_PLUGIN_DIR . 'includes/class-students-sanitizer.php';
         require_once STUDENTS_PLUGIN_DIR . 'includes/class-students-post-type.php';
         require_once STUDENTS_PLUGIN_DIR . 'includes/class-students-admin.php';
         require_once STUDENTS_PLUGIN_DIR . 'includes/class-students-public.php';

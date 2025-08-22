@@ -131,6 +131,16 @@ class Students_Public {
                                 $class_grade = get_post_meta( get_the_ID(), '_student_class_grade', true );
                                 $is_active = get_post_meta( get_the_ID(), '_student_is_active', true );
                                 
+                                // Ensure values are strings and properly sanitized for display
+                                $student_id = is_string( $student_id ) ? $student_id : '';
+                                $class_grade = is_string( $class_grade ) ? $class_grade : '';
+                                $is_active = is_string( $is_active ) ? $is_active : '0';
+                                
+                                // Validate is_active value
+                                if ( ! in_array( $is_active, array( '0', '1' ), true ) ) {
+                                    $is_active = '0';
+                                }
+                                
                                 if ( $student_id ) :
                                 ?>
                                     <p class="student-id"><?php echo esc_html( __( 'ID:', 'students' ) . ' ' . $student_id ); ?></p>
@@ -141,11 +151,11 @@ class Students_Public {
                                 <?php endif; ?>
 
                                 <p class="student-status">
-                                    <strong><?php _e( 'Status:', 'students' ); ?></strong>
+                                    <strong><?php esc_html_e( 'Status:', 'students' ); ?></strong>
                                     <?php if ( '1' === $is_active ) : ?>
-                                        <span style="color: green; font-weight: bold;"><?php _e( 'Active', 'students' ); ?></span>
+                                        <span style="color: green; font-weight: bold;"><?php esc_html_e( 'Active', 'students' ); ?></span>
                                     <?php else : ?>
-                                        <span style="color: red; font-weight: bold;"><?php _e( 'Inactive', 'students' ); ?></span>
+                                        <span style="color: red; font-weight: bold;"><?php esc_html_e( 'Inactive', 'students' ); ?></span>
                                     <?php endif; ?>
                                 </p>
 
@@ -241,46 +251,69 @@ class Students_Public {
                 $city = get_post_meta( $post->ID, '_student_city', true );
                 $class_grade = get_post_meta( $post->ID, '_student_class_grade', true );
                 $is_active = get_post_meta( $post->ID, '_student_is_active', true );
+                
+                // Ensure values are strings and properly sanitized for display
+                $student_id = is_string( $student_id ) ? $student_id : '';
+                $email = is_string( $email ) ? $email : '';
+                $phone = is_string( $phone ) ? $phone : '';
+                $dob = is_string( $dob ) ? $dob : '';
+                $address = is_string( $address ) ? $address : '';
+                $country = is_string( $country ) ? $country : '';
+                $city = is_string( $city ) ? $city : '';
+                $class_grade = is_string( $class_grade ) ? $class_grade : '';
+                $is_active = is_string( $is_active ) ? $is_active : '0';
+                
+                // Validate is_active value
+                if ( ! in_array( $is_active, array( '0', '1' ), true ) ) {
+                    $is_active = '0';
+                }
                 ?>
 
                 <?php if ( $student_id ) : ?>
                     <div class="student-field">
-                        <strong><?php _e( 'Student ID:', 'students' ); ?></strong>
+                        <strong><?php esc_html_e( 'Student ID:', 'students' ); ?></strong>
                         <?php echo esc_html( $student_id ); ?>
                     </div>
                 <?php endif; ?>
 
                 <?php if ( $email ) : ?>
                     <div class="student-field">
-                        <strong><?php _e( 'Email:', 'students' ); ?></strong>
+                        <strong><?php esc_html_e( 'Email:', 'students' ); ?></strong>
                         <a href="mailto:<?php echo esc_attr( $email ); ?>"><?php echo esc_html( $email ); ?></a>
                     </div>
                 <?php endif; ?>
 
                 <?php if ( $phone ) : ?>
                     <div class="student-field">
-                        <strong><?php _e( 'Phone:', 'students' ); ?></strong>
+                        <strong><?php esc_html_e( 'Phone:', 'students' ); ?></strong>
                         <a href="tel:<?php echo esc_attr( $phone ); ?>"><?php echo esc_html( $phone ); ?></a>
                     </div>
                 <?php endif; ?>
 
                 <?php if ( $dob ) : ?>
                     <div class="student-field">
-                        <strong><?php _e( 'Date of Birth:', 'students' ); ?></strong>
-                        <?php echo esc_html( date_i18n( get_option( 'date_format' ), strtotime( $dob ) ) ); ?>
+                        <strong><?php esc_html_e( 'Date of Birth:', 'students' ); ?></strong>
+                        <?php 
+                        $dob_timestamp = strtotime( $dob );
+                        if ( $dob_timestamp ) {
+                            echo esc_html( date_i18n( get_option( 'date_format' ), $dob_timestamp ) );
+                        } else {
+                            echo esc_html( $dob );
+                        }
+                        ?>
                     </div>
                 <?php endif; ?>
 
                 <?php if ( $address ) : ?>
                     <div class="student-field">
-                        <strong><?php _e( 'Address:', 'students' ); ?></strong>
+                        <strong><?php esc_html_e( 'Address:', 'students' ); ?></strong>
                         <?php echo esc_html( $address ); ?>
                     </div>
                 <?php endif; ?>
 
                 <?php if ( $country || $city ) : ?>
                     <div class="student-field">
-                        <strong><?php _e( 'Location:', 'students' ); ?></strong>
+                        <strong><?php esc_html_e( 'Location:', 'students' ); ?></strong>
                         <?php 
                         $location = array();
                         if ( $city ) $location[] = esc_html( $city );
@@ -292,17 +325,17 @@ class Students_Public {
 
                 <?php if ( $class_grade ) : ?>
                     <div class="student-field">
-                        <strong><?php _e( 'Class/Grade:', 'students' ); ?></strong>
+                        <strong><?php esc_html_e( 'Class/Grade:', 'students' ); ?></strong>
                         <?php echo esc_html( $class_grade ); ?>
                     </div>
                 <?php endif; ?>
 
                 <div class="student-field">
-                    <strong><?php _e( 'Status:', 'students' ); ?></strong>
+                    <strong><?php esc_html_e( 'Status:', 'students' ); ?></strong>
                     <?php if ( '1' === $is_active ) : ?>
-                        <span style="color: green; font-weight: bold;"><?php _e( 'Active', 'students' ); ?></span>
+                        <span style="color: green; font-weight: bold;"><?php esc_html_e( 'Active', 'students' ); ?></span>
                     <?php else : ?>
-                        <span style="color: red; font-weight: bold;"><?php _e( 'Inactive', 'students' ); ?></span>
+                        <span style="color: red; font-weight: bold;"><?php esc_html_e( 'Inactive', 'students' ); ?></span>
                     <?php endif; ?>
                 </div>
             </div>
@@ -405,18 +438,27 @@ class Students_Public {
         $class_grade = get_post_meta( get_the_ID(), '_student_class_grade', true );
         $is_active = get_post_meta( get_the_ID(), '_student_is_active', true );
         
+        // Ensure values are strings and properly sanitized for display
+        $class_grade = is_string( $class_grade ) ? $class_grade : '';
+        $is_active = is_string( $is_active ) ? $is_active : '0';
+        
+        // Validate is_active value
+        if ( ! in_array( $is_active, array( '0', '1' ), true ) ) {
+            $is_active = '0';
+        }
+        
         ob_start();
         ?>
         <div class="student-meta">
             <?php if ( $class_grade ) : ?>
-                <p><strong><?php _e( 'Class/Grade:', 'students' ); ?></strong> <?php echo esc_html( $class_grade ); ?></p>
+                <p><strong><?php esc_html_e( 'Class/Grade:', 'students' ); ?></strong> <?php echo esc_html( $class_grade ); ?></p>
             <?php endif; ?>
             
-            <p><strong><?php _e( 'Status:', 'students' ); ?></strong> 
+            <p><strong><?php esc_html_e( 'Status:', 'students' ); ?></strong> 
                 <?php if ( '1' === $is_active ) : ?>
-                    <span style="color: green; font-weight: bold;"><?php _e( 'Active', 'students' ); ?></span>
+                    <span style="color: green; font-weight: bold;"><?php esc_html_e( 'Active', 'students' ); ?></span>
                 <?php else : ?>
-                    <span style="color: red; font-weight: bold;"><?php _e( 'Inactive', 'students' ); ?></span>
+                    <span style="color: red; font-weight: bold;"><?php esc_html_e( 'Inactive', 'students' ); ?></span>
                 <?php endif; ?>
             </p>
         </div>

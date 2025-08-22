@@ -303,48 +303,50 @@ class Students_Admin {
         // Add nonce for security
         wp_nonce_field( 'student_meta_box_nonce', 'student_meta_box_nonce' );
 
-        // Get current values
-        $country = get_post_meta( $post->ID, '_student_country', true );
-        $city = get_post_meta( $post->ID, '_student_city', true );
-        $class_grade = get_post_meta( $post->ID, '_student_class_grade', true );
-        $is_active = get_post_meta( $post->ID, '_student_is_active', true );
+        // Get current values and sanitize them for display using the sanitizer class
+        $country = Students_Sanitizer::validate_for_display( get_post_meta( $post->ID, '_student_country', true ), 'country' );
+        $city = Students_Sanitizer::validate_for_display( get_post_meta( $post->ID, '_student_city', true ), 'city' );
+        $class_grade = Students_Sanitizer::validate_for_display( get_post_meta( $post->ID, '_student_class_grade', true ), 'class_grade' );
+        $is_active = Students_Sanitizer::validate_for_display( get_post_meta( $post->ID, '_student_is_active', true ), 'status' );
         ?>
         <table class="form-table">
             <tr>
                 <th scope="row">
-                    <label for="student_country"><?php _e( 'Country', 'students' ); ?></label>
+                    <label for="student_country"><?php esc_html_e( 'Country', 'students' ); ?></label>
                 </th>
                 <td>
-                    <input type="text" id="student_country" name="student_country" value="<?php echo esc_attr( $country ); ?>" class="regular-text" />
+                    <input type="text" id="student_country" name="student_country" value="<?php echo esc_attr( $country ); ?>" class="regular-text" maxlength="100" />
+                    <p class="description"><?php esc_html_e( 'Enter the country name (letters, spaces, and common punctuation only)', 'students' ); ?></p>
                 </td>
             </tr>
             <tr>
                 <th scope="row">
-                    <label for="student_city"><?php _e( 'City', 'students' ); ?></label>
+                    <label for="student_city"><?php esc_html_e( 'City', 'students' ); ?></label>
                 </th>
                 <td>
-                    <input type="text" id="student_city" name="student_city" value="<?php echo esc_attr( $city ); ?>" class="regular-text" />
+                    <input type="text" id="student_city" name="student_city" value="<?php echo esc_attr( $city ); ?>" class="regular-text" maxlength="100" />
+                    <p class="description"><?php esc_html_e( 'Enter the city name (letters, spaces, and common punctuation only)', 'students' ); ?></p>
                 </td>
             </tr>
             <tr>
                 <th scope="row">
-                    <label for="student_class_grade"><?php _e( 'Class / Grade', 'students' ); ?></label>
+                    <label for="student_class_grade"><?php esc_html_e( 'Class / Grade', 'students' ); ?></label>
                 </th>
                 <td>
-                    <input type="text" id="student_class_grade" name="student_class_grade" value="<?php echo esc_attr( $class_grade ); ?>" class="regular-text" />
-                    <p class="description"><?php _e( 'e.g., Grade 10, Class A, etc.', 'students' ); ?></p>
+                    <input type="text" id="student_class_grade" name="student_class_grade" value="<?php echo esc_attr( $class_grade ); ?>" class="regular-text" maxlength="50" />
+                    <p class="description"><?php esc_html_e( 'e.g., Grade 10, Class A, etc. (letters, numbers, spaces, and common punctuation only)', 'students' ); ?></p>
                 </td>
             </tr>
             <tr>
                 <th scope="row">
-                    <label for="student_is_active"><?php _e( 'Status', 'students' ); ?></label>
+                    <label for="student_is_active"><?php esc_html_e( 'Status', 'students' ); ?></label>
                 </th>
                 <td>
                     <select id="student_is_active" name="student_is_active">
-                        <option value="1" <?php selected( $is_active, '1' ); ?>><?php _e( 'Active', 'students' ); ?></option>
-                        <option value="0" <?php selected( $is_active, '0' ); ?>><?php _e( 'Inactive', 'students' ); ?></option>
+                        <option value="1" <?php selected( $is_active, '1' ); ?>><?php esc_html_e( 'Active', 'students' ); ?></option>
+                        <option value="0" <?php selected( $is_active, '0' ); ?>><?php esc_html_e( 'Inactive', 'students' ); ?></option>
                     </select>
-                    <p class="description"><?php _e( 'Whether the student is currently active or not', 'students' ); ?></p>
+                    <p class="description"><?php esc_html_e( 'Whether the student is currently active or not', 'students' ); ?></p>
                 </td>
             </tr>
         </table>
@@ -372,21 +374,25 @@ class Students_Admin {
             return;
         }
 
-        // Check if our custom fields are set
+        // Check if our custom fields are set and sanitize them properly using the sanitizer class
         if ( isset( $_POST['student_country'] ) ) {
-            update_post_meta( $post_id, '_student_country', sanitize_text_field( $_POST['student_country'] ) );
+            $country = Students_Sanitizer::sanitize_country( $_POST['student_country'] );
+            update_post_meta( $post_id, '_student_country', $country );
         }
 
         if ( isset( $_POST['student_city'] ) ) {
-            update_post_meta( $post_id, '_student_city', sanitize_text_field( $_POST['student_city'] ) );
+            $city = Students_Sanitizer::sanitize_city( $_POST['student_city'] );
+            update_post_meta( $post_id, '_student_city', $city );
         }
 
         if ( isset( $_POST['student_class_grade'] ) ) {
-            update_post_meta( $post_id, '_student_class_grade', sanitize_text_field( $_POST['student_class_grade'] ) );
+            $class_grade = Students_Sanitizer::sanitize_class_grade( $_POST['student_class_grade'] );
+            update_post_meta( $post_id, '_student_class_grade', $class_grade );
         }
 
         if ( isset( $_POST['student_is_active'] ) ) {
-            update_post_meta( $post_id, '_student_is_active', sanitize_text_field( $_POST['student_is_active'] ) );
+            $is_active = Students_Sanitizer::sanitize_status( $_POST['student_is_active'] );
+            update_post_meta( $post_id, '_student_is_active', $is_active );
         }
     }
 }
