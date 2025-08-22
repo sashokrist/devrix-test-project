@@ -290,4 +290,82 @@ class Students_Sanitizer {
                 return esc_html( $value );
         }
     }
+
+    /**
+     * Safely display student metadata with XSS protection
+     *
+     * @param mixed $value The metadata value to display
+     * @param string $field_type The type of field for context-specific sanitization
+     * @param string $context The display context (html, attr, url)
+     * @return string Safely escaped value for display
+     */
+    public static function display_meta_safely( $value, $field_type = 'text', $context = 'html' ) {
+        // First sanitize based on field type
+        $sanitized_value = self::validate_for_display( $value, $field_type );
+        
+        // Then escape for the specific context
+        return self::escape_for_display( $sanitized_value, $context );
+    }
+
+    /**
+     * Get all student metadata safely for display
+     *
+     * @param int $post_id The student post ID
+     * @return array Array of safely sanitized metadata
+     */
+    public static function get_student_meta_safely( $post_id ) {
+        $meta_fields = array(
+            '_student_id' => 'student_id',
+            '_student_email' => 'email',
+            '_student_phone' => 'phone',
+            '_student_dob' => 'date',
+            '_student_address' => 'address',
+            '_student_country' => 'country',
+            '_student_city' => 'city',
+            '_student_class_grade' => 'class_grade',
+            '_student_is_active' => 'status'
+        );
+
+        $safe_meta = array();
+        
+        foreach ( $meta_fields as $meta_key => $field_type ) {
+            $raw_value = get_post_meta( $post_id, $meta_key, true );
+            $safe_meta[ $meta_key ] = self::display_meta_safely( $raw_value, $field_type );
+        }
+
+        return $safe_meta;
+    }
+
+    /**
+     * Check if a metadata field should be displayed based on settings
+     *
+     * @param string $field_name The field name (e.g., 'student_id', 'email', etc.)
+     * @return bool Whether the field should be displayed
+     */
+    public static function should_display_field( $field_name ) {
+        $options = get_option( 'students_options', array() );
+        $setting_key = 'show_' . $field_name;
+        
+        // Default to true if setting doesn't exist
+        return isset( $options[ $setting_key ] ) ? $options[ $setting_key ] : true;
+    }
+
+    /**
+     * Get field display key mapping
+     *
+     * @return array Mapping of meta keys to field names
+     */
+    public static function get_field_display_mapping() {
+        return array(
+            '_student_id' => 'student_id',
+            '_student_email' => 'email',
+            '_student_phone' => 'phone',
+            '_student_dob' => 'dob',
+            '_student_address' => 'address',
+            '_student_country' => 'country',
+            '_student_city' => 'city',
+            '_student_class_grade' => 'class_grade',
+            '_student_is_active' => 'status'
+        );
+    }
 }

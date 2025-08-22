@@ -46,6 +46,15 @@ class Students_Admin {
             'students-settings',
             array( $this, 'settings_page' )
         );
+
+        // Add settings page under main Settings menu
+        add_options_page(
+            __( 'Students Settings', 'students' ),
+            __( 'Students', 'students' ),
+            'manage_options',
+            'students-settings',
+            array( $this, 'settings_page' )
+        );
     }
 
     /**
@@ -84,6 +93,17 @@ class Students_Admin {
             'students-settings',
             'students_general'
         );
+
+        // Add metadata visibility section
+        add_settings_section(
+            'students_metadata_visibility',
+            __( 'Metadata Visibility Settings', 'students' ),
+            array( $this, 'metadata_visibility_section' ),
+            'students-settings'
+        );
+
+        // Add metadata visibility fields programmatically
+        $this->add_metadata_visibility_fields();
     }
 
     /**
@@ -312,6 +332,51 @@ class Students_Admin {
         <table class="form-table">
             <tr>
                 <th scope="row">
+                    <label for="student_id"><?php esc_html_e( 'Student ID', 'students' ); ?></label>
+                </th>
+                <td>
+                    <input type="text" id="student_id" name="student_id" value="<?php echo esc_attr( Students_Sanitizer::validate_for_display( get_post_meta( $post->ID, '_student_id', true ), 'student_id' ) ); ?>" class="regular-text" maxlength="50" />
+                    <p class="description"><?php esc_html_e( 'Enter the student ID (letters, numbers, and hyphens only)', 'students' ); ?></p>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">
+                    <label for="student_email"><?php esc_html_e( 'Email', 'students' ); ?></label>
+                </th>
+                <td>
+                    <input type="email" id="student_email" name="student_email" value="<?php echo esc_attr( Students_Sanitizer::validate_for_display( get_post_meta( $post->ID, '_student_email', true ), 'email' ) ); ?>" class="regular-text" />
+                    <p class="description"><?php esc_html_e( 'Enter the student email address', 'students' ); ?></p>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">
+                    <label for="student_phone"><?php esc_html_e( 'Phone', 'students' ); ?></label>
+                </th>
+                <td>
+                    <input type="tel" id="student_phone" name="student_phone" value="<?php echo esc_attr( Students_Sanitizer::validate_for_display( get_post_meta( $post->ID, '_student_phone', true ), 'phone' ) ); ?>" class="regular-text" maxlength="20" />
+                    <p class="description"><?php esc_html_e( 'Enter the student phone number (digits, spaces, hyphens, parentheses, and plus signs only)', 'students' ); ?></p>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">
+                    <label for="student_dob"><?php esc_html_e( 'Date of Birth', 'students' ); ?></label>
+                </th>
+                <td>
+                    <input type="date" id="student_dob" name="student_dob" value="<?php echo esc_attr( Students_Sanitizer::validate_for_display( get_post_meta( $post->ID, '_student_dob', true ), 'date' ) ); ?>" class="regular-text" />
+                    <p class="description"><?php esc_html_e( 'Enter the student date of birth', 'students' ); ?></p>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">
+                    <label for="student_address"><?php esc_html_e( 'Address', 'students' ); ?></label>
+                </th>
+                <td>
+                    <textarea id="student_address" name="student_address" rows="3" class="large-text" maxlength="200"><?php echo esc_textarea( Students_Sanitizer::validate_for_display( get_post_meta( $post->ID, '_student_address', true ), 'address' ) ); ?></textarea>
+                    <p class="description"><?php esc_html_e( 'Enter the student address (letters, numbers, spaces, and common punctuation only)', 'students' ); ?></p>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">
                     <label for="student_country"><?php esc_html_e( 'Country', 'students' ); ?></label>
                 </th>
                 <td>
@@ -375,6 +440,31 @@ class Students_Admin {
         }
 
         // Check if our custom fields are set and sanitize them properly using the sanitizer class
+        if ( isset( $_POST['student_id'] ) ) {
+            $student_id = Students_Sanitizer::sanitize_student_id( $_POST['student_id'] );
+            update_post_meta( $post_id, '_student_id', $student_id );
+        }
+
+        if ( isset( $_POST['student_email'] ) ) {
+            $email = Students_Sanitizer::sanitize_email( $_POST['student_email'] );
+            update_post_meta( $post_id, '_student_email', $email );
+        }
+
+        if ( isset( $_POST['student_phone'] ) ) {
+            $phone = Students_Sanitizer::sanitize_phone( $_POST['student_phone'] );
+            update_post_meta( $post_id, '_student_phone', $phone );
+        }
+
+        if ( isset( $_POST['student_dob'] ) ) {
+            $dob = Students_Sanitizer::sanitize_date( $_POST['student_dob'] );
+            update_post_meta( $post_id, '_student_dob', $dob );
+        }
+
+        if ( isset( $_POST['student_address'] ) ) {
+            $address = Students_Sanitizer::sanitize_address( $_POST['student_address'] );
+            update_post_meta( $post_id, '_student_address', $address );
+        }
+
         if ( isset( $_POST['student_country'] ) ) {
             $country = Students_Sanitizer::sanitize_country( $_POST['student_country'] );
             update_post_meta( $post_id, '_student_country', $country );
@@ -394,5 +484,91 @@ class Students_Admin {
             $is_active = Students_Sanitizer::sanitize_status( $_POST['student_is_active'] );
             update_post_meta( $post_id, '_student_is_active', $is_active );
         }
+    }
+
+    /**
+     * Add metadata visibility fields programmatically
+     */
+    private function add_metadata_visibility_fields() {
+        $metadata_fields = array(
+            'show_student_id' => array(
+                'label' => __( 'Student ID', 'students' ),
+                'description' => __( 'Show student ID on single student pages', 'students' )
+            ),
+            'show_email' => array(
+                'label' => __( 'Email', 'students' ),
+                'description' => __( 'Show email address on single student pages', 'students' )
+            ),
+            'show_phone' => array(
+                'label' => __( 'Phone', 'students' ),
+                'description' => __( 'Show phone number on single student pages', 'students' )
+            ),
+            'show_dob' => array(
+                'label' => __( 'Date of Birth', 'students' ),
+                'description' => __( 'Show date of birth on single student pages', 'students' )
+            ),
+            'show_address' => array(
+                'label' => __( 'Address', 'students' ),
+                'description' => __( 'Show address on single student pages', 'students' )
+            ),
+            'show_country' => array(
+                'label' => __( 'Country', 'students' ),
+                'description' => __( 'Show country on single student pages', 'students' )
+            ),
+            'show_city' => array(
+                'label' => __( 'City', 'students' ),
+                'description' => __( 'Show city on single student pages', 'students' )
+            ),
+            'show_class_grade' => array(
+                'label' => __( 'Class/Grade', 'students' ),
+                'description' => __( 'Show class/grade on single student pages', 'students' )
+            ),
+            'show_status' => array(
+                'label' => __( 'Status', 'students' ),
+                'description' => __( 'Show student status on single student pages', 'students' )
+            ),
+        );
+
+        foreach ( $metadata_fields as $field_key => $field_data ) {
+            add_settings_field(
+                $field_key,
+                $field_data['label'],
+                array( $this, 'metadata_visibility_field' ),
+                'students-settings',
+                'students_metadata_visibility',
+                array(
+                    'field_key' => $field_key,
+                    'description' => $field_data['description']
+                )
+            );
+        }
+    }
+
+    /**
+     * Metadata visibility section callback
+     */
+    public function metadata_visibility_section() {
+        echo '<p>' . __( 'Control which metadata fields are displayed on single student pages. Uncheck fields you want to hide.', 'students' ) . '</p>';
+    }
+
+    /**
+     * Metadata visibility field callback
+     *
+     * @param array $args Field arguments
+     */
+    public function metadata_visibility_field( $args ) {
+        $options = get_option( 'students_options', array() );
+        $field_key = $args['field_key'];
+        $description = $args['description'];
+        
+        // Default to true (show) for all fields
+        $value = isset( $options[ $field_key ] ) ? $options[ $field_key ] : true;
+        ?>
+        <input type="checkbox" 
+               name="students_options[<?php echo esc_attr( $field_key ); ?>]" 
+               value="1" 
+               <?php checked( $value, true ); ?> />
+        <span class="description"><?php echo esc_html( $description ); ?></span>
+        <?php
     }
 }

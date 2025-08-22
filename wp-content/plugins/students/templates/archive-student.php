@@ -27,6 +27,14 @@ get_header(); ?>
             <div class="students-grid">
                 <?php while ( have_posts() ) : the_post(); ?>
                     
+                    <?php
+                    // Only show active students on archive page
+                    $is_active = get_post_meta( get_the_ID(), '_student_is_active', true );
+                    if ( '1' !== $is_active ) {
+                        continue; // Skip inactive students
+                    }
+                    ?>
+                    
                     <article id="post-<?php the_ID(); ?>" <?php post_class('student-card'); ?>>
                         
                         <?php if ( has_post_thumbnail() ) : ?>
@@ -45,40 +53,28 @@ get_header(); ?>
                             </header>
 
                             <?php
-                            // Get student meta data
-                            $student_id = get_post_meta( get_the_ID(), '_student_id', true );
-                            $class_grade = get_post_meta( get_the_ID(), '_student_class_grade', true );
-                            $is_active = get_post_meta( get_the_ID(), '_student_is_active', true );
+                            // Get student meta data safely using the sanitizer
+                            $student_meta = Students_Sanitizer::get_student_meta_safely( get_the_ID() );
                             $courses = get_the_terms( get_the_ID(), 'course' );
                             $grade_levels = get_the_terms( get_the_ID(), 'grade_level' );
-                            
-                            // Ensure values are strings and properly sanitized for display
-                            $student_id = is_string( $student_id ) ? $student_id : '';
-                            $class_grade = is_string( $class_grade ) ? $class_grade : '';
-                            $is_active = is_string( $is_active ) ? $is_active : '0';
-                            
-                            // Validate is_active value
-                            if ( ! in_array( $is_active, array( '0', '1' ), true ) ) {
-                                $is_active = '0';
-                            }
                             ?>
 
                             <div class="student-meta">
-                                <?php if ( $student_id ) : ?>
+                                <?php if ( ! empty( $student_meta['_student_id'] ) ) : ?>
                                     <div class="meta-item">
-                                        <strong><?php esc_html_e( 'ID:', 'students' ); ?></strong> <?php echo esc_html( $student_id ); ?>
+                                        <strong><?php esc_html_e( 'ID:', 'students' ); ?></strong> <?php echo $student_meta['_student_id']; ?>
                                     </div>
                                 <?php endif; ?>
 
-                                <?php if ( $class_grade ) : ?>
+                                <?php if ( ! empty( $student_meta['_student_class_grade'] ) ) : ?>
                                     <div class="meta-item">
-                                        <strong><?php esc_html_e( 'Class/Grade:', 'students' ); ?></strong> <?php echo esc_html( $class_grade ); ?>
+                                        <strong><?php esc_html_e( 'Class/Grade:', 'students' ); ?></strong> <?php echo $student_meta['_student_class_grade']; ?>
                                     </div>
                                 <?php endif; ?>
 
                                 <div class="meta-item">
                                     <strong><?php esc_html_e( 'Status:', 'students' ); ?></strong> 
-                                    <?php if ( '1' === $is_active ) : ?>
+                                    <?php if ( '1' === $student_meta['_student_is_active'] ) : ?>
                                         <span style="color: green; font-weight: bold;"><?php esc_html_e( 'Active', 'students' ); ?></span>
                                     <?php else : ?>
                                         <span style="color: red; font-weight: bold;"><?php esc_html_e( 'Inactive', 'students' ); ?></span>
@@ -87,11 +83,11 @@ get_header(); ?>
 
                                 <?php if ( $courses && ! is_wp_error( $courses ) ) : ?>
                                     <div class="meta-item">
-                                        <strong>Courses:</strong>
+                                        <strong><?php esc_html_e( 'Courses:', 'students' ); ?></strong>
                                         <?php
                                         $course_names = array();
                                         foreach ( $courses as $course ) {
-                                            $course_names[] = '<a href="' . get_term_link( $course ) . '">' . esc_html( $course->name ) . '</a>';
+                                            $course_names[] = '<a href="' . esc_url( get_term_link( $course ) ) . '">' . esc_html( $course->name ) . '</a>';
                                         }
                                         echo implode( ', ', $course_names );
                                         ?>
@@ -100,11 +96,11 @@ get_header(); ?>
 
                                 <?php if ( $grade_levels && ! is_wp_error( $grade_levels ) ) : ?>
                                     <div class="meta-item">
-                                        <strong>Grade:</strong>
+                                        <strong><?php esc_html_e( 'Grade:', 'students' ); ?></strong>
                                         <?php
                                         $grade_names = array();
                                         foreach ( $grade_levels as $grade ) {
-                                            $grade_names[] = '<a href="' . get_term_link( $grade ) . '">' . esc_html( $grade->name ) . '</a>';
+                                            $grade_names[] = '<a href="' . esc_url( get_term_link( $grade ) ) . '">' . esc_html( $grade->name ) . '</a>';
                                         }
                                         echo implode( ', ', $grade_names );
                                         ?>

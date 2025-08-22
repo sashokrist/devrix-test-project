@@ -30,67 +30,88 @@ get_header(); ?>
                             <h3>Student Information</h3>
                             
                             <?php
-                            // Get student meta data
-                            $student_id = get_post_meta( get_the_ID(), '_student_id', true );
-                            $email = get_post_meta( get_the_ID(), '_student_email', true );
-                            $country = get_post_meta( get_the_ID(), '_student_country', true );
-                            $city = get_post_meta( get_the_ID(), '_student_city', true );
-                            $class_grade = get_post_meta( get_the_ID(), '_student_class_grade', true );
-                            $is_active = get_post_meta( get_the_ID(), '_student_is_active', true );
-                            
-                            // Ensure values are strings and properly sanitized for display
-                            $student_id = is_string( $student_id ) ? $student_id : '';
-                            $email = is_string( $email ) ? $email : '';
-                            $country = is_string( $country ) ? $country : '';
-                            $city = is_string( $city ) ? $city : '';
-                            $class_grade = is_string( $class_grade ) ? $class_grade : '';
-                            $is_active = is_string( $is_active ) ? $is_active : '0';
-                            
-                            // Validate is_active value
-                            if ( ! in_array( $is_active, array( '0', '1' ), true ) ) {
-                                $is_active = '0';
-                            }
+                            // Get all student meta data safely using the sanitizer
+                            $student_meta = Students_Sanitizer::get_student_meta_safely( get_the_ID() );
                             ?>
 
                             <div class="student-meta">
-                                <?php if ( $student_id ) : ?>
+                                <?php if ( ! empty( $student_meta['_student_id'] ) && Students_Sanitizer::should_display_field( 'student_id' ) ) : ?>
                                     <div class="meta-item">
-                                        <strong><?php esc_html_e( 'Student ID:', 'students' ); ?></strong> <?php echo esc_html( $student_id ); ?>
+                                        <strong><?php esc_html_e( 'Student ID:', 'students' ); ?></strong> <?php echo $student_meta['_student_id']; ?>
                                     </div>
                                 <?php endif; ?>
 
-                                <?php if ( $email ) : ?>
+                                <?php if ( ! empty( $student_meta['_student_email'] ) && Students_Sanitizer::should_display_field( 'email' ) ) : ?>
                                     <div class="meta-item">
-                                        <strong><?php esc_html_e( 'Email:', 'students' ); ?></strong> <a href="mailto:<?php echo esc_attr( $email ); ?>"><?php echo esc_html( $email ); ?></a>
+                                        <strong><?php esc_html_e( 'Email:', 'students' ); ?></strong> 
+                                        <a href="mailto:<?php echo esc_attr( $student_meta['_student_email'] ); ?>"><?php echo $student_meta['_student_email']; ?></a>
                                     </div>
                                 <?php endif; ?>
 
-                                <?php if ( $country || $city ) : ?>
+                                <?php if ( ! empty( $student_meta['_student_phone'] ) && Students_Sanitizer::should_display_field( 'phone' ) ) : ?>
+                                    <div class="meta-item">
+                                        <strong><?php esc_html_e( 'Phone:', 'students' ); ?></strong> 
+                                        <a href="tel:<?php echo esc_attr( $student_meta['_student_phone'] ); ?>"><?php echo $student_meta['_student_phone']; ?></a>
+                                    </div>
+                                <?php endif; ?>
+
+                                <?php if ( ! empty( $student_meta['_student_dob'] ) && Students_Sanitizer::should_display_field( 'dob' ) ) : ?>
+                                    <div class="meta-item">
+                                        <strong><?php esc_html_e( 'Date of Birth:', 'students' ); ?></strong> 
+                                        <?php 
+                                        $dob_timestamp = strtotime( $student_meta['_student_dob'] );
+                                        if ( $dob_timestamp ) {
+                                            echo esc_html( date_i18n( get_option( 'date_format' ), $dob_timestamp ) );
+                                        } else {
+                                            echo $student_meta['_student_dob'];
+                                        }
+                                        ?>
+                                    </div>
+                                <?php endif; ?>
+
+                                <?php if ( ! empty( $student_meta['_student_address'] ) && Students_Sanitizer::should_display_field( 'address' ) ) : ?>
+                                    <div class="meta-item">
+                                        <strong><?php esc_html_e( 'Address:', 'students' ); ?></strong> <?php echo $student_meta['_student_address']; ?>
+                                    </div>
+                                <?php endif; ?>
+
+                                <?php 
+                                $show_location = ( Students_Sanitizer::should_display_field( 'country' ) || Students_Sanitizer::should_display_field( 'city' ) );
+                                $has_location_data = ( ! empty( $student_meta['_student_country'] ) || ! empty( $student_meta['_student_city'] ) );
+                                
+                                if ( $has_location_data && $show_location ) : 
+                                ?>
                                     <div class="meta-item">
                                         <strong><?php esc_html_e( 'Location:', 'students' ); ?></strong> 
                                         <?php 
                                         $location = array();
-                                        if ( $city ) $location[] = esc_html( $city );
-                                        if ( $country ) $location[] = esc_html( $country );
+                                        if ( ! empty( $student_meta['_student_city'] ) && Students_Sanitizer::should_display_field( 'city' ) ) {
+                                            $location[] = $student_meta['_student_city'];
+                                        }
+                                        if ( ! empty( $student_meta['_student_country'] ) && Students_Sanitizer::should_display_field( 'country' ) ) {
+                                            $location[] = $student_meta['_student_country'];
+                                        }
                                         echo implode( ', ', $location );
                                         ?>
                                     </div>
                                 <?php endif; ?>
 
-                                <?php if ( $class_grade ) : ?>
+                                <?php if ( ! empty( $student_meta['_student_class_grade'] ) && Students_Sanitizer::should_display_field( 'class_grade' ) ) : ?>
                                     <div class="meta-item">
-                                        <strong><?php esc_html_e( 'Class/Grade:', 'students' ); ?></strong> <?php echo esc_html( $class_grade ); ?>
+                                        <strong><?php esc_html_e( 'Class/Grade:', 'students' ); ?></strong> <?php echo $student_meta['_student_class_grade']; ?>
                                     </div>
                                 <?php endif; ?>
 
-                                <div class="meta-item">
-                                    <strong><?php esc_html_e( 'Status:', 'students' ); ?></strong> 
-                                    <?php if ( '1' === $is_active ) : ?>
-                                        <span style="color: green; font-weight: bold;"><?php esc_html_e( 'Active', 'students' ); ?></span>
-                                    <?php else : ?>
-                                        <span style="color: red; font-weight: bold;"><?php esc_html_e( 'Inactive', 'students' ); ?></span>
-                                    <?php endif; ?>
-                                </div>
+                                <?php if ( Students_Sanitizer::should_display_field( 'status' ) ) : ?>
+                                    <div class="meta-item">
+                                        <strong><?php esc_html_e( 'Status:', 'students' ); ?></strong> 
+                                        <?php if ( '1' === $student_meta['_student_is_active'] ) : ?>
+                                            <span style="color: green; font-weight: bold;"><?php esc_html_e( 'Active', 'students' ); ?></span>
+                                        <?php else : ?>
+                                            <span style="color: red; font-weight: bold;"><?php esc_html_e( 'Inactive', 'students' ); ?></span>
+                                        <?php endif; ?>
+                                    </div>
+                                <?php endif; ?>
                             </div>
 
                             <?php

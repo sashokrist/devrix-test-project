@@ -195,7 +195,16 @@ class Students_Plugin {
         $default_options = array(
             'students_per_page' => 10,
             'enable_search' => true,
-            'show_email' => false,
+            'show_email' => true,
+            // Metadata visibility settings - default to showing all fields
+            'show_student_id' => true,
+            'show_phone' => true,
+            'show_dob' => true,
+            'show_address' => true,
+            'show_country' => true,
+            'show_city' => true,
+            'show_class_grade' => true,
+            'show_status' => true,
         );
 
         add_option( 'students_options', $default_options );
