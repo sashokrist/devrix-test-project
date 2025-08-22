@@ -61,7 +61,8 @@ class Students_Admin {
      * Initialize settings
      */
     public function init_settings() {
-        register_setting( 'students_options', 'students_options' );
+        // Register settings for both pages
+        register_setting( 'students_options', 'students_options', array( $this, 'sanitize_settings' ) );
 
         add_settings_section(
             'students_general',
@@ -104,6 +105,46 @@ class Students_Admin {
 
         // Add metadata visibility fields programmatically
         $this->add_metadata_visibility_fields();
+    }
+
+    /**
+     * Sanitize settings before saving
+     *
+     * @param array $input The input array
+     * @return array Sanitized input
+     */
+    public function sanitize_settings( $input ) {
+        $sanitized_input = array();
+        
+        // Handle general settings
+        if ( isset( $input['students_per_page'] ) ) {
+            $sanitized_input['students_per_page'] = absint( $input['students_per_page'] );
+        }
+        
+        if ( isset( $input['enable_search'] ) ) {
+            $sanitized_input['enable_search'] = true;
+        }
+        
+        if ( isset( $input['show_email'] ) ) {
+            $sanitized_input['show_email'] = true;
+        }
+        
+        // Handle metadata visibility settings
+        $metadata_fields = array(
+            'show_student_id', 'show_email', 'show_phone', 'show_dob', 
+            'show_address', 'show_country', 'show_city', 'show_class_grade', 'show_status',
+            'show_courses', 'show_grade_levels'
+        );
+        
+        foreach ( $metadata_fields as $field ) {
+            if ( isset( $input[ $field ] ) ) {
+                $sanitized_input[ $field ] = true;
+            } else {
+                $sanitized_input[ $field ] = false;
+            }
+        }
+        
+        return $sanitized_input;
     }
 
     /**
@@ -527,6 +568,14 @@ class Students_Admin {
                 'label' => __( 'Status', 'students' ),
                 'description' => __( 'Show student status on single student pages', 'students' )
             ),
+            'show_courses' => array(
+                'label' => __( 'Courses', 'students' ),
+                'description' => __( 'Show courses on single student pages', 'students' )
+            ),
+            'show_grade_levels' => array(
+                'label' => __( 'Grade Levels', 'students' ),
+                'description' => __( 'Show grade levels on single student pages', 'students' )
+            ),
         );
 
         foreach ( $metadata_fields as $field_key => $field_data ) {
@@ -561,8 +610,8 @@ class Students_Admin {
         $field_key = $args['field_key'];
         $description = $args['description'];
         
-        // Default to true (show) for all fields
-        $value = isset( $options[ $field_key ] ) ? $options[ $field_key ] : true;
+        // Check if the setting exists and is true
+        $value = isset( $options[ $field_key ] ) && $options[ $field_key ] === true;
         ?>
         <input type="checkbox" 
                name="students_options[<?php echo esc_attr( $field_key ); ?>]" 
@@ -570,5 +619,26 @@ class Students_Admin {
                <?php checked( $value, true ); ?> />
         <span class="description"><?php echo esc_html( $description ); ?></span>
         <?php
+    }
+
+    /**
+     * Reset settings to defaults
+     */
+    public function reset_settings_to_defaults() {
+        $default_options = array(
+            'students_per_page' => 10,
+            'enable_search' => true,
+            'show_email' => true,
+            'show_student_id' => true,
+            'show_phone' => true,
+            'show_dob' => true,
+            'show_address' => true,
+            'show_country' => true,
+            'show_city' => true,
+            'show_class_grade' => true,
+            'show_status' => true,
+        );
+        
+        update_option( 'students_options', $default_options );
     }
 }

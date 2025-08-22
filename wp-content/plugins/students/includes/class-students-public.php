@@ -133,27 +133,29 @@ class Students_Public {
                                 // Get student meta data safely using the sanitizer
                                 $student_meta = Students_Sanitizer::get_student_meta_safely( get_the_ID() );
                                 
-                                if ( ! empty( $student_meta['_student_id'] ) ) :
+                                if ( ! empty( $student_meta['_student_id'] ) && Students_Sanitizer::should_display_field( 'student_id' ) ) :
                                 ?>
                                     <p class="student-id"><?php echo esc_html( __( 'ID:', 'students' ) . ' ' . $student_meta['_student_id'] ); ?></p>
                                 <?php endif; ?>
 
-                                <?php if ( ! empty( $student_meta['_student_class_grade'] ) ) : ?>
+                                <?php if ( ! empty( $student_meta['_student_class_grade'] ) && Students_Sanitizer::should_display_field( 'class_grade' ) ) : ?>
                                     <p class="student-class-grade"><?php echo esc_html( __( 'Class/Grade:', 'students' ) . ' ' . $student_meta['_student_class_grade'] ); ?></p>
                                 <?php endif; ?>
 
-                                <p class="student-status">
-                                    <strong><?php esc_html_e( 'Status:', 'students' ); ?></strong>
-                                    <?php if ( '1' === $student_meta['_student_is_active'] ) : ?>
-                                        <span style="color: green; font-weight: bold;"><?php esc_html_e( 'Active', 'students' ); ?></span>
-                                    <?php else : ?>
-                                        <span style="color: red; font-weight: bold;"><?php esc_html_e( 'Inactive', 'students' ); ?></span>
-                                    <?php endif; ?>
-                                </p>
+                                <?php if ( Students_Sanitizer::should_display_field( 'status' ) ) : ?>
+                                    <p class="student-status">
+                                        <strong><?php esc_html_e( 'Status:', 'students' ); ?></strong>
+                                        <?php if ( '1' === $student_meta['_student_is_active'] ) : ?>
+                                            <span style="color: green; font-weight: bold;"><?php esc_html_e( 'Active', 'students' ); ?></span>
+                                        <?php else : ?>
+                                            <span style="color: red; font-weight: bold;"><?php esc_html_e( 'Inactive', 'students' ); ?></span>
+                                        <?php endif; ?>
+                                    </p>
+                                <?php endif; ?>
 
                                 <?php
                                 $courses = get_the_terms( get_the_ID(), 'course' );
-                                if ( $courses && ! is_wp_error( $courses ) ) :
+                                if ( $courses && ! is_wp_error( $courses ) && Students_Sanitizer::should_display_field( 'courses' ) ) :
                                 ?>
                                     <p class="student-courses">
                                         <?php echo esc_html( __( 'Courses:', 'students' ) . ' ' . implode( ', ', wp_list_pluck( $courses, 'name' ) ) ); ?>
@@ -162,7 +164,7 @@ class Students_Public {
 
                                 <?php
                                 $grade_levels = get_the_terms( get_the_ID(), 'grade_level' );
-                                if ( $grade_levels && ! is_wp_error( $grade_levels ) ) :
+                                if ( $grade_levels && ! is_wp_error( $grade_levels ) && Students_Sanitizer::should_display_field( 'grade_levels' ) ) :
                                 ?>
                                     <p class="student-grade">
                                         <?php echo esc_html( __( 'Grade:', 'students' ) . ' ' . implode( ', ', wp_list_pluck( $grade_levels, 'name' ) ) ); ?>
@@ -316,6 +318,38 @@ class Students_Public {
                         <?php else : ?>
                             <span style="color: red; font-weight: bold;"><?php esc_html_e( 'Inactive', 'students' ); ?></span>
                         <?php endif; ?>
+                    </div>
+                <?php endif; ?>
+
+                <?php
+                // Display taxonomies
+                $courses = get_the_terms( $post->ID, 'course' );
+                $grade_levels = get_the_terms( $post->ID, 'grade_level' );
+                ?>
+
+                <?php if ( $courses && ! is_wp_error( $courses ) && Students_Sanitizer::should_display_field( 'courses' ) ) : ?>
+                    <div class="student-field">
+                        <strong><?php esc_html_e( 'Courses:', 'students' ); ?></strong>
+                        <?php
+                        $course_names = array();
+                        foreach ( $courses as $course ) {
+                            $course_names[] = '<a href="' . esc_url( get_term_link( $course ) ) . '">' . esc_html( $course->name ) . '</a>';
+                        }
+                        echo implode( ', ', $course_names );
+                        ?>
+                    </div>
+                <?php endif; ?>
+
+                <?php if ( $grade_levels && ! is_wp_error( $grade_levels ) && Students_Sanitizer::should_display_field( 'grade_levels' ) ) : ?>
+                    <div class="student-field">
+                        <strong><?php esc_html_e( 'Grade Level:', 'students' ); ?></strong>
+                        <?php
+                        $grade_names = array();
+                        foreach ( $grade_levels as $grade ) {
+                            $grade_names[] = '<a href="' . esc_url( get_term_link( $grade ) ) . '">' . esc_html( $grade->name ) . '</a>';
+                        }
+                        echo implode( ', ', $grade_names );
+                        ?>
                     </div>
                 <?php endif; ?>
             </div>

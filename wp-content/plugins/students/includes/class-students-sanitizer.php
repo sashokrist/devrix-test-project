@@ -346,8 +346,9 @@ class Students_Sanitizer {
         $options = get_option( 'students_options', array() );
         $setting_key = 'show_' . $field_name;
         
-        // Default to true if setting doesn't exist
-        return isset( $options[ $setting_key ] ) ? $options[ $setting_key ] : true;
+        // Check if the setting exists and is true
+        // If setting doesn't exist or is false, return false
+        return isset( $options[ $setting_key ] ) && $options[ $setting_key ] === true;
     }
 
     /**

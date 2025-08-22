@@ -205,9 +205,15 @@ class Students_Plugin {
             'show_city' => true,
             'show_class_grade' => true,
             'show_status' => true,
+            'show_courses' => true,
+            'show_grade_levels' => true,
         );
 
-        add_option( 'students_options', $default_options );
+        // Get existing options and merge with defaults
+        $existing_options = get_option( 'students_options', array() );
+        $merged_options = wp_parse_args( $existing_options, $default_options );
+        
+        update_option( 'students_options', $merged_options );
     }
 
     /**

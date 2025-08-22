@@ -120,7 +120,7 @@ get_header(); ?>
                             $grade_levels = get_the_terms( get_the_ID(), 'grade_level' );
                             ?>
 
-                            <?php if ( $courses && ! is_wp_error( $courses ) ) : ?>
+                            <?php if ( $courses && ! is_wp_error( $courses ) && Students_Sanitizer::should_display_field( 'courses' ) ) : ?>
                                 <div class="student-taxonomies">
                                     <strong><?php esc_html_e( 'Courses:', 'students' ); ?></strong>
                                     <?php
@@ -133,7 +133,7 @@ get_header(); ?>
                                 </div>
                             <?php endif; ?>
 
-                            <?php if ( $grade_levels && ! is_wp_error( $grade_levels ) ) : ?>
+                            <?php if ( $grade_levels && ! is_wp_error( $grade_levels ) && Students_Sanitizer::should_display_field( 'grade_levels' ) ) : ?>
                                 <div class="student-taxonomies">
                                     <strong><?php esc_html_e( 'Grade Level:', 'students' ); ?></strong>
                                     <?php

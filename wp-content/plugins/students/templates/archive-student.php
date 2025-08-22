@@ -60,28 +60,30 @@ get_header(); ?>
                             ?>
 
                             <div class="student-meta">
-                                <?php if ( ! empty( $student_meta['_student_id'] ) ) : ?>
+                                <?php if ( ! empty( $student_meta['_student_id'] ) && Students_Sanitizer::should_display_field( 'student_id' ) ) : ?>
                                     <div class="meta-item">
                                         <strong><?php esc_html_e( 'ID:', 'students' ); ?></strong> <?php echo $student_meta['_student_id']; ?>
                                     </div>
                                 <?php endif; ?>
 
-                                <?php if ( ! empty( $student_meta['_student_class_grade'] ) ) : ?>
+                                <?php if ( ! empty( $student_meta['_student_class_grade'] ) && Students_Sanitizer::should_display_field( 'class_grade' ) ) : ?>
                                     <div class="meta-item">
                                         <strong><?php esc_html_e( 'Class/Grade:', 'students' ); ?></strong> <?php echo $student_meta['_student_class_grade']; ?>
                                     </div>
                                 <?php endif; ?>
 
-                                <div class="meta-item">
-                                    <strong><?php esc_html_e( 'Status:', 'students' ); ?></strong> 
-                                    <?php if ( '1' === $student_meta['_student_is_active'] ) : ?>
-                                        <span style="color: green; font-weight: bold;"><?php esc_html_e( 'Active', 'students' ); ?></span>
-                                    <?php else : ?>
-                                        <span style="color: red; font-weight: bold;"><?php esc_html_e( 'Inactive', 'students' ); ?></span>
-                                    <?php endif; ?>
-                                </div>
+                                <?php if ( Students_Sanitizer::should_display_field( 'status' ) ) : ?>
+                                    <div class="meta-item">
+                                        <strong><?php esc_html_e( 'Status:', 'students' ); ?></strong> 
+                                        <?php if ( '1' === $student_meta['_student_is_active'] ) : ?>
+                                            <span style="color: green; font-weight: bold;"><?php esc_html_e( 'Active', 'students' ); ?></span>
+                                        <?php else : ?>
+                                            <span style="color: red; font-weight: bold;"><?php esc_html_e( 'Inactive', 'students' ); ?></span>
+                                        <?php endif; ?>
+                                    </div>
+                                <?php endif; ?>
 
-                                <?php if ( $courses && ! is_wp_error( $courses ) ) : ?>
+                                <?php if ( $courses && ! is_wp_error( $courses ) && Students_Sanitizer::should_display_field( 'courses' ) ) : ?>
                                     <div class="meta-item">
                                         <strong><?php esc_html_e( 'Courses:', 'students' ); ?></strong>
                                         <?php
@@ -94,7 +96,7 @@ get_header(); ?>
                                     </div>
                                 <?php endif; ?>
 
-                                <?php if ( $grade_levels && ! is_wp_error( $grade_levels ) ) : ?>
+                                <?php if ( $grade_levels && ! is_wp_error( $grade_levels ) && Students_Sanitizer::should_display_field( 'grade_levels' ) ) : ?>
                                     <div class="meta-item">
                                         <strong><?php esc_html_e( 'Grade:', 'students' ); ?></strong>
                                         <?php
