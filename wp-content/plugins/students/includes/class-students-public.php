@@ -40,7 +40,10 @@ class Students_Public {
      * Enqueue scripts
      */
     public function enqueue_scripts() {
-        if ( is_post_type_archive( 'student' ) || is_singular( 'student' ) ) {
+        if ( is_post_type_archive( 'student' ) || 
+             is_singular( 'student' ) || 
+             is_tax( 'course' ) || 
+             is_tax( 'grade_level' ) ) {
             wp_enqueue_script(
                 'students-public',
                 STUDENTS_PLUGIN_URL . 'assets/js/public.js',
@@ -60,7 +63,10 @@ class Students_Public {
      * Enqueue styles
      */
     public function enqueue_styles() {
-        if ( is_post_type_archive( 'student' ) || is_singular( 'student' ) ) {
+        if ( is_post_type_archive( 'student' ) || 
+             is_singular( 'student' ) || 
+             is_tax( 'course' ) || 
+             is_tax( 'grade_level' ) ) {
             wp_enqueue_style(
                 'students-public',
                 STUDENTS_PLUGIN_URL . 'assets/css/public.css',

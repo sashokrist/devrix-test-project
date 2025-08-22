@@ -12,6 +12,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 define( 'CAR_SELL_SHOP_CORE_LOADED', true );
+define( 'CAR_SELL_SHOP_CORE_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+define( 'CAR_SELL_SHOP_CORE_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+
+// Load template functionality
+require_once CAR_SELL_SHOP_CORE_PLUGIN_DIR . 'includes/class-car-templates.php';
 
 add_action( 'init', function () {
     // Register Car post type.
@@ -74,6 +79,28 @@ add_action( 'init', function () {
 
     register_taxonomy( 'brand', array( 'car' ), $brand_args );
 } );
+
+// Initialize template loading
+new Car_Sell_Shop_Core_Templates();
+
+// Enqueue car styles
+add_action( 'wp_enqueue_scripts', function() {
+    global $post;
+    
+    // Check if we're on car-related pages or the brands page
+    if ( is_post_type_archive( 'car' ) || 
+         is_singular( 'car' ) || 
+         is_tax( 'brand' ) ||
+         ( $post && is_page() && ( $post->post_name === 'brands' || strpos( strtolower( $post->post_title ), 'brand' ) !== false ) ) ) {
+        
+        wp_enqueue_style( 
+            'car-sell-shop-core-styles', 
+            CAR_SELL_SHOP_CORE_PLUGIN_URL . 'assets/css/car-styles.css', 
+            array(), 
+            '1.0.0' 
+        );
+    }
+});
 
 /**
  * Custom hooks for Car Sell Shop.

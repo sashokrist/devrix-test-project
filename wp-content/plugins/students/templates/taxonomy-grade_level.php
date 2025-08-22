@@ -8,6 +8,226 @@
 
 get_header(); ?>
 
+<style>
+/* Box Layout CSS for Course and Grade Pages */
+.students-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.student-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.student-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.student-photo {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    background: #f5f5f5;
+}
+
+.student-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.student-info {
+    padding: 1.5rem;
+}
+
+.entry-title {
+    margin: 0 0 1rem 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.entry-title a {
+    color: #333;
+    text-decoration: none;
+}
+
+.entry-title a:hover {
+    color: #0073aa;
+}
+
+.student-meta {
+    margin-bottom: 1rem;
+}
+
+.meta-item {
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.meta-item strong {
+    color: #333;
+    font-weight: 600;
+}
+
+.entry-summary {
+    margin-bottom: 1rem;
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.entry-footer {
+    text-align: center;
+}
+
+.read-more {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: #0073aa;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+}
+
+.read-more:hover {
+    background: #005a87;
+    color: #fff;
+    text-decoration: none;
+}
+
+/* Grade Level Cards */
+.grade-levels-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.grade-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.grade-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.grade-photo {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    background: #f5f5f5;
+}
+
+.grade-image-placeholder {
+    width: 100%;
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #6f42c1, #e83e8c);
+    color: white;
+    transition: transform 0.3s ease;
+}
+
+.grade-card:hover .grade-image-placeholder {
+    transform: scale(1.05);
+}
+
+.grade-icon {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+}
+
+.grade-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.grade-info {
+    padding: 1.5rem;
+}
+
+.grade-title {
+    margin: 0 0 1rem 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.grade-title a {
+    color: #333;
+    text-decoration: none;
+}
+
+.grade-title a:hover {
+    color: #0073aa;
+}
+
+.grade-meta {
+    margin-bottom: 1rem;
+}
+
+.grade-count {
+    color: #6f42c1;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.grade-description {
+    margin-top: 0.5rem;
+    color: #666;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.grade-footer {
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .students-grid,
+    .grade-levels-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .student-info,
+    .grade-info {
+        padding: 1rem;
+    }
+    
+    .student-photo,
+    .grade-photo {
+        height: 180px;
+    }
+    
+    .grade-image-placeholder {
+        height: 180px;
+    }
+    
+    .grade-icon {
+        font-size: 2.5rem;
+    }
+}
+</style>
+
 <div id="primary" class="content-area">
     <main id="main" class="site-main">
         
@@ -135,14 +355,45 @@ get_header(); ?>
             ) );
             
             if ( $grade_levels && ! is_wp_error( $grade_levels ) ) : ?>
-                <ul class="grade-levels-list">
+                <div class="grade-levels-grid">
                     <?php foreach ( $grade_levels as $grade ) : ?>
-                        <li>
-                            <a href="<?php echo get_term_link( $grade ); ?>"><?php echo esc_html( $grade->name ); ?></a>
-                            <span class="grade-count">(<?php echo $grade->count; ?> students)</span>
-                        </li>
+                        <article class="grade-card">
+                            <div class="grade-photo">
+                                <a href="<?php echo get_term_link( $grade ); ?>">
+                                    <div class="grade-image-placeholder">
+                                        <span class="grade-icon">🎓</span>
+                                        <span class="grade-name"><?php echo esc_html( $grade->name ); ?></span>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="grade-info">
+                                <header class="grade-header">
+                                    <h2 class="grade-title">
+                                        <a href="<?php echo get_term_link( $grade ); ?>"><?php echo esc_html( $grade->name ); ?></a>
+                                    </h2>
+                                </header>
+                                <div class="grade-meta">
+                                    <div class="meta-item">
+                                        <strong><?php esc_html_e( 'Students:', 'students' ); ?></strong> 
+                                        <span class="grade-count"><?php echo $grade->count; ?></span>
+                                    </div>
+                                    <?php if ( ! empty( $grade->description ) ) : ?>
+                                        <div class="grade-description">
+                                            <?php echo wp_kses_post( $grade->description ); ?>
+                                        </div>
+                                    <?php else : ?>
+                                        <div class="grade-description">
+                                            <?php echo esc_html( $grade->name ); ?> grade level with <?php echo $grade->count; ?> students.
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                                <footer class="grade-footer">
+                                    <a href="<?php echo get_term_link( $grade ); ?>" class="read-more">View Students</a>
+                                </footer>
+                            </div>
+                        </article>
                     <?php endforeach; ?>
-                </ul>
+                </div>
             <?php endif; ?>
         </div>
 

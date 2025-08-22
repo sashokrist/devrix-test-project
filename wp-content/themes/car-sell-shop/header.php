@@ -46,6 +46,12 @@
                     <li class="nav-item <?php echo (is_tax('grade_level') || is_page('grade-level')) ? 'active' : ''; ?>">
                         <a href="<?php echo esc_url(home_url('/grade-level/')); ?>">Grades</a>
                     </li>
+                    <li class="nav-item <?php echo (is_post_type_archive('car') || is_singular('car') || is_tax('brand')) ? 'active' : ''; ?>">
+                        <a href="<?php echo esc_url(get_post_type_archive_link('car')); ?>">Cars</a>
+                    </li>
+                    <li class="nav-item <?php echo (is_page('brands')) ? 'active' : ''; ?>">
+                        <a href="<?php echo esc_url(home_url('/brands/')); ?>">Brands</a>
+                    </li>
                 </ul>
                 <div class="nav-profile-section">
                     <a href="<?php echo esc_url(admin_url('profile.php')); ?>" class="profile-settings-btn">Profile Settings</a>
