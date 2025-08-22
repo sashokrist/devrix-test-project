@@ -193,7 +193,7 @@ class Students_Plugin {
      */
     private function set_default_options() {
         $default_options = array(
-            'students_per_page' => 10,
+            'students_per_page' => 4,
             'enable_search' => true,
             'show_email' => true,
             // Metadata visibility settings - default to showing all fields
@@ -283,7 +283,7 @@ add_action( 'init', function() {
         'public'             => true,
         'publicly_queryable' => true,
         'show_ui'            => true,
-        'show_in_menu'       => true,
+        'show_in_menu'       => false, // Hide default menu since we're creating our own
         'query_var'          => true,
         'rewrite'            => array( 'slug' => 'students' ),
         'capability_type'    => 'post',

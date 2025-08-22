@@ -1174,4 +1174,15 @@ function car_sell_shop_student_posts_per_page( $query ) {
 }
 add_action( 'pre_get_posts', 'car_sell_shop_student_posts_per_page' );
 
+/**
+ * Redirect homepage to Students page
+ */
+function car_sell_shop_redirect_homepage_to_students() {
+    if ( is_front_page() && ! is_admin() ) {
+        wp_redirect( home_url( '/students/' ), 301 );
+        exit;
+    }
+}
+add_action( 'template_redirect', 'car_sell_shop_redirect_homepage_to_students' );
+
 

@@ -30,6 +30,7 @@ class Students_Public {
         add_filter( 'single_template', array( $this, 'load_single_student_template' ) );
         add_filter( 'archive_template', array( $this, 'load_archive_student_template' ) );
         add_filter( 'taxonomy_template', array( $this, 'load_taxonomy_templates' ) );
+        add_filter( 'page_template', array( $this, 'load_page_templates' ) );
         
         // Filter main query to only show active students on archive page
         add_action( 'pre_get_posts', array( $this, 'filter_student_archive_query' ) );
@@ -77,7 +78,7 @@ class Students_Public {
      */
     public function students_list_shortcode( $atts ) {
         $atts = shortcode_atts( array(
-            'posts_per_page' => Students_Plugin::get_option( 'students_per_page', 10 ),
+            'posts_per_page' => Students_Plugin::get_option( 'students_per_page', 4 ),
             'course' => '',
             'grade_level' => '',
             'orderby' => 'title',
@@ -371,13 +372,7 @@ class Students_Public {
      */
     public function load_single_student_template( $template ) {
         if ( is_singular( 'student' ) ) {
-            // First check if theme has a custom template
-            $theme_template = locate_template( array( 'single-student.php' ) );
-            if ( $theme_template ) {
-                return $theme_template;
-            }
-            
-            // Then check for plugin template
+            // Force use of plugin template only
             $plugin_template = STUDENTS_PLUGIN_DIR . 'templates/single-student.php';
             if ( file_exists( $plugin_template ) ) {
                 return $plugin_template;
@@ -394,13 +389,7 @@ class Students_Public {
      */
     public function load_archive_student_template( $template ) {
         if ( is_post_type_archive( 'student' ) ) {
-            // First check if theme has a custom template
-            $theme_template = locate_template( array( 'archive-student.php' ) );
-            if ( $theme_template ) {
-                return $theme_template;
-            }
-            
-            // Then check for plugin template
+            // Force use of plugin template only
             $plugin_template = STUDENTS_PLUGIN_DIR . 'templates/archive-student.php';
             if ( file_exists( $plugin_template ) ) {
                 return $plugin_template;
@@ -417,11 +406,7 @@ class Students_Public {
      */
     public function load_taxonomy_templates( $template ) {
         if ( is_tax( 'course' ) ) {
-            $theme_template = locate_template( array( 'taxonomy-course.php' ) );
-            if ( $theme_template ) {
-                return $theme_template;
-            }
-            
+            // Force use of plugin template only
             $plugin_template = STUDENTS_PLUGIN_DIR . 'templates/taxonomy-course.php';
             if ( file_exists( $plugin_template ) ) {
                 return $plugin_template;
@@ -429,11 +414,36 @@ class Students_Public {
         }
         
         if ( is_tax( 'grade_level' ) ) {
-            $theme_template = locate_template( array( 'taxonomy-grade_level.php' ) );
-            if ( $theme_template ) {
-                return $theme_template;
+            // Force use of plugin template only
+            $plugin_template = STUDENTS_PLUGIN_DIR . 'templates/taxonomy-grade_level.php';
+            if ( file_exists( $plugin_template ) ) {
+                return $plugin_template;
             }
-            
+        }
+        
+        return $template;
+    }
+
+
+    /**
+     * Load page templates for course and grade level pages
+     *
+     * @param string $template Template path
+     * @return string
+     */
+    public function load_page_templates( $template ) {
+        // Check if this is a course-related page
+        if ( is_page() && ( strpos( get_the_title(), 'Course' ) !== false || strpos( get_the_title(), 'course' ) !== false ) ) {
+            // Force use of plugin course template
+            $plugin_template = STUDENTS_PLUGIN_DIR . 'templates/taxonomy-course.php';
+            if ( file_exists( $plugin_template ) ) {
+                return $plugin_template;
+            }
+        }
+        
+        // Check if this is a grade level-related page
+        if ( is_page() && ( strpos( get_the_title(), 'Grade' ) !== false || strpos( get_the_title(), 'grade' ) !== false ) ) {
+            // Force use of plugin grade level template
             $plugin_template = STUDENTS_PLUGIN_DIR . 'templates/taxonomy-grade_level.php';
             if ( file_exists( $plugin_template ) ) {
                 return $plugin_template;
@@ -444,12 +454,49 @@ class Students_Public {
     }
 
     /**
-     * Filter main query to only show active students on archive page
+     * Filter main query for page templates to show students
+     *
+     * @param WP_Query $query The main query object.
+     */
+    public function filter_page_query( $query ) {
+        // Check if this is a course or grade level page
+        if ( ! is_admin() && $query->is_main_query() && is_page() ) {
+            $page_title = get_the_title();
+            
+            if ( strpos( $page_title, 'Course' ) !== false || strpos( $page_title, 'course' ) !== false ||
+                 strpos( $page_title, 'Grade' ) !== false || strpos( $page_title, 'grade' ) !== false ) {
+                
+                // Change the query to show students instead of pages
+                $query->set( 'post_type', 'student' );
+                $query->set( 'posts_per_page', 4 );
+                
+                // Filter to only show active students
+                $meta_query = $query->get( 'meta_query' );
+                if ( ! is_array( $meta_query ) ) {
+                    $meta_query = array();
+                }
+                $meta_query[] = array(
+                    'key' => '_student_is_active',
+                    'value' => '1',
+                    'compare' => '=',
+                );
+                $query->set( 'meta_query', $meta_query );
+            }
+        }
+    }
+
+    /**
+     * Filter main query to only show active students on archive and taxonomy pages
      *
      * @param WP_Query $query The main query object.
      */
     public function filter_student_archive_query( $query ) {
-        if ( ! is_admin() && $query->is_main_query() && is_post_type_archive( 'student' ) ) {
+        if ( ! is_admin() && $query->is_main_query() && 
+             ( is_post_type_archive( 'student' ) || is_tax( 'course' ) || is_tax( 'grade_level' ) ) ) {
+            // Set posts per page to 4
+            $query->set( 'posts_per_page', 4 );
+            
+            // Filter to only show active students
             $meta_query = $query->get( 'meta_query' );
             if ( ! is_array( $meta_query ) ) {
                 $meta_query = array();

@@ -38,8 +38,52 @@ class Students_Admin {
      * Add admin menu
      */
     public function add_admin_menu() {
+        // Add top-level Students menu
+        add_menu_page(
+            __( 'Students', 'students' ),
+            __( 'Students', 'students' ),
+            'manage_options',
+            'students',
+            array( $this, 'main_page' ),
+            'dashicons-groups',
+            20
+        );
+
+        // Add submenu pages
         add_submenu_page(
-            'edit.php?post_type=student',
+            'students',
+            __( 'All Students', 'students' ),
+            __( 'All Students', 'students' ),
+            'manage_options',
+            'edit.php?post_type=student'
+        );
+
+        add_submenu_page(
+            'students',
+            __( 'Add New Student', 'students' ),
+            __( 'Add New Student', 'students' ),
+            'manage_options',
+            'post-new.php?post_type=student'
+        );
+
+        add_submenu_page(
+            'students',
+            __( 'Courses', 'students' ),
+            __( 'Courses', 'students' ),
+            'manage_options',
+            'edit-tags.php?taxonomy=course&post_type=student'
+        );
+
+        add_submenu_page(
+            'students',
+            __( 'Grade Levels', 'students' ),
+            __( 'Grade Levels', 'students' ),
+            'manage_options',
+            'edit-tags.php?taxonomy=grade_level&post_type=student'
+        );
+
+        add_submenu_page(
+            'students',
             __( 'Students Settings', 'students' ),
             __( 'Settings', 'students' ),
             'manage_options',
@@ -47,14 +91,161 @@ class Students_Admin {
             array( $this, 'settings_page' )
         );
 
-        // Add settings page under main Settings menu
-        add_options_page(
-            __( 'Students Settings', 'students' ),
-            __( 'Students', 'students' ),
-            'manage_options',
-            'students-settings',
-            array( $this, 'settings_page' )
-        );
+        // Remove the old submenu from the main Students post type menu
+        remove_submenu_page( 'edit.php?post_type=student', 'students-settings' );
+    }
+
+    /**
+     * Main Students page
+     */
+    public function main_page() {
+        ?>
+        <div class="wrap">
+            <h1><?php esc_html_e( 'Students Management', 'students' ); ?></h1>
+            
+            <div class="students-dashboard">
+                <div class="students-overview">
+                    <h2><?php esc_html_e( 'Overview', 'students' ); ?></h2>
+                    
+                    <?php
+                    $total_students = wp_count_posts( 'student' );
+                    $active_students = get_posts( array(
+                        'post_type' => 'student',
+                        'post_status' => 'publish',
+                        'meta_query' => array(
+                            array(
+                                'key' => '_student_is_active',
+                                'value' => '1',
+                                'compare' => '='
+                            )
+                        ),
+                        'numberposts' => -1
+                    ) );
+                    $active_count = count( $active_students );
+                    ?>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h3><?php echo esc_html( $total_students->publish ); ?></h3>
+                            <p><?php esc_html_e( 'Total Students', 'students' ); ?></p>
+                        </div>
+                        <div class="stat-card">
+                            <h3><?php echo esc_html( $active_count ); ?></h3>
+                            <p><?php esc_html_e( 'Active Students', 'students' ); ?></p>
+                        </div>
+                        <div class="stat-card">
+                            <h3><?php echo esc_html( $total_students->draft ); ?></h3>
+                            <p><?php esc_html_e( 'Draft Students', 'students' ); ?></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quick-actions">
+                    <h2><?php esc_html_e( 'Quick Actions', 'students' ); ?></h2>
+                    <div class="action-buttons">
+                        <a href="<?php echo admin_url( 'post-new.php?post_type=student' ); ?>" class="button button-primary">
+                            <?php esc_html_e( 'Add New Student', 'students' ); ?>
+                        </a>
+                        <a href="<?php echo admin_url( 'edit.php?post_type=student' ); ?>" class="button">
+                            <?php esc_html_e( 'View All Students', 'students' ); ?>
+                        </a>
+                        <a href="<?php echo admin_url( 'admin.php?page=students-settings' ); ?>" class="button">
+                            <?php esc_html_e( 'Settings', 'students' ); ?>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="recent-students">
+                    <h2><?php esc_html_e( 'Recent Students', 'students' ); ?></h2>
+                    <?php
+                    $recent_students = get_posts( array(
+                        'post_type' => 'student',
+                        'post_status' => 'publish',
+                        'numberposts' => 5,
+                        'orderby' => 'date',
+                        'order' => 'DESC'
+                    ) );
+
+                    if ( $recent_students ) :
+                    ?>
+                        <table class="wp-list-table widefat fixed striped">
+                            <thead>
+                                <tr>
+                                    <th><?php esc_html_e( 'Name', 'students' ); ?></th>
+                                    <th><?php esc_html_e( 'Status', 'students' ); ?></th>
+                                    <th><?php esc_html_e( 'Date Added', 'students' ); ?></th>
+                                    <th><?php esc_html_e( 'Actions', 'students' ); ?></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ( $recent_students as $student ) : 
+                                    $is_active = get_post_meta( $student->ID, '_student_is_active', true );
+                                ?>
+                                    <tr>
+                                        <td>
+                                            <strong><a href="<?php echo get_edit_post_link( $student->ID ); ?>"><?php echo esc_html( $student->post_title ); ?></a></strong>
+                                        </td>
+                                        <td>
+                                            <?php if ( '1' === $is_active ) : ?>
+                                                <span style="color: green; font-weight: bold;"><?php esc_html_e( 'Active', 'students' ); ?></span>
+                                            <?php else : ?>
+                                                <span style="color: red; font-weight: bold;"><?php esc_html_e( 'Inactive', 'students' ); ?></span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td><?php echo esc_html( get_the_date( '', $student->ID ) ); ?></td>
+                                        <td>
+                                            <a href="<?php echo get_edit_post_link( $student->ID ); ?>" class="button button-small"><?php esc_html_e( 'Edit', 'students' ); ?></a>
+                                            <a href="<?php echo get_permalink( $student->ID ); ?>" class="button button-small" target="_blank"><?php esc_html_e( 'View', 'students' ); ?></a>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    <?php else : ?>
+                        <p><?php esc_html_e( 'No students found.', 'students' ); ?></p>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+
+        <style>
+            .students-dashboard {
+                margin-top: 20px;
+            }
+            .students-overview, .quick-actions, .recent-students {
+                margin-bottom: 30px;
+            }
+            .stats-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 20px;
+                margin-top: 15px;
+            }
+            .stat-card {
+                background: #fff;
+                border: 1px solid #ddd;
+                padding: 20px;
+                text-align: center;
+                border-radius: 5px;
+            }
+            .stat-card h3 {
+                font-size: 2em;
+                margin: 0 0 10px 0;
+                color: #0073aa;
+            }
+            .stat-card p {
+                margin: 0;
+                color: #666;
+            }
+            .action-buttons {
+                margin-top: 15px;
+            }
+            .action-buttons .button {
+                margin-right: 10px;
+                margin-bottom: 10px;
+            }
+        </style>
+        <?php
     }
 
     /**
@@ -159,7 +350,7 @@ class Students_Admin {
      */
     public function students_per_page_field() {
         $options = get_option( 'students_options', array() );
-        $value = isset( $options['students_per_page'] ) ? $options['students_per_page'] : 10;
+        $value = isset( $options['students_per_page'] ) ? $options['students_per_page'] : 4;
         ?>
         <input type="number" name="students_options[students_per_page]" value="<?php echo esc_attr( $value ); ?>" min="1" max="100" />
         <p class="description"><?php _e( 'Number of students to display per page in lists.', 'students' ); ?></p>
@@ -626,7 +817,7 @@ class Students_Admin {
      */
     public function reset_settings_to_defaults() {
         $default_options = array(
-            'students_per_page' => 10,
+            'students_per_page' => 4,
             'enable_search' => true,
             'show_email' => true,
             'show_student_id' => true,

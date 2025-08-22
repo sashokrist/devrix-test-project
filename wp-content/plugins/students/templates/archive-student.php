@@ -12,15 +12,12 @@ get_header(); ?>
     <main id="main" class="site-main">
         
         <header class="page-header">
+            <div style="background: #e7f3ff; border: 2px solid #0073aa; padding: 10px; margin: 10px 0; border-radius: 5px; text-align: center;">
+                <strong>✅ PLUGIN TEMPLATE ACTIVE</strong> - This is the plugin's archive-student.php template
+            </div>
             <h1 class="page-title">Students</h1>
             <?php the_archive_description( '<div class="archive-description">', '</div>' ); ?>
         </header>
-
-        <!-- Filter Section -->
-        <div class="students-filter">
-            <h3>Filter Students</h3>
-            <?php echo do_shortcode( '[students_list posts_per_page="12" orderby="title" order="ASC"]' ); ?>
-        </div>
 
         <?php if ( have_posts() ) : ?>
             
@@ -145,5 +142,4 @@ get_header(); ?>
     </main>
 </div>
 
-<?php get_sidebar(); ?>
 <?php get_footer(); ?>

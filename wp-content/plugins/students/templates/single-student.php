@@ -27,8 +27,11 @@ get_header(); ?>
                         <?php endif; ?>
 
                         <div class="student-details">
-                            <h3>Student Information</h3>
-                            
+                            <div style="background: #e7f3ff; border: 2px solid #0073aa; padding: 10px; margin: 10px 0; border-radius: 5px; text-align: center;">
+                                <strong>✅ PLUGIN TEMPLATE ACTIVE</strong> - This is the plugin's single-student.php template
+                            </div>
+                            <h3>Student Information test</h3>
+                            <h3>test</h3>
                             <?php
                             // Get all student meta data safely using the sanitizer
                             $student_meta = Students_Sanitizer::get_student_meta_safely( get_the_ID() );
@@ -194,5 +197,4 @@ get_header(); ?>
     </main>
 </div>
 
-<?php get_sidebar(); ?>
 <?php get_footer(); ?>
