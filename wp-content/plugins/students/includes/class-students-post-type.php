@@ -65,8 +65,8 @@ class Students_Post_Type {
             'publicly_queryable' => true,
             'show_ui'            => true,
             'show_in_menu'       => true,
-            'query_var'          => true,
-            'rewrite'            => array( 'slug' => 'students' ),
+            'query_var'          => false, // Don't create a custom query var
+            'rewrite'            => false, // Disable automatic rewrite rules completely
             'capability_type'    => 'post',
             'has_archive'        => true,
             'hierarchical'       => false,

@@ -29,22 +29,25 @@ class Students_Pages {
         add_action( 'template_redirect', array( $this, 'handle_custom_pages' ) );
         add_filter( 'query_vars', array( $this, 'add_query_vars' ) );
         add_action( 'wp_loaded', array( $this, 'add_endpoints' ) );
+        add_filter( 'template_include', array( $this, 'load_custom_templates' ) );
+        add_action( 'init', array( $this, 'add_custom_endpoints' ) );
+        add_action( 'init', array( $this, 'add_student_endpoints' ) );
     }
 
     /**
      * Add custom rewrite rules
      */
     public function add_rewrite_rules() {
-        // Students archive and individual pages
+        // Override WordPress's automatic rewrite rules for students
         add_rewrite_rule(
-            '^students/?$',
-            'index.php?post_type=student',
+            '^students/([^/]+)/?$',
+            'index.php?post_type=student&name=$matches[1]',
             'top'
         );
         
         add_rewrite_rule(
-            '^students/([^/]+)/?$',
-            'index.php?post_type=student&name=$matches[1]',
+            '^students/?$',
+            'index.php?post_type=student',
             'top'
         );
 
@@ -131,11 +134,70 @@ class Students_Pages {
     }
 
     /**
+     * Add custom endpoints for students
+     */
+    public function add_custom_endpoints() {
+        add_rewrite_endpoint( 'students', EP_ROOT );
+    }
+
+    /**
+     * Add student endpoints
+     */
+    public function add_student_endpoints() {
+        add_rewrite_endpoint( 'student', EP_ROOT );
+    }
+
+    /**
+     * Load custom templates for students
+     */
+    public function load_custom_templates( $template ) {
+        global $post, $wp_query;
+
+        // Check if this is a student post type
+        if ( is_singular( 'student' ) ) {
+            $custom_template = STUDENTS_PLUGIN_DIR . 'templates/single-student.php';
+            if ( file_exists( $custom_template ) ) {
+                return $custom_template;
+            }
+        }
+
+        // Check if this is a student archive
+        if ( is_post_type_archive( 'student' ) ) {
+            $custom_template = STUDENTS_PLUGIN_DIR . 'templates/archive-student.php';
+            if ( file_exists( $custom_template ) ) {
+                return $custom_template;
+            }
+        }
+
+        // Check if this is a course taxonomy
+        if ( is_tax( 'course' ) ) {
+            $custom_template = STUDENTS_PLUGIN_DIR . 'templates/taxonomy-course.php';
+            if ( file_exists( $custom_template ) ) {
+                return $custom_template;
+            }
+        }
+
+        // Check if this is a grade level taxonomy
+        if ( is_tax( 'grade_level' ) ) {
+            $custom_template = STUDENTS_PLUGIN_DIR . 'templates/taxonomy-grade_level.php';
+            if ( file_exists( $custom_template ) ) {
+                return $custom_template;
+            }
+        }
+
+        return $template;
+    }
+
+    /**
      * Handle custom page requests
      */
     public function handle_custom_pages() {
         $request_uri = $_SERVER['REQUEST_URI'];
-        $path_parts = explode('/', trim($request_uri, '/'));
+        
+        // Remove the base directory from the path
+        $home_path = parse_url(home_url(), PHP_URL_PATH);
+        $relative_path = str_replace($home_path, '', $request_uri);
+        $path_parts = explode('/', trim($relative_path, '/'));
 
         // Handle students pages
         if ( isset($path_parts[0]) && $path_parts[0] === 'students' ) {
