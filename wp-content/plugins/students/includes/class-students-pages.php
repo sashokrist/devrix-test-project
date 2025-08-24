@@ -38,79 +38,13 @@ class Students_Pages {
      * Add custom rewrite rules
      */
     public function add_rewrite_rules() {
-        // Override WordPress's automatic rewrite rules for students
-        add_rewrite_rule(
-            '^students/([^/]+)/?$',
-            'index.php?post_type=student&name=$matches[1]',
-            'top'
-        );
+        // Get rewrite rules from configuration
+        $rewrite_rules = Students_Config::get_rewrite_rules();
         
-        add_rewrite_rule(
-            '^students/?$',
-            'index.php?post_type=student',
-            'top'
-        );
-
-        // Students pagination
-        add_rewrite_rule(
-            '^students/page/([0-9]+)/?$',
-            'index.php?post_type=student&paged=$matches[1]',
-            'top'
-        );
-
-        // Course pages
-        add_rewrite_rule(
-            '^course/?$',
-            'index.php?taxonomy=course',
-            'top'
-        );
-        
-        add_rewrite_rule(
-            '^course/([^/]+)/?$',
-            'index.php?taxonomy=course&term=$matches[1]',
-            'top'
-        );
-
-        // Course pagination
-        add_rewrite_rule(
-            '^course/page/([0-9]+)/?$',
-            'index.php?taxonomy=course&paged=$matches[1]',
-            'top'
-        );
-
-        // Grade level pages
-        add_rewrite_rule(
-            '^grade-level/?$',
-            'index.php?taxonomy=grade_level',
-            'top'
-        );
-        
-        add_rewrite_rule(
-            '^grade-level/([^/]+)/?$',
-            'index.php?taxonomy=grade_level&term=$matches[1]',
-            'top'
-        );
-
-        // Grade level pagination
-        add_rewrite_rule(
-            '^grade-level/page/([0-9]+)/?$',
-            'index.php?taxonomy=grade_level&paged=$matches[1]',
-            'top'
-        );
-
-        // Taxonomy archive pages
-        add_rewrite_rule(
-            '^taxonomy-archive/?$',
-            'index.php?taxonomy_archive=1',
-            'top'
-        );
-
-        // General pagination for students
-        add_rewrite_rule(
-            '^page/([0-9]+)/?$',
-            'index.php?paged=$matches[1]',
-            'top'
-        );
+        // Add each rewrite rule
+        foreach ( $rewrite_rules as $pattern => $replacement ) {
+            add_rewrite_rule( '^' . $pattern, $replacement, 'top' );
+        }
     }
 
     /**

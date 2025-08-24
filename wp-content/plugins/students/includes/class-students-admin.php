@@ -18,6 +18,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Students_Admin {
 
+    use Students_Meta_Box;
+
     /**
      * Constructor
      */
@@ -29,9 +31,7 @@ class Students_Admin {
         add_action( 'manage_student_posts_custom_column', array( $this, 'display_custom_columns' ), 10, 2 );
         add_filter( 'manage_edit-student_sortable_columns', array( $this, 'make_columns_sortable' ) );
         
-        // Add meta boxes
-        add_action( 'add_meta_boxes', array( $this, 'add_student_meta_boxes' ) );
-        add_action( 'save_post', array( $this, 'save_student_meta_boxes' ) );
+        // Meta boxes are now handled by the post type class using traits
     }
 
     /**
@@ -561,16 +561,12 @@ class Students_Admin {
 
     /**
      * Add meta boxes for student post type
+     * 
+     * @deprecated Meta boxes are now handled by the post type class using traits
      */
     public function add_student_meta_boxes() {
-        add_meta_box(
-            'student_personal_info',
-            __( 'Additional Information', 'students' ),
-            array( $this, 'render_personal_info_meta_box' ),
-            'student',
-            'normal',
-            'high'
-        );
+        // Meta boxes are now handled by the post type class using traits
+        // This method is kept for backward compatibility but does nothing
     }
 
     /**
@@ -681,68 +677,11 @@ class Students_Admin {
      * Save student meta box data
      *
      * @param int $post_id
+     * @deprecated Meta box saving is now handled by the post type class using traits
      */
     public function save_student_meta_boxes( $post_id ) {
-        // Check if nonce is valid
-        if ( ! isset( $_POST['student_meta_box_nonce'] ) || ! wp_verify_nonce( $_POST['student_meta_box_nonce'], 'student_meta_box_nonce' ) ) {
-            return;
-        }
-
-        // Check if user has permissions to save data
-        if ( ! current_user_can( 'edit_post', $post_id ) ) {
-            return;
-        }
-
-        // Check if not an autosave
-        if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
-            return;
-        }
-
-        // Check if our custom fields are set and sanitize them properly using the sanitizer class
-        if ( isset( $_POST['student_id'] ) ) {
-            $student_id = Students_Sanitizer::sanitize_student_id( $_POST['student_id'] );
-            update_post_meta( $post_id, '_student_id', $student_id );
-        }
-
-        if ( isset( $_POST['student_email'] ) ) {
-            $email = Students_Sanitizer::sanitize_email( $_POST['student_email'] );
-            update_post_meta( $post_id, '_student_email', $email );
-        }
-
-        if ( isset( $_POST['student_phone'] ) ) {
-            $phone = Students_Sanitizer::sanitize_phone( $_POST['student_phone'] );
-            update_post_meta( $post_id, '_student_phone', $phone );
-        }
-
-        if ( isset( $_POST['student_dob'] ) ) {
-            $dob = Students_Sanitizer::sanitize_date( $_POST['student_dob'] );
-            update_post_meta( $post_id, '_student_dob', $dob );
-        }
-
-        if ( isset( $_POST['student_address'] ) ) {
-            $address = Students_Sanitizer::sanitize_address( $_POST['student_address'] );
-            update_post_meta( $post_id, '_student_address', $address );
-        }
-
-        if ( isset( $_POST['student_country'] ) ) {
-            $country = Students_Sanitizer::sanitize_country( $_POST['student_country'] );
-            update_post_meta( $post_id, '_student_country', $country );
-        }
-
-        if ( isset( $_POST['student_city'] ) ) {
-            $city = Students_Sanitizer::sanitize_city( $_POST['student_city'] );
-            update_post_meta( $post_id, '_student_city', $city );
-        }
-
-        if ( isset( $_POST['student_class_grade'] ) ) {
-            $class_grade = Students_Sanitizer::sanitize_class_grade( $_POST['student_class_grade'] );
-            update_post_meta( $post_id, '_student_class_grade', $class_grade );
-        }
-
-        if ( isset( $_POST['student_is_active'] ) ) {
-            $is_active = Students_Sanitizer::sanitize_status( $_POST['student_is_active'] );
-            update_post_meta( $post_id, '_student_is_active', $is_active );
-        }
+        // Meta box saving is now handled by the post type class using traits
+        // This method is kept for backward compatibility but does nothing
     }
 
     /**

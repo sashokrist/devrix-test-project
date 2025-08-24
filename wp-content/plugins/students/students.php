@@ -96,14 +96,20 @@ class Students_Plugin {
      * Load plugin dependencies
      */
     private function load_dependencies() {
+        // Load configuration and traits first
+        require_once STUDENTS_PLUGIN_DIR . 'includes/class-students-config.php';
+        require_once STUDENTS_PLUGIN_DIR . 'includes/trait-students-ajax-response.php';
+        require_once STUDENTS_PLUGIN_DIR . 'includes/trait-students-meta-box.php';
+        
         // Load core files
         require_once STUDENTS_PLUGIN_DIR . 'includes/class-students-loader.php';
         require_once STUDENTS_PLUGIN_DIR . 'includes/class-students-sanitizer.php';
+        require_once STUDENTS_PLUGIN_DIR . 'includes/class-students-database.php';
         require_once STUDENTS_PLUGIN_DIR . 'includes/class-students-post-type.php';
         require_once STUDENTS_PLUGIN_DIR . 'includes/class-students-admin.php';
         require_once STUDENTS_PLUGIN_DIR . 'includes/class-students-public.php';
         require_once STUDENTS_PLUGIN_DIR . 'includes/class-students-pages.php';
-        require_once STUDENTS_PLUGIN_DIR . 'ajax-handler.php';
+        require_once STUDENTS_PLUGIN_DIR . 'includes/class-students-ajax.php';
     }
 
     /**

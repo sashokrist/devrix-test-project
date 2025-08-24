@@ -16,6 +16,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Students_Ajax_Handler {
 
+    use Students_Ajax_Response;
+
     /**
      * Constructor
      */
@@ -44,27 +46,22 @@ class Students_Ajax_Handler {
      * Save student data
      */
     public function save_student() {
-        // Verify nonce
-        if ( ! wp_verify_nonce( $_POST['nonce'], 'students_ajax_nonce' ) ) {
-            wp_send_json_error( 'Invalid nonce' );
+        // Verify nonce and permissions
+        if ( ! $this->verify_nonce( $_POST['nonce'] ?? '' ) ) {
+            return;
         }
-
-        // Check permissions
-        if ( ! current_user_can( 'edit_posts' ) ) {
-            wp_send_json_error( 'Insufficient permissions' );
+        if ( ! $this->check_capability( 'edit_posts' ) ) {
+            return;
         }
 
         // Sanitize input data
-        $student_data = array(
-            'post_title'   => sanitize_text_field( $_POST['title'] ?? '' ),
-            'post_content' => wp_kses_post( $_POST['content'] ?? '' ),
-            'post_status'  => sanitize_text_field( $_POST['status'] ?? 'draft' ),
-            'post_type'    => 'student'
-        );
+        $student_data = $this->sanitize_student_data( $_POST );
+        $student_data['post_type'] = Students_Config::POST_TYPE;
 
         // Validate required fields
-        if ( empty( $student_data['post_title'] ) ) {
-            wp_send_json_error( 'Student name is required' );
+        $required_fields = array( 'title' );
+        if ( ! $this->validate_required_fields( $student_data, $required_fields ) ) {
+            return;
         }
 
         // Handle post ID for updates
@@ -77,17 +74,17 @@ class Students_Ajax_Handler {
         }
 
         if ( is_wp_error( $result ) ) {
-            wp_send_json_error( $result->get_error_message() );
+            $this->handle_database_error( $result );
+            return;
         }
 
         // Save meta data
         $this->save_student_meta( $result, $_POST );
 
-        wp_send_json_success( array(
-            'message' => 'Student saved successfully',
+        $this->send_json_success( array(
             'post_id' => $result,
             'redirect_url' => admin_url( 'edit.php?post_type=student' )
-        ) );
+        ), 'Student saved successfully' );
     }
 
     /**

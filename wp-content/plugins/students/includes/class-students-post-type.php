@@ -18,13 +18,15 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Students_Post_Type {
 
+    use Students_Meta_Box;
+
     /**
      * Constructor
      */
     public function __construct() {
         add_action( 'init', array( $this, 'register_post_type' ) );
         add_action( 'init', array( $this, 'register_taxonomies' ) );
-        add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ) );
+        add_action( 'add_meta_boxes_student', array( $this, 'add_meta_boxes' ) );
         add_action( 'save_post', array( $this, 'save_meta_boxes' ) );
     }
 
@@ -64,7 +66,7 @@ class Students_Post_Type {
             'public'             => true,
             'publicly_queryable' => true,
             'show_ui'            => true,
-            'show_in_menu'       => true,
+            'show_in_menu'       => false, // Let admin class handle the menu
             'query_var'          => false, // Don't create a custom query var
             'rewrite'            => false, // Disable automatic rewrite rules completely
             'capability_type'    => 'post',
@@ -76,7 +78,7 @@ class Students_Post_Type {
             'show_in_rest'       => true,
         );
 
-        register_post_type( 'student', $args );
+        register_post_type( Students_Config::POST_TYPE, $args );
     }
 
     /**
@@ -156,60 +158,7 @@ class Students_Post_Type {
      * @param WP_Post $post The post object
      */
     public function student_details_meta_box( $post ) {
-        // Add nonce for security
-        wp_nonce_field( 'student_details_nonce', 'student_details_nonce' );
-
-        // Get existing values
-        $student_id = get_post_meta( $post->ID, '_student_id', true );
-        $email = get_post_meta( $post->ID, '_student_email', true );
-        $phone = get_post_meta( $post->ID, '_student_phone', true );
-        $date_of_birth = get_post_meta( $post->ID, '_student_dob', true );
-        $address = get_post_meta( $post->ID, '_student_address', true );
-
-        ?>
-        <table class="form-table">
-            <tr>
-                <th scope="row">
-                    <label for="student_id"><?php _e( 'Student ID', 'students' ); ?></label>
-                </th>
-                <td>
-                    <input type="text" id="student_id" name="student_id" value="<?php echo esc_attr( $student_id ); ?>" class="regular-text" />
-                </td>
-            </tr>
-            <tr>
-                <th scope="row">
-                    <label for="student_email"><?php _e( 'Email', 'students' ); ?></label>
-                </th>
-                <td>
-                    <input type="email" id="student_email" name="student_email" value="<?php echo esc_attr( $email ); ?>" class="regular-text" />
-                </td>
-            </tr>
-            <tr>
-                <th scope="row">
-                    <label for="student_phone"><?php _e( 'Phone', 'students' ); ?></label>
-                </th>
-                <td>
-                    <input type="tel" id="student_phone" name="student_phone" value="<?php echo esc_attr( $phone ); ?>" class="regular-text" />
-                </td>
-            </tr>
-            <tr>
-                <th scope="row">
-                    <label for="student_dob"><?php _e( 'Date of Birth', 'students' ); ?></label>
-                </th>
-                <td>
-                    <input type="date" id="student_dob" name="student_dob" value="<?php echo esc_attr( $date_of_birth ); ?>" />
-                </td>
-            </tr>
-            <tr>
-                <th scope="row">
-                    <label for="student_address"><?php _e( 'Address', 'students' ); ?></label>
-                </th>
-                <td>
-                    <textarea id="student_address" name="student_address" rows="3" class="large-text"><?php echo esc_textarea( $address ); ?></textarea>
-                </td>
-            </tr>
-        </table>
-        <?php
+        $this->render_meta_box_content( $post );
     }
 
     /**
@@ -218,34 +167,7 @@ class Students_Post_Type {
      * @param int $post_id The post ID
      */
     public function save_meta_boxes( $post_id ) {
-        // Check if nonce is valid
-        if ( ! isset( $_POST['student_details_nonce'] ) || ! wp_verify_nonce( $_POST['student_details_nonce'], 'student_details_nonce' ) ) {
-            return;
-        }
-
-        // Check if user has permissions to save data
-        if ( ! current_user_can( 'edit_post', $post_id ) ) {
-            return;
-        }
-
-        // Check if not an autosave
-        if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
-            return;
-        }
-
-        // Save the data
-        $fields = array(
-            'student_id' => '_student_id',
-            'student_email' => '_student_email',
-            'student_phone' => '_student_phone',
-            'student_dob' => '_student_dob',
-            'student_address' => '_student_address',
-        );
-
-        foreach ( $fields as $field => $meta_key ) {
-            if ( isset( $_POST[ $field ] ) ) {
-                update_post_meta( $post_id, $meta_key, sanitize_text_field( $_POST[ $field ] ) );
-            }
-        }
+        $meta_field_names = Students_Config::get_meta_field_names();
+        $this->save_meta_fields( $post_id, $meta_field_names );
     }
 }
