@@ -1,13 +1,8 @@
-<IfModule mod_negotiation.c>
-Options -MultiViews
-</IfModule>
-
-<IfModule mod_rewrite.c>
 RewriteEngine On
-# Ensure REST API routes work even if general WP rewrites are not applied
-RewriteRule ^wp-json/?$ index.php?rest_route=/ [L]
-RewriteRule ^wp-json/(.*)$ index.php?rest_route=/$1 [L,QSA]
-</IfModule>
+RewriteBase /devrix-test-project/
+
+# Redirect taxonomy-archive to working handler
+RewriteRule ^taxonomy-archive/?$ taxonomy-archive-redirect.php [QSA,L]
 
 # BEGIN WordPress
 # The directives (lines) between "BEGIN WordPress" and "END WordPress" are
@@ -16,11 +11,11 @@ RewriteRule ^wp-json/(.*)$ index.php?rest_route=/$1 [L,QSA]
 <IfModule mod_rewrite.c>
 RewriteEngine On
 RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
-RewriteBase /
+RewriteBase /devrix-test-project/
 RewriteRule ^index\.php$ - [L]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule . /index.php [L]
+RewriteRule . /devrix-test-project/index.php [L]
 </IfModule>
 
 # END WordPress

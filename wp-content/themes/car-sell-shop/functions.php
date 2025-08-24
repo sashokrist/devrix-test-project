@@ -326,7 +326,9 @@ function test_email_functionality() {
 
 /**
  * Manual test function - call this via WP-CLI or browser
+ * DISABLED: Commented out to prevent output issues
  */
+/*
 function manual_email_test() {
     echo "Testing email functionality...\n";
     $result = test_email_functionality();
@@ -336,7 +338,9 @@ function manual_email_test() {
 
 /**
  * Simple email test function
+ * DISABLED: Commented out to prevent output issues
  */
+/*
 function simple_email_test() {
     echo "=== EMAIL TEST ===\n";
     
@@ -358,17 +362,20 @@ function simple_email_test() {
     echo "=== END TEST ===\n";
     return $result;
 }
+*/
 
 /**
  * Add a test endpoint for email testing
+ * DISABLED: Commented out to prevent output issues
  */
+/*
 function add_email_test_endpoint() {
     if (isset($_GET['test_email']) && current_user_can('administrator')) {
         echo "<h1>Email Test Results</h1>";
         echo "<pre>";
-        $result = simple_email_test();
+        // $result = simple_email_test(); // DISABLED: Function commented out
         echo "</pre>";
-        echo "<p><strong>Email Test Result:</strong> " . ($result ? 'SUCCESS' : 'FAILED') . "</p>";
+        echo "<p><strong>Email Test Result:</strong> DISABLED (function commented out)</p>";
         echo "<p><a href='http://localhost/wp-admin/'>Back to Admin</a></p>";
         exit;
     }
@@ -400,6 +407,7 @@ function add_email_test_endpoint() {
     }
 }
 add_action('init', 'add_email_test_endpoint');
+*/
 
 /**
  * Mailtrap SMTP Configuration
@@ -596,7 +604,9 @@ add_filter( 'wp_nav_menu_objects', 'add_profile_settings_menu_object_block', 10,
 
 /**
  * Add a test endpoint to check navigation menu status
+ * DISABLED: Commented out to prevent output issues
  */
+/*
 function add_navigation_test_endpoint() {
     if (isset($_GET['test_navigation'])) {
         echo "<h1>Navigation Menu Test</h1>";
@@ -630,6 +640,7 @@ function add_navigation_test_endpoint() {
     }
 }
 add_action('init', 'add_navigation_test_endpoint');
+*/
 
 /**
  * Add CSS styles for the profile settings menu item
@@ -728,6 +739,7 @@ add_action( 'wp_footer', 'add_profile_settings_highlight' );
  * Example: Add custom content after the content in My Custom Template
  * This demonstrates how other developers can hook into the custom action
  */
+/*
 function car_sell_shop_custom_template_content_example() {
     // Only show on pages using the My Custom Template
     if ( is_page_template( 'my-custom-template' ) || is_page_template( 'page-my-custom' ) ) {
@@ -740,10 +752,12 @@ function car_sell_shop_custom_template_content_example() {
     }
 }
 add_action( 'car_sell_shop_after_custom_template_content', 'car_sell_shop_custom_template_content_example' );
+*/
 
 /**
  * Example: Add social sharing buttons after content
  */
+/*
 function car_sell_shop_add_social_sharing() {
     if ( is_page_template( 'my-custom-template' ) || is_page_template( 'page-my-custom' ) ) {
         $current_url = get_permalink();
@@ -758,6 +772,7 @@ function car_sell_shop_add_social_sharing() {
     }
 }
 add_action( 'car_sell_shop_after_custom_template_content', 'car_sell_shop_add_social_sharing' );
+*/
 
 /**
  * Add CSS styles for the custom action hook content
@@ -1184,5 +1199,204 @@ function car_sell_shop_redirect_homepage_to_students() {
     }
 }
 add_action( 'template_redirect', 'car_sell_shop_redirect_homepage_to_students' );
+
+/**
+ * Handle taxonomy parameters and pagination in query strings
+ */
+function car_sell_shop_handle_taxonomy_parameters() {
+    // Only handle on frontend
+    if (is_admin()) {
+        return;
+    }
+    
+    // Don't redirect if we're already on the taxonomy-archive page
+    if (strpos($_SERVER['REQUEST_URI'], '/taxonomy-archive/') !== false) {
+        return;
+    }
+    
+    // Handle pagination parameters with paged
+    if (isset($_GET['paged']) && isset($_GET['post_type'])) {
+        $paged = intval($_GET['paged']);
+        $post_type = sanitize_text_field($_GET['post_type']);
+        
+        if ($post_type === 'student' && $paged > 1) {
+            // Don't redirect pagination for students - let WordPress handle it
+            return;
+        }
+    }
+    
+    // Check if taxonomy parameter is present
+    if (isset($_GET['taxonomy'])) {
+        $taxonomy = sanitize_text_field($_GET['taxonomy']);
+        
+        // Redirect to the proper taxonomy archive page
+        $redirect_url = home_url('/taxonomy-archive/?taxonomy=' . urlencode($taxonomy));
+        
+        // Preserve other query parameters
+        $other_params = $_GET;
+        unset($other_params['taxonomy']);
+        
+        if (!empty($other_params)) {
+            $redirect_url .= '&' . http_build_query($other_params);
+        }
+        
+        wp_redirect($redirect_url, 301);
+        exit;
+    }
+}
+add_action('init', 'car_sell_shop_handle_taxonomy_parameters');
+
+/**
+ * Disable canonical redirects for pagination URLs to prevent redirect loops
+ */
+function car_sell_shop_disable_canonical_redirects($redirect_url, $requested_url) {
+    // Don't redirect if paged parameter is present
+    if (isset($_GET['paged']) && $_GET['paged'] > 1) {
+        return false;
+    }
+    
+    // Don't redirect if post_type parameter is present
+    if (isset($_GET['post_type'])) {
+        return false;
+    }
+    
+    return $redirect_url;
+}
+add_filter('redirect_canonical', 'car_sell_shop_disable_canonical_redirects', 10, 2);
+
+/**
+ * REST API Workaround - Create direct endpoint for wp-json
+ * This is needed because .htaccess is not being processed due to AllowOverride None
+ */
+function add_rest_api_workaround() {
+    // Handle wp-json requests that are failing due to .htaccess limitations
+    if (strpos($_SERVER['REQUEST_URI'], '/wp-json/') !== false) {
+        // Set proper headers for JSON response
+        header('Content-Type: application/json; charset=UTF-8');
+        header('Access-Control-Allow-Origin: *');
+        header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+        header('Access-Control-Allow-Headers: Content-Type, Authorization, X-WP-Nonce');
+        
+        // Handle preflight OPTIONS request
+        if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+            http_response_code(200);
+            exit;
+        }
+        
+        // Extract the REST route from the URL
+        $rest_route = str_replace('/wp-json/', '', $_SERVER['REQUEST_URI']);
+        
+        // Remove query parameters from the route
+        $rest_route = strtok($rest_route, '?');
+        
+        // Redirect to WordPress REST API using query parameter format
+        $rest_url = home_url('/?rest_route=' . $rest_route);
+        
+        // Preserve query parameters
+        if (!empty($_SERVER['QUERY_STRING'])) {
+            $rest_url .= '&' . $_SERVER['QUERY_STRING'];
+        }
+        
+        wp_redirect($rest_url);
+        exit;
+    }
+}
+add_action('init', 'add_rest_api_workaround', 1);
+
+/**
+ * Alternative REST API endpoint for when wp-json is not accessible
+ */
+function add_alternative_rest_endpoint() {
+    if (isset($_GET['rest_route'])) {
+        // This will be handled by WordPress core REST API
+        return;
+    }
+}
+add_action('init', 'add_alternative_rest_endpoint', 2);
+
+/**
+ * Handle specific REST API endpoints that might fail
+ */
+function handle_specific_rest_endpoints() {
+    // Handle blocks endpoint specifically
+    if (isset($_GET['rest_route']) && strpos($_GET['rest_route'], '/wp/v2/blocks') !== false) {
+        // Ensure blocks endpoint is accessible
+        if (!function_exists('get_block_types')) {
+            require_once ABSPATH . 'wp-includes/blocks.php';
+        }
+        
+        // Set proper headers
+        header('Content-Type: application/json; charset=UTF-8');
+        header('Access-Control-Allow-Origin: *');
+        header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+        header('Access-Control-Allow-Headers: Content-Type, Authorization, X-WP-Nonce');
+    }
+}
+add_action('init', 'handle_specific_rest_endpoints', 3);
+
+/**
+ * Fix JSON response issues by adding output buffering
+ */
+function fix_json_response_issues() {
+    // Start output buffering if not already started
+    if (!ob_get_level()) {
+        ob_start();
+    }
+    
+    // Prevent any output during REST API requests
+    if (defined('REST_REQUEST') && REST_REQUEST) {
+        // Remove any output that might interfere with JSON responses
+        if (ob_get_level()) {
+            ob_clean();
+        }
+    }
+    
+    // Prevent output during admin AJAX requests
+    if (wp_doing_ajax()) {
+        if (ob_get_level()) {
+            ob_clean();
+        }
+    }
+}
+add_action('init', 'fix_json_response_issues', 1);
+
+/**
+ * Clean output buffer before sending JSON responses
+ */
+function clean_output_for_json() {
+    // Clean any output that might interfere with JSON responses
+    if (ob_get_level()) {
+        $output = ob_get_contents();
+        if (!empty($output)) {
+            // Log the output for debugging
+            error_log('Output detected before JSON response: ' . substr($output, 0, 500));
+            ob_clean();
+        }
+    }
+}
+add_action('rest_api_init', 'clean_output_for_json', 1);
+add_action('wp_ajax_save-post', 'clean_output_for_json', 1);
+add_action('wp_ajax_nopriv_save-post', 'clean_output_for_json', 1);
+
+/**
+ * Additional fix for admin publishing issues
+ */
+function fix_admin_publishing() {
+    // Only run in admin context
+    if (!is_admin()) {
+        return;
+    }
+    
+    // Clean output buffer in admin
+    if (ob_get_level()) {
+        ob_clean();
+    }
+    
+    // Ensure proper headers for admin requests
+    if (wp_doing_ajax() || (defined('REST_REQUEST') && REST_REQUEST)) {
+        header('Content-Type: application/json; charset=UTF-8');
+    }
+}
+add_action('admin_init', 'fix_admin_publishing', 1);
 
 

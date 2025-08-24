@@ -102,6 +102,8 @@ class Students_Plugin {
         require_once STUDENTS_PLUGIN_DIR . 'includes/class-students-post-type.php';
         require_once STUDENTS_PLUGIN_DIR . 'includes/class-students-admin.php';
         require_once STUDENTS_PLUGIN_DIR . 'includes/class-students-public.php';
+        require_once STUDENTS_PLUGIN_DIR . 'includes/class-students-pages.php';
+        require_once STUDENTS_PLUGIN_DIR . 'ajax-handler.php';
     }
 
     /**
@@ -113,6 +115,9 @@ class Students_Plugin {
         
         // Initialize public functionality
         new Students_Public();
+        
+        // Initialize pages handler
+        new Students_Pages();
     }
 
     /**

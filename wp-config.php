@@ -26,7 +26,7 @@ define( 'DB_NAME', 'test_wp_project' );
 define( 'DB_USER', 'admin' );
 
 /** Database password */
-define( 'DB_PASSWORD', 'Jana009@' );
+define( 'DB_PASSWORD', 'Strong_Admin_Passw0rd!');
 
 /** Database hostname */
 define( 'DB_HOST', 'localhost' );

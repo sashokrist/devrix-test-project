@@ -414,12 +414,39 @@ class Students_Admin {
                     true
                 );
 
+                wp_enqueue_script(
+                    'students-ajax-handler',
+                    STUDENTS_PLUGIN_URL . 'assets/js/ajax-handler.js',
+                    array( 'jquery' ),
+                    STUDENTS_VERSION,
+                    true
+                );
+
                 wp_enqueue_style(
                     'students-admin',
                     STUDENTS_PLUGIN_URL . 'assets/css/admin.css',
                     array(),
                     STUDENTS_VERSION
                 );
+
+                wp_enqueue_style(
+                    'students-ajax-handler',
+                    STUDENTS_PLUGIN_URL . 'assets/css/ajax-handler.css',
+                    array(),
+                    STUDENTS_VERSION
+                );
+
+                // Localize AJAX data
+                wp_localize_script( 'students-ajax-handler', 'students_ajax', array(
+                    'ajax_url' => admin_url( 'admin-ajax.php' ),
+                    'nonce' => wp_create_nonce( 'students_ajax_nonce' ),
+                    'strings' => array(
+                        'saving' => __( 'Saving...', 'students' ),
+                        'saved' => __( 'Saved successfully!', 'students' ),
+                        'error' => __( 'An error occurred.', 'students' ),
+                        'confirm_delete' => __( 'Are you sure you want to delete this student?', 'students' )
+                    )
+                ) );
             }
         }
     }

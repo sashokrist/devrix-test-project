@@ -1,0 +1,268 @@
+/**
+ * AJAX Handler Styles for Students Plugin
+ *
+ * @package Students
+ * @version 1.0.0
+ */
+
+/* Message Styles */
+.student-form .message {
+    padding: 10px 15px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    font-weight: 500;
+    display: none;
+}
+
+.student-form .message.success {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
+}
+
+.student-form .message.error {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+}
+
+/* Global Message Styles */
+#students-global-message {
+    background-color: #007cba;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    font-weight: 500;
+    display: none;
+}
+
+#students-global-message.success {
+    background-color: #28a745;
+}
+
+#students-global-message.error {
+    background-color: #dc3545;
+}
+
+/* Loading Styles */
+#students-loading {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+#students-loading > div {
+    background-color: white;
+    padding: 20px 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    font-weight: 500;
+    color: #333;
+}
+
+/* Field Validation Styles */
+.field-validation {
+    font-size: 12px;
+    margin-top: 5px;
+    padding: 5px 8px;
+    border-radius: 3px;
+    display: none;
+}
+
+.field-validation.valid {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
+}
+
+.field-validation.invalid {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+}
+
+/* Form Styles */
+.student-form {
+    position: relative;
+}
+
+.student-form.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.student-form .submit-button {
+    transition: all 0.3s ease;
+}
+
+.student-form .submit-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Search Results Styles */
+.students-search-results {
+    margin-top: 20px;
+}
+
+.student-result {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 10px;
+    transition: all 0.3s ease;
+}
+
+.student-result:hover {
+    background-color: #e9ecef;
+    border-color: #adb5bd;
+}
+
+.student-result h4 {
+    margin: 0 0 10px 0;
+    color: #007cba;
+}
+
+.student-result h4 a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.student-result h4 a:hover {
+    text-decoration: underline;
+}
+
+.student-result p {
+    margin: 5px 0;
+    color: #6c757d;
+    font-size: 14px;
+}
+
+/* Search Input Styles */
+.student-search {
+    width: 100%;
+    max-width: 300px;
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.student-search:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Filter Styles */
+.course-filter,
+.grade-level-filter {
+    padding: 6px 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 14px;
+    margin-right: 10px;
+    background-color: white;
+}
+
+.course-filter:focus,
+.grade-level-filter:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Delete Button Styles */
+.delete-student {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 12px;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.3s ease;
+}
+
+.delete-student:hover {
+    background-color: #c82333;
+    color: white;
+    text-decoration: none;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .student-search {
+        max-width: 100%;
+        margin-bottom: 10px;
+    }
+    
+    .course-filter,
+    .grade-level-filter {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+    
+    #students-global-message {
+        left: 10px;
+        right: 10px;
+        top: 10px;
+    }
+}
+
+/* Animation Styles */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.student-result {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Loading Spinner */
+.loading-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #007cba;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 8px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Form Field Focus States */
+.student-form input:focus,
+.student-form textarea:focus,
+.student-form select:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Success/Error States for Form Fields */
+.student-form input.valid,
+.student-form textarea.valid,
+.student-form select.valid {
+    border-color: #28a745;
+}
+
+.student-form input.invalid,
+.student-form textarea.invalid,
+.student-form select.invalid {
+    border-color: #dc3545;
+}
