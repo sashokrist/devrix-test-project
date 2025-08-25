@@ -116,7 +116,7 @@
 
 .students-list-footer {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: center;
     padding: 15px 0;
     border-top: 1px solid #e9ecef;
@@ -124,9 +124,32 @@
 }
 
 .students-count {
-    margin: 0;
+    margin: 0 0 15px 0;
     color: #6c757d;
     font-size: 14px;
+}
+
+.load-more-students {
+    display: inline-block;
+    padding: 8px 16px;
+    margin: 0 0 15px 0;
+    background: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+
+.load-more-students:hover:not(:disabled) {
+    background: #218838;
+}
+
+.load-more-students:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
 }
 
 .view-all-students {
