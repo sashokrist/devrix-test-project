@@ -31,6 +31,10 @@ class Students_Admin {
         add_action( 'manage_student_posts_custom_column', array( $this, 'display_custom_columns' ), 10, 2 );
         add_filter( 'manage_edit-student_sortable_columns', array( $this, 'make_columns_sortable' ) );
         
+        // AJAX handlers
+        add_action( 'wp_ajax_save_students_setting', array( $this, 'ajax_save_setting' ) );
+        add_action( 'wp_ajax_update_student_status', array( $this, 'ajax_update_student_status' ) );
+        
         // Meta boxes are now handled by the post type class using traits
     }
 
@@ -89,6 +93,15 @@ class Students_Admin {
             'manage_options',
             'students-settings',
             array( $this, 'settings_page' )
+        );
+
+        add_submenu_page(
+            'students',
+            __( 'AJAX Settings', 'students' ),
+            __( 'AJAX Settings', 'students' ),
+            'manage_options',
+            'students-ajax-settings',
+            array( $this, 'ajax_settings_page' )
         );
 
         // Remove the old submenu from the main Students post type menu
@@ -400,9 +413,138 @@ class Students_Admin {
     }
 
     /**
+     * AJAX Settings page
+     */
+    public function ajax_settings_page() {
+        ?>
+        <div class="wrap">
+            <h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
+            <p class="description"><?php esc_html_e( 'Settings are automatically saved when you change them. No need to click save!', 'students' ); ?></p>
+            
+            <div id="ajax-settings-container">
+                <div class="ajax-settings-section">
+                    <h2><?php esc_html_e( 'Metadata Visibility', 'students' ); ?></h2>
+                    <p><?php esc_html_e( 'Control which metadata fields are displayed on single student pages. Uncheck fields you want to hide.', 'students' ); ?></p>
+                    
+                    <div class="ajax-settings-grid">
+                        <?php
+                        $options = get_option( 'students_options', array() );
+                        $metadata_fields = array(
+                            'show_student_id' => array(
+                                'label' => __( 'Student ID', 'students' ),
+                                'description' => __( 'Show student ID on single student pages', 'students' )
+                            ),
+                            'show_email' => array(
+                                'label' => __( 'Email', 'students' ),
+                                'description' => __( 'Show email address on single student pages', 'students' )
+                            ),
+                            'show_phone' => array(
+                                'label' => __( 'Phone', 'students' ),
+                                'description' => __( 'Show phone number on single student pages', 'students' )
+                            ),
+                            'show_dob' => array(
+                                'label' => __( 'Date of Birth', 'students' ),
+                                'description' => __( 'Show date of birth on single student pages', 'students' )
+                            ),
+                            'show_address' => array(
+                                'label' => __( 'Address', 'students' ),
+                                'description' => __( 'Show address on single student pages', 'students' )
+                            ),
+                            'show_country' => array(
+                                'label' => __( 'Country', 'students' ),
+                                'description' => __( 'Show country on single student pages', 'students' )
+                            ),
+                            'show_city' => array(
+                                'label' => __( 'City', 'students' ),
+                                'description' => __( 'Show city on single student pages', 'students' )
+                            ),
+                            'show_class_grade' => array(
+                                'label' => __( 'Class/Grade', 'students' ),
+                                'description' => __( 'Show class/grade on single student pages', 'students' )
+                            ),
+                            'show_status' => array(
+                                'label' => __( 'Status', 'students' ),
+                                'description' => __( 'Show student status on single student pages', 'students' )
+                            ),
+                            'show_courses' => array(
+                                'label' => __( 'Courses', 'students' ),
+                                'description' => __( 'Show courses on single student pages', 'students' )
+                            ),
+                            'show_grade_levels' => array(
+                                'label' => __( 'Grade Levels', 'students' ),
+                                'description' => __( 'Show grade levels on single student pages', 'students' )
+                            ),
+                        );
+
+                        foreach ( $metadata_fields as $field_key => $field_data ) {
+                            $value = isset( $options[ $field_key ] ) && $options[ $field_key ] === true;
+                            ?>
+                            <div class="ajax-setting-item">
+                                <label class="ajax-checkbox-label">
+                                    <input type="checkbox" 
+                                           class="ajax-setting-checkbox" 
+                                           data-setting="<?php echo esc_attr( $field_key ); ?>"
+                                           value="1" 
+                                           <?php checked( $value, true ); ?> />
+                                    <span class="setting-label"><?php echo esc_html( $field_data['label'] ); ?></span>
+                                </label>
+                                <p class="setting-description"><?php echo esc_html( $field_data['description'] ); ?></p>
+                                <div class="setting-status"></div>
+                            </div>
+                            <?php
+                        }
+                        ?>
+                    </div>
+                </div>
+                
+                <div class="ajax-settings-section">
+                    <h2><?php esc_html_e( 'General Settings', 'students' ); ?></h2>
+                    
+                    <div class="ajax-settings-grid">
+                        <?php
+                        $general_fields = array(
+                            'enable_search' => array(
+                                'label' => __( 'Enable Search', 'students' ),
+                                'description' => __( 'Enable search functionality on student pages', 'students' )
+                            ),
+                            'show_email_publicly' => array(
+                                'label' => __( 'Show Email Publicly', 'students' ),
+                                'description' => __( 'Show student email addresses on public pages', 'students' )
+                            ),
+                        );
+
+                        foreach ( $general_fields as $field_key => $field_data ) {
+                            $value = isset( $options[ $field_key ] ) && $options[ $field_key ] === true;
+                            ?>
+                            <div class="ajax-setting-item">
+                                <label class="ajax-checkbox-label">
+                                    <input type="checkbox" 
+                                           class="ajax-setting-checkbox" 
+                                           data-setting="<?php echo esc_attr( $field_key ); ?>"
+                                           value="1" 
+                                           <?php checked( $value, true ); ?> />
+                                    <span class="setting-label"><?php echo esc_html( $field_data['label'] ); ?></span>
+                                </label>
+                                <p class="setting-description"><?php echo esc_html( $field_data['description'] ); ?></p>
+                                <div class="setting-status"></div>
+                            </div>
+                            <?php
+                        }
+                        ?>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="ajax-settings-status" class="ajax-status-message"></div>
+        </div>
+        <?php
+    }
+
+    /**
      * Enqueue admin scripts
      */
     public function enqueue_admin_scripts( $hook ) {
+        // Enqueue for student post pages
         if ( 'post.php' === $hook || 'post-new.php' === $hook ) {
             global $post_type;
             if ( 'student' === $post_type ) {
@@ -449,6 +591,64 @@ class Students_Admin {
                 ) );
             }
         }
+        
+        // Enqueue for AJAX settings page
+        if ( 'students_page_students-ajax-settings' === $hook ) {
+            wp_enqueue_script(
+                'students-ajax-settings',
+                STUDENTS_PLUGIN_URL . 'assets/js/ajax-settings.js',
+                array( 'jquery' ),
+                STUDENTS_VERSION,
+                true
+            );
+
+            wp_enqueue_style(
+                'students-ajax-settings',
+                STUDENTS_PLUGIN_URL . 'assets/css/ajax-settings.css',
+                array(),
+                STUDENTS_VERSION
+            );
+
+            // Localize AJAX data for settings
+            wp_localize_script( 'students-ajax-settings', 'students_ajax_settings', array(
+                'ajax_url' => admin_url( 'admin-ajax.php' ),
+                'nonce' => wp_create_nonce( 'students_ajax_settings_nonce' ),
+                'strings' => array(
+                    'saving' => __( 'Saving...', 'students' ),
+                    'saved' => __( 'Saved successfully!', 'students' ),
+                    'error' => __( 'An error occurred while saving.', 'students' ),
+                    'saved_successfully' => __( 'Setting saved successfully!', 'students' )
+                )
+            ) );
+        }
+        
+        // Enqueue for student list page
+        if ( 'edit.php' === $hook ) {
+            wp_enqueue_script(
+                'students-list-handler',
+                STUDENTS_PLUGIN_URL . 'assets/js/students-list.js',
+                array( 'jquery' ),
+                STUDENTS_VERSION,
+                true
+            );
+
+            wp_enqueue_style(
+                'students-list-handler',
+                STUDENTS_PLUGIN_URL . 'assets/css/students-list.css',
+                array(),
+                STUDENTS_VERSION
+            );
+
+            // Localize AJAX data for student list
+            wp_localize_script( 'students-list-handler', 'students_list_ajax', array(
+                'ajax_url' => admin_url( 'admin-ajax.php' ),
+                'strings' => array(
+                    'updating' => __( 'Updating...', 'students' ),
+                    'updated' => __( 'Status updated successfully!', 'students' ),
+                    'error' => __( 'An error occurred while updating status.', 'students' )
+                )
+            ) );
+        }
     }
 
     /**
@@ -468,6 +668,7 @@ class Students_Admin {
                 $new_columns['location'] = __( 'Location', 'students' );
                 $new_columns['class_grade'] = __( 'Class/Grade', 'students' );
                 $new_columns['status'] = __( 'Status', 'students' );
+                $new_columns['active'] = __( 'Active', 'students' );
                 $new_columns['course'] = __( 'Course', 'students' );
                 $new_columns['grade_level'] = __( 'Grade Level', 'students' );
             }
@@ -515,10 +716,21 @@ class Students_Admin {
             case 'status':
                 $is_active = get_post_meta( $post_id, '_student_is_active', true );
                 if ( '1' === $is_active ) {
-                    echo '<span style="color: green; font-weight: bold;">' . __( 'Active', 'students' ) . '</span>';
+                    echo '<span style="color: green; font-weight: bold;" data-colname="Status">' . __( 'Active', 'students' ) . '</span>';
                 } else {
-                    echo '<span style="color: red; font-weight: bold;">' . __( 'Inactive', 'students' ) . '</span>';
+                    echo '<span style="color: red; font-weight: bold;" data-colname="Status">' . __( 'Inactive', 'students' ) . '</span>';
                 }
+                break;
+                
+            case 'active':
+                $is_active = get_post_meta( $post_id, '_student_is_active', true );
+                $checked = ( '1' === $is_active ) ? 'checked' : '';
+                echo '<input type="checkbox" 
+                           class="student-active-checkbox" 
+                           data-student-id="' . esc_attr( $post_id ) . '" 
+                           data-nonce="' . wp_create_nonce( 'student_active_nonce_' . $post_id ) . '"
+                           ' . $checked . ' />';
+                echo '<span class="student-status-message" id="status-' . esc_attr( $post_id ) . '"></span>';
                 break;
                 
             case 'course':
@@ -797,5 +1009,116 @@ class Students_Admin {
         );
         
         update_option( 'students_options', $default_options );
+    }
+
+    /**
+     * AJAX handler for saving settings
+     */
+    public function ajax_save_setting() {
+        // Verify nonce
+        if ( ! wp_verify_nonce( $_POST['nonce'], 'students_ajax_settings_nonce' ) ) {
+            wp_send_json_error( array(
+                'message' => __( 'Security check failed.', 'students' )
+            ) );
+        }
+
+        // Check permissions
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( array(
+                'message' => __( 'Insufficient permissions.', 'students' )
+            ) );
+        }
+
+        $setting_key = sanitize_text_field( $_POST['setting'] );
+        $setting_value = (bool) $_POST['value'];
+
+        // Get current options
+        $options = get_option( 'students_options', array() );
+
+        // Update the specific setting
+        $options[ $setting_key ] = $setting_value;
+
+        // Ensure all metadata fields are explicitly set to prevent conflicts
+        $metadata_fields = array(
+            'show_student_id', 'show_email', 'show_phone', 'show_dob', 
+            'show_address', 'show_country', 'show_city', 'show_class_grade', 'show_status',
+            'show_courses', 'show_grade_levels'
+        );
+
+        // Make sure all fields exist in the options array
+        foreach ( $metadata_fields as $field ) {
+            if ( ! isset( $options[ $field ] ) ) {
+                $options[ $field ] = false;
+            }
+        }
+
+        // Add a timestamp to force cache refresh
+        $options['last_updated'] = time();
+
+        // Save the updated options
+        $result = update_option( 'students_options', $options );
+
+        // Always return success if we reach this point, as update_option can return false
+        // even when the option is successfully saved (if the value didn't change)
+        wp_send_json_success( array(
+            'message' => __( 'Setting saved successfully!', 'students' ),
+            'setting' => $setting_key,
+            'value' => $setting_value,
+            'result' => $result,
+            'timestamp' => $options['last_updated']
+        ) );
+    }
+
+    /**
+     * AJAX handler for updating student status
+     */
+    public function ajax_update_student_status() {
+        // Verify nonce
+        $student_id = intval( $_POST['student_id'] );
+        $nonce_key = 'student_active_nonce_' . $student_id;
+        
+        if ( ! wp_verify_nonce( $_POST['nonce'], $nonce_key ) ) {
+            wp_send_json_error( array(
+                'message' => __( 'Security check failed.', 'students' )
+            ) );
+        }
+
+        // Check permissions
+        if ( ! current_user_can( 'edit_post', $student_id ) ) {
+            wp_send_json_error( array(
+                'message' => __( 'Insufficient permissions.', 'students' )
+            ) );
+        }
+
+        // Verify the post exists and is a student
+        $post = get_post( $student_id );
+        if ( ! $post || 'student' !== $post->post_type ) {
+            wp_send_json_error( array(
+                'message' => __( 'Invalid student.', 'students' )
+            ) );
+        }
+
+        $is_active = (bool) $_POST['is_active'];
+        $meta_value = $is_active ? '1' : '0';
+
+        // Update the student status
+        $result = update_post_meta( $student_id, '_student_is_active', $meta_value );
+
+        // Check if the update was successful by reading back the value
+        $updated_value = get_post_meta( $student_id, '_student_is_active', true );
+        $update_successful = ( $updated_value === $meta_value );
+
+        if ( $update_successful ) {
+            wp_send_json_success( array(
+                'message' => $is_active ? __( 'Student activated successfully!', 'students' ) : __( 'Student deactivated successfully!', 'students' ),
+                'student_id' => $student_id,
+                'is_active' => $is_active,
+                'status_text' => $is_active ? __( 'Active', 'students' ) : __( 'Inactive', 'students' )
+            ) );
+        } else {
+            wp_send_json_error( array(
+                'message' => __( 'Failed to update student status.', 'students' )
+            ) );
+        }
     }
 }

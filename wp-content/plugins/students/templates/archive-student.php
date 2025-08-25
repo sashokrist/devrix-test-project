@@ -24,14 +24,6 @@ get_header(); ?>
             <div class="students-grid">
                 <?php while ( have_posts() ) : the_post(); ?>
                     
-                    <?php
-                    // Only show active students on archive page
-                    $is_active = get_post_meta( get_the_ID(), '_student_is_active', true );
-                    if ( '1' !== $is_active ) {
-                        continue; // Skip inactive students
-                    }
-                    ?>
-                    
                     <article id="post-<?php the_ID(); ?>" <?php post_class('student-card'); ?>>
                         
                         <?php if ( has_post_thumbnail() ) : ?>
@@ -123,8 +115,14 @@ get_header(); ?>
 
             <?php
             // Pagination
-            the_posts_pagination( array(
-                'mid_size'  => 2,
+            $big = 999999999;
+            $base_url = home_url('/students/');
+            echo paginate_links( array(
+                'base' => $base_url . 'page/%#%/',
+                'format' => '',
+                'current' => max( 1, get_query_var( 'paged' ) ),
+                'total' => $wp_query->max_num_pages,
+                'mid_size' => 2,
                 'prev_text' => __( 'Previous', 'students' ),
                 'next_text' => __( 'Next', 'students' ),
             ) );

@@ -1214,6 +1214,11 @@ function car_sell_shop_handle_taxonomy_parameters() {
         return;
     }
     
+    // Don't redirect admin pagination URLs
+    if (strpos($_SERVER['REQUEST_URI'], '/wp-admin/') !== false) {
+        return;
+    }
+    
     // Handle pagination parameters with paged
     if (isset($_GET['paged']) && isset($_GET['post_type'])) {
         $paged = intval($_GET['paged']);

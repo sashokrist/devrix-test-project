@@ -1,35 +1,13 @@
-[24-Aug-2025 11:06:42 UTC] Students Plugin: Attempting to save meta fields for post 120
-[24-Aug-2025 11:06:42 UTC] Students Plugin: students_meta_nonce not set in POST data
-[24-Aug-2025 11:06:42 UTC] Students Plugin: Attempting to save meta fields for post 120
-[24-Aug-2025 11:06:42 UTC] Students Plugin: Nonce verification passed
-[24-Aug-2025 11:06:42 UTC] Students Plugin: User lacks permission to edit post 120
-[24-Aug-2025 11:07:17 UTC] Students Plugin: Attempting to save meta fields for post 121
-[24-Aug-2025 11:07:17 UTC] Students Plugin: students_meta_nonce not set in POST data
-[24-Aug-2025 11:07:17 UTC] Students Plugin: Attempting to save meta fields for post 121
-[24-Aug-2025 11:07:17 UTC] Students Plugin: Nonce verification failed
-[24-Aug-2025 11:08:54 UTC] Students Plugin: save_meta_fields called for post 123
-[24-Aug-2025 11:08:54 UTC] Students Plugin: POST data: Array
-(
-)
 
-[24-Aug-2025 11:08:54 UTC] Students Plugin: Nonce verification failed
-[24-Aug-2025 11:08:54 UTC] Students Plugin: save_meta_fields called for post 123
-[24-Aug-2025 11:08:54 UTC] Students Plugin: POST data: Array
-(
-    [students_meta_nonce] => f34bf57a17
-    [student_id] => TEST-1756033734
-    [student_email] => test@example.com
-    [student_phone] => 123-456-7890
-    [student_dob] => 1990-01-01
-    [student_address] => 123 Test Street
-)
-
-[24-Aug-2025 11:08:54 UTC] Students Plugin: Nonce verification failed
-[24-Aug-2025 11:19:59 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function add_meta_box() in /var/www/html/devrix-test-project/wp-content/plugins/students/includes/class-students-post-type.php:145
-Stack trace:
-#0 /var/www/html/devrix-test-project/wp-includes/class-wp-hook.php(326): Students_Post_Type->add_meta_boxes()
-#1 /var/www/html/devrix-test-project/wp-includes/class-wp-hook.php(348): WP_Hook->apply_filters()
-#2 /var/www/html/devrix-test-project/wp-includes/plugin.php(517): WP_Hook->do_action()
-#3 /var/www/html/devrix-test-project/wp-content/plugins/students/test-meta-box-registration.php(56): do_action()
-#4 {main}
-  thrown in /var/www/html/devrix-test-project/wp-content/plugins/students/includes/class-students-post-type.php on line 145
+[25-Aug-2025 12:08:14 UTC] PHP Warning:  foreach() argument must be of type array|object, null given in /var/www/html/devrix-test-project/debug-301-redirect.php on line 98
+[25-Aug-2025 12:08:14 UTC] PHP Warning:  foreach() argument must be of type array|object, null given in /var/www/html/devrix-test-project/debug-301-redirect.php on line 125
+[25-Aug-2025 12:08:46 UTC] PHP Warning:  foreach() argument must be of type array|object, null given in /var/www/html/devrix-test-project/test-pagination-links.php on line 76
+[25-Aug-2025 12:11:53 UTC] PHP Warning:  foreach() argument must be of type array|object, null given in /var/www/html/devrix-test-project/debug-frontend-pagination.php on line 71
+[25-Aug-2025 12:16:48 UTC] PHP Warning:  foreach() argument must be of type array|object, null given in /var/www/html/devrix-test-project/check-redirects.php on line 92
+[25-Aug-2025 12:22:58 UTC] PHP Warning:  foreach() argument must be of type array|object, null given in /var/www/html/devrix-test-project/debug-frontend-pagination-links.php on line 99
+[25-Aug-2025 12:22:58 UTC] PHP Warning:  foreach() argument must be of type array|object, null given in /var/www/html/devrix-test-project/debug-frontend-pagination-links.php on line 99
+[25-Aug-2025 12:22:58 UTC] PHP Warning:  foreach() argument must be of type array|object, null given in /var/www/html/devrix-test-project/debug-frontend-pagination-links.php on line 99
+[25-Aug-2025 12:23:38 UTC] PHP Warning:  foreach() argument must be of type array|object, null given in /var/www/html/devrix-test-project/fix-rewrite-rules.php on line 17
+[25-Aug-2025 12:24:31 UTC] PHP Warning:  foreach() argument must be of type array|object, null given in /var/www/html/devrix-test-project/test-final-pagination.php on line 61
+[25-Aug-2025 12:24:31 UTC] PHP Warning:  foreach() argument must be of type array|object, null given in /var/www/html/devrix-test-project/test-final-pagination.php on line 61
+[25-Aug-2025 12:24:31 UTC] PHP Warning:  foreach() argument must be of type array|object, null given in /var/www/html/devrix-test-project/test-final-pagination.php on line 61

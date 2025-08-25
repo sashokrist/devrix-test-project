@@ -497,8 +497,18 @@ class Students_Public {
      * @param WP_Query $query The main query object.
      */
     public function filter_student_archive_query( $query ) {
-        if ( ! is_admin() && $query->is_main_query() && 
-             ( is_post_type_archive( 'student' ) || is_tax( 'course' ) || is_tax( 'grade_level' ) ) ) {
+        // Only apply to frontend queries, not admin queries
+        if ( is_admin() ) {
+            return;
+        }
+        
+        // Only apply to main query
+        if ( ! $query->is_main_query() ) {
+            return;
+        }
+        
+        // Only apply to specific frontend pages
+        if ( is_post_type_archive( 'student' ) || is_tax( 'course' ) || is_tax( 'grade_level' ) ) {
             // Set posts per page to 4
             $query->set( 'posts_per_page', 4 );
             
