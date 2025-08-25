@@ -27,6 +27,7 @@ class Students_Shortcodes {
      * Usage: [students_list count="5"]
      * Usage: [students_list id="123"] - Show specific student
      * Usage: [students_list count="4" max="12"] - Show 4 at a time, max 12 total
+     * Usage: [students_list count="4" infinite-scroll="true"] - Enable infinite scroll
      * 
      * @param array $atts Shortcode attributes
      * @return string HTML output
@@ -41,6 +42,7 @@ class Students_Shortcodes {
             'class' => '', // Additional CSS classes
             'id' => '', // Specific student ID
             'max' => 0, // Maximum number of students to show (0 = no limit)
+            'infinite-scroll' => 'false', // Enable infinite scroll
         ), $atts, 'students_list' );
         
         // Sanitize attributes
@@ -51,6 +53,7 @@ class Students_Shortcodes {
         $additional_class = sanitize_text_field( $atts['class'] );
         $student_id = absint( $atts['id'] );
         $max_students = absint( $atts['max'] );
+        $infinite_scroll = filter_var( $atts['infinite-scroll'], FILTER_VALIDATE_BOOLEAN );
         
         // Validate inputs
         if ( $count < 1 ) {
@@ -117,7 +120,7 @@ class Students_Shortcodes {
         if ( $students_query->have_posts() ) {
             ?>
             <div class="students-list-shortcode <?php echo esc_attr( $additional_class ); ?>">
-                <div class="students-grid" data-total="<?php echo esc_attr( $students_query->found_posts ); ?>" data-shown="<?php echo esc_attr( $students_query->post_count ); ?>" data-count="<?php echo esc_attr( $count ); ?>" data-max="<?php echo esc_attr( $max_students ); ?>" data-orderby="<?php echo esc_attr( $orderby ); ?>" data-order="<?php echo esc_attr( $order ); ?>" data-status="<?php echo esc_attr( $status ); ?>">
+                <div class="students-grid" data-total="<?php echo esc_attr( $students_query->found_posts ); ?>" data-shown="<?php echo esc_attr( $students_query->post_count ); ?>" data-count="<?php echo esc_attr( $count ); ?>" data-max="<?php echo esc_attr( $max_students ); ?>" data-orderby="<?php echo esc_attr( $orderby ); ?>" data-order="<?php echo esc_attr( $order ); ?>" data-status="<?php echo esc_attr( $status ); ?>" data-infinite-scroll="<?php echo esc_attr( $infinite_scroll ? 'true' : 'false' ); ?>">
                     <?php
                     while ( $students_query->have_posts() ) {
                         $students_query->the_post();
@@ -199,9 +202,18 @@ class Students_Shortcodes {
                         }
                         
                         if ( $can_load_more ) : ?>
-                            <button class="load-more-students" data-page="1" data-nonce="<?php echo wp_create_nonce( 'load_more_students' ); ?>">
-                                <?php esc_html_e( 'Show More', 'students' ); ?>
-                            </button>
+                            <?php if ( ! $infinite_scroll ) : ?>
+                                <button class="load-more-students" data-page="1" data-nonce="<?php echo wp_create_nonce( 'load_more_students' ); ?>">
+                                    <?php esc_html_e( 'Show More', 'students' ); ?>
+                                </button>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                        
+                        <?php if ( $infinite_scroll && $can_load_more ) : ?>
+                            <div class="infinite-scroll-loader" style="display: none;">
+                                <div class="loading-spinner"></div>
+                                <p><?php esc_html_e( 'Loading more students...', 'students' ); ?></p>
+                            </div>
                         <?php endif; ?>
                         
                         <a href="<?php echo esc_url( get_post_type_archive_link( 'student' ) ); ?>" class="view-all-students">
