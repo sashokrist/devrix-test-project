@@ -109,6 +109,7 @@ class Students_Plugin {
         require_once STUDENTS_PLUGIN_DIR . 'includes/class-students-pages.php';
         require_once STUDENTS_PLUGIN_DIR . 'includes/class-students-ajax.php';
         require_once STUDENTS_PLUGIN_DIR . 'includes/class-students-dictionary.php';
+        require_once STUDENTS_PLUGIN_DIR . 'includes/class-students-shortcodes.php';
     }
 
     /**
@@ -126,6 +127,9 @@ class Students_Plugin {
         
         // Initialize dictionary functionality
         new Students_Dictionary();
+        
+        // Initialize shortcodes
+        new Students_Shortcodes();
     }
 
     /**
