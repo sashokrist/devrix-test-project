@@ -32,6 +32,7 @@ class Students_Pages {
         add_filter( 'template_include', array( $this, 'load_custom_templates' ) );
         add_action( 'init', array( $this, 'add_custom_endpoints' ) );
         add_action( 'init', array( $this, 'add_student_endpoints' ) );
+        add_action( 'template_redirect', array( $this, 'handle_students_pagination' ), 1 );
     }
 
     /**
@@ -41,10 +42,67 @@ class Students_Pages {
         // Get rewrite rules from configuration
         $rewrite_rules = Students_Config::get_rewrite_rules();
         
-        // Add each rewrite rule
+        // Add each rewrite rule with top priority
         foreach ( $rewrite_rules as $pattern => $replacement ) {
             add_rewrite_rule( '^' . $pattern, $replacement, 'top' );
         }
+    }
+    
+    /**
+     * Handle students request before page rewrite rules
+     */
+    public function handle_students_request($query_vars) {
+        // Check if this is a students page request
+        if (isset($_SERVER['REQUEST_URI'])) {
+            $request_uri = $_SERVER['REQUEST_URI'];
+            
+            // Check for students pagination
+            if (preg_match('#^/devrix-test-project/students/page/([0-9]+)/?$#', $request_uri, $matches)) {
+                $query_vars['post_type'] = 'student';
+                $query_vars['paged'] = intval($matches[1]);
+                return $query_vars;
+            }
+            
+            // Check for students archive
+            if (preg_match('#^/devrix-test-project/students/?$#', $request_uri)) {
+                $query_vars['post_type'] = 'student';
+                return $query_vars;
+            }
+        }
+        
+        return $query_vars;
+    }
+    
+    /**
+     * Handle students pagination
+     */
+    public function handle_students_pagination() {
+        // Check if this is a students pagination request
+        if (isset($_SERVER['REQUEST_URI'])) {
+            $request_uri = $_SERVER['REQUEST_URI'];
+            
+            // Check for students pagination
+            if (preg_match('#^/devrix-test-project/students/page/([0-9]+)/?$#', $request_uri, $matches)) {
+                $page = intval($matches[1]);
+                $redirect_url = home_url('/?post_type=student&paged=' . $page);
+                wp_redirect($redirect_url, 301);
+                exit;
+            }
+        }
+    }
+    
+    /**
+     * Remove conflicting rewrite rules
+     */
+    public function remove_conflicting_rules($rules) {
+        // Remove page rewrite rules that conflict with students post type
+        foreach ($rules as $pattern => $replacement) {
+            if (strpos($pattern, 'students') !== false && strpos($replacement, 'pagename') !== false) {
+                unset($rules[$pattern]);
+            }
+        }
+        
+        return $rules;
     }
 
     /**

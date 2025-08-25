@@ -68,7 +68,7 @@ class Students_Post_Type {
             'show_ui'            => true,
             'show_in_menu'       => false, // Let admin class handle the menu
             'query_var'          => true, // Enable query var
-            'rewrite'            => array( 'slug' => 'students' ), // Enable rewrite rules with 'students' slug
+            'rewrite'            => array( 'slug' => 'students', 'with_front' => false ), // Enable rewrite rules with 'students' slug
             'capability_type'    => 'post',
             'has_archive'        => true,
             'hierarchical'       => false,

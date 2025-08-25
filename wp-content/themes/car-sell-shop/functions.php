@@ -1265,6 +1265,26 @@ function car_sell_shop_disable_canonical_redirects($redirect_url, $requested_url
         return false;
     }
     
+    // Don't redirect student pagination URLs
+    if (strpos($requested_url, '/students/page/') !== false) {
+        return false;
+    }
+    
+    // Don't redirect if this is a student archive with pagination
+    if (is_post_type_archive('student') && get_query_var('paged') > 1) {
+        return false;
+    }
+    
+    // Don't redirect any students URLs to prevent conflicts
+    if (strpos($requested_url, '/students/') !== false) {
+        return false;
+    }
+    
+    // Completely disable canonical redirects for students URLs
+    if (strpos($requested_url, '/students/') !== false) {
+        return false;
+    }
+    
     return $redirect_url;
 }
 add_filter('redirect_canonical', 'car_sell_shop_disable_canonical_redirects', 10, 2);

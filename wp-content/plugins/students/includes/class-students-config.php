@@ -45,9 +45,6 @@ class Students_Config {
      * Rewrite rules configuration
      */
     const REWRITE_RULES = array(
-        'students/([^/]+)/?' => 'index.php?post_type=student&name=$matches[1]',
-        'students/?' => 'index.php?post_type=student',
-        'students/page/([0-9]+)/?' => 'index.php?post_type=student&paged=$matches[1]',
         'course/?' => 'index.php?taxonomy=course',
         'course/([^/]+)/?' => 'index.php?taxonomy=course&term=$matches[1]',
         'course/page/([0-9]+)/?' => 'index.php?taxonomy=course&paged=$matches[1]',
@@ -55,7 +52,6 @@ class Students_Config {
         'grade-level/([^/]+)/?' => 'index.php?taxonomy=grade_level&term=$matches[1]',
         'grade-level/page/([0-9]+)/?' => 'index.php?taxonomy=grade_level&paged=$matches[1]',
         'taxonomy-archive/?' => 'index.php?taxonomy_archive=1',
-        'page/([0-9]+)/?' => 'index.php?paged=$matches[1]',
     );
 
     /**
