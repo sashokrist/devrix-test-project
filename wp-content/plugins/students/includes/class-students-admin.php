@@ -420,6 +420,7 @@ class Students_Admin {
         <div class="wrap">
             <h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
             <p class="description"><?php esc_html_e( 'Settings are automatically saved when you change them. No need to click save!', 'students' ); ?></p>
+            <p class="description"><?php esc_html_e( 'Last updated:', 'students' ); ?> <?php echo esc_html( current_time( 'Y-m-d H:i:s' ) ); ?></p>
             
             <div id="ajax-settings-container">
                 <div class="ajax-settings-section">
@@ -477,7 +478,7 @@ class Students_Admin {
                         );
 
                         foreach ( $metadata_fields as $field_key => $field_data ) {
-                            $value = isset( $options[ $field_key ] ) && $options[ $field_key ] === true;
+                            $value = isset( $options[ $field_key ] ) ? (bool) $options[ $field_key ] : false;
                             ?>
                             <div class="ajax-setting-item">
                                 <label class="ajax-checkbox-label">
@@ -514,7 +515,7 @@ class Students_Admin {
                         );
 
                         foreach ( $general_fields as $field_key => $field_data ) {
-                            $value = isset( $options[ $field_key ] ) && $options[ $field_key ] === true;
+                            $value = isset( $options[ $field_key ] ) ? (bool) $options[ $field_key ] : false;
                             ?>
                             <div class="ajax-setting-item">
                                 <label class="ajax-checkbox-label">
@@ -1030,13 +1031,13 @@ class Students_Admin {
         }
 
         $setting_key = sanitize_text_field( $_POST['setting'] );
-        $setting_value = (bool) $_POST['value'];
+        $setting_value = ( $_POST['value'] === '1' );
 
         // Get current options
         $options = get_option( 'students_options', array() );
 
-        // Update the specific setting
-        $options[ $setting_key ] = $setting_value;
+        // Update the specific setting - ensure false is saved as false, not empty string
+        $options[ $setting_key ] = $setting_value ? true : false;
 
         // Ensure all metadata fields are explicitly set to prevent conflicts
         $metadata_fields = array(
@@ -1054,6 +1055,9 @@ class Students_Admin {
 
         // Add a timestamp to force cache refresh
         $options['last_updated'] = time();
+        
+        // Clear any WordPress object cache for this option
+        wp_cache_delete('students_options', 'options');
 
         // Save the updated options
         $result = update_option( 'students_options', $options );
