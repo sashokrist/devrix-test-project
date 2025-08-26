@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Direct API Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .step {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #007cba;
+        }
+        .btn {
+            background: #007cba;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px 5px;
+            font-size: 16px;
+        }
+        .btn:hover {
+            background: #005a87;
+        }
+        .btn.success {
+            background: #28a745;
+        }
+        .btn.warning {
+            background: #ffc107;
+            color: #212529;
+        }
+        .result {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 4px solid #6c757d;
+        }
+        .result.success {
+            border-left-color: #28a745;
+            background: #d4edda;
+        }
+        .result.error {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+        }
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        pre {
+            background: #f1f1f1;
+            padding: 10px;
+            border-radius: 3px;
+            overflow-x: auto;
+        }
+        .form-group {
+            margin: 15px 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Direct API Test</h1>
+        
+        <div class="warning">
+            <strong>⚠️ Browser Authentication Issue:</strong> The browser is having trouble with WordPress cookies. Let's try a different approach.
+        </div>
+
+        <div class="info">
+            <strong>💡 Solution:</strong> We'll test the API using the public endpoints first, then show you how to use the terminal for authenticated operations.
+        </div>
+
+        <div class="step">
+            <h3>🔍 Step 1: Test Public Endpoints</h3>
+            <p>These don't require authentication:</p>
+            <button onclick="testPublicEndpoints()" class="btn success">Test Public Endpoints</button>
+            <button onclick="testURL()" class="btn warning">Test URL Directly</button>
+            <div id="public-result" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="step">
+            <h3>🔐 Step 2: Get Fresh Nonce</h3>
+            <p>Run this command in terminal to get a fresh nonce:</p>
+            <pre>./api-test-helper.sh</pre>
+            <p>Then paste the nonce below:</p>
+            <div class="form-group">
+                <label for="nonce-input">Nonce:</label>
+                <input type="text" id="nonce-input" placeholder="Paste nonce from terminal">
+            </div>
+            <button onclick="testWithNonce()" class="btn">Test with Nonce</button>
+            <div id="nonce-result" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="step">
+            <h3>📝 Step 3: Create Student Test</h3>
+            <p>Test creating a student with the nonce:</p>
+            <div class="form-group">
+                <label for="student-name">Student Name:</label>
+                <input type="text" id="student-name" value="Test Student" placeholder="Enter student name">
+            </div>
+            <div class="form-group">
+                <label for="student-id">Student ID:</label>
+                <input type="text" id="student-id" value="TEST001" placeholder="Enter unique student ID">
+            </div>
+            <div class="form-group">
+                <label for="student-email">Email:</label>
+                <input type="email" id="student-email" value="test@example.com" placeholder="Enter email">
+            </div>
+            <button onclick="createStudent()" class="btn success">Create Student</button>
+            <div id="create-result" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="step">
+            <h3>🚀 Step 4: Terminal Alternative</h3>
+            <p>If browser continues to fail, use the terminal:</p>
+            <button onclick="showTerminalCommands()" class="btn warning">Show Terminal Commands</button>
+            <div id="terminal-commands" class="result" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost/devrix-test-project/?rest_route=/students/v1';
+
+        async function testPublicEndpoints() {
+            const resultDiv = document.getElementById('public-result');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result';
+            resultDiv.innerHTML = 'Testing public endpoints...';
+
+            try {
+                // Test getting all students (public endpoint)
+                const response = await fetch(`${API_BASE}/students&per_page=2`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    mode: 'cors'
+                });
+                
+                console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers);
+                
+                const data = await response.json();
+                console.log('Response data:', data);
+
+                if (response.ok) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        <h4>✅ Public Endpoints Working!</h4>
+                        <p>Found ${data.data ? data.data.students.length : data.length} students</p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `
+                        <h4>❌ Public Endpoints Failed</h4>
+                        <p>Status: ${response.status}</p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `
+                    <h4>❌ Error</h4>
+                    <p>${error.message}</p>
+                    <p><strong>Debug Info:</strong></p>
+                    <p>URL: ${API_BASE}/students&per_page=2</p>
+                    <p>Error: ${error.toString()}</p>
+                `;
+                console.error('Fetch error:', error);
+            }
+        }
+
+        async function testWithNonce() {
+            const nonce = document.getElementById('nonce-input').value;
+            if (!nonce) {
+                alert('Please enter a nonce first');
+                return;
+            }
+
+            const resultDiv = document.getElementById('nonce-result');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result';
+            resultDiv.innerHTML = 'Testing with nonce...';
+
+            try {
+                // Test the nonce endpoint
+                const response = await fetch(`${API_BASE}/nonce`, {
+                    method: 'GET',
+                    headers: {
+                        'X-WP-Nonce': nonce,
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include'
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        <h4>✅ Nonce Test Successful!</h4>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `
+                        <h4>❌ Nonce Test Failed</h4>
+                        <p>Status: ${response.status}</p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = '❌ Error: ' + error.message;
+            }
+        }
+
+        async function createStudent() {
+            const nonce = document.getElementById('nonce-input').value;
+            const name = document.getElementById('student-name').value;
+            const id = document.getElementById('student-id').value;
+            const email = document.getElementById('student-email').value;
+
+            if (!nonce || !name || !id) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            const resultDiv = document.getElementById('create-result');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result';
+            resultDiv.innerHTML = 'Creating student...';
+
+            try {
+                const response = await fetch(`${API_BASE}/students`, {
+                    method: 'POST',
+                    headers: {
+                        'X-WP-Nonce': nonce,
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        title: name,
+                        student_id: id,
+                        student_email: email,
+                        student_is_active: 'active'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        <h4>✅ Student Created Successfully!</h4>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `
+                        <h4>❌ Student Creation Failed</h4>
+                        <p>Status: ${response.status}</p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = '❌ Error: ' + error.message;
+            }
+        }
+
+        function testURL() {
+            const resultDiv = document.getElementById('public-result');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result';
+            resultDiv.innerHTML = `
+                <h4>🔗 URL Test</h4>
+                <p><strong>Testing URL:</strong> ${API_BASE}/students&per_page=2</p>
+                <p><strong>Full URL:</strong> ${API_BASE}/students&per_page=2</p>
+                <p><strong>Instructions:</strong></p>
+                <ol>
+                    <li>Copy this URL: <code>${API_BASE}/students&per_page=2</code></li>
+                    <li>Paste it in a new browser tab</li>
+                    <li>You should see JSON data</li>
+                </ol>
+                <p><strong>If you see JSON:</strong> The API is working, but there's a browser issue</p>
+                <p><strong>If you see 404:</strong> There's a routing issue</p>
+            `;
+        }
+
+        function showTerminalCommands() {
+            const resultDiv = document.getElementById('terminal-commands');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result';
+            resultDiv.innerHTML = `
+                <h4>🖥️ Terminal Commands</h4>
+                <p><strong>1. Get fresh nonce:</strong></p>
+                <pre>./api-test-helper.sh</pre>
+                
+                <p><strong>2. Create student:</strong></p>
+                <pre>curl -X POST "http://localhost/devrix-test-project/?rest_route=/students/v1/students" \\
+  -b cookies.txt \\
+  -H "Content-Type: application/json" \\
+  -H "X-WP-Nonce: YOUR_NONCE_HERE" \\
+  -d '{"title":"Test Student","student_id":"TEST001","student_email":"test@example.com"}'</pre>
+                
+                <p><strong>3. Get all students:</strong></p>
+                <pre>curl -X GET "http://localhost/devrix-test-project/?rest_route=/students/v1/students" \\
+  -b cookies.txt \\
+  -H "X-WP-Nonce: YOUR_NONCE_HERE"</pre>
+                
+                <p><strong>💡 Tip:</strong> Replace YOUR_NONCE_HERE with the nonce from step 1</p>
+            `;
+        }
+    </script>
+</body>
+</html>

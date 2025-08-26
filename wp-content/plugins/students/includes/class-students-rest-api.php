@@ -25,12 +25,24 @@ class Students_REST_API {
      */
     public function __construct() {
         add_action( 'rest_api_init', array( $this, 'register_routes' ) );
+        add_filter( 'nonce_life', array( $this, 'set_custom_nonce_lifetime' ) );
     }
 
     /**
      * Register REST API routes
      */
     public function register_routes() {
+        // Custom nonce endpoint (10-minute lifetime)
+        register_rest_route(
+            'students/v1',
+            '/nonce',
+            array(
+                'methods'             => WP_REST_Server::READABLE,
+                'callback'            => array( $this, 'get_custom_nonce' ),
+                'permission_callback' => array( $this, 'check_admin_permissions' ),
+            )
+        );
+
         // Get all students endpoint
         register_rest_route(
             'students/v1',
@@ -371,6 +383,32 @@ class Students_REST_API {
         }
 
         return true;
+    }
+
+    /**
+     * Set custom nonce lifetime to 10 minutes
+     */
+    public function set_custom_nonce_lifetime() {
+        return 600; // 10 minutes in seconds
+    }
+
+    /**
+     * Get custom nonce with 10-minute lifetime
+     *
+     * @param WP_REST_Request $request The request object
+     * @return WP_REST_Response
+     */
+    public function get_custom_nonce( $request ) {
+        $nonce = wp_create_nonce( 'wp_rest' );
+        return new WP_REST_Response(
+            array(
+                'nonce' => $nonce,
+                'expires_in' => 600, // 10 minutes in seconds
+                'expires_at' => date( 'Y-m-d H:i:s', time() + 600 ),
+                'message' => 'Nonce created with 10-minute lifetime'
+            ),
+            200
+        );
     }
 
     /**

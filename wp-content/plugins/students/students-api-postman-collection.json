@@ -1,0 +1,238 @@
+{
+	"info": {
+		"_postman_id": "students-api-collection",
+		"name": "Students API",
+		"description": "WordPress Students REST API endpoints",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create Student",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "X-WP-Nonce",
+						"value": "9d99f36f3a",
+						"description": "Replace with fresh nonce from terminal"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"Postman Test Student\",\n    \"student_id\": \"POSTMAN_001\",\n    \"student_email\": \"postman.test@example.com\",\n    \"student_is_active\": \"active\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost/devrix-test-project/?rest_route=/students/v1/students",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"devrix-test-project",
+						"",
+						"rest_route",
+						"students",
+						"v1",
+						"students"
+					],
+					"query": [
+						{
+							"key": "rest_route",
+							"value": "/students/v1/students"
+						}
+					]
+				}
+			}
+		},
+		{
+			"name": "Get All Students",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-WP-Nonce",
+						"value": "9d99f36f3a",
+						"description": "Replace with fresh nonce from terminal"
+					}
+				],
+				"url": {
+					"raw": "http://localhost/devrix-test-project/?rest_route=/students/v1/students?per_page=10",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"devrix-test-project",
+						"",
+						"rest_route",
+						"students",
+						"v1",
+						"students"
+					],
+					"query": [
+						{
+							"key": "rest_route",
+							"value": "/students/v1/students"
+						},
+						{
+							"key": "per_page",
+							"value": "10"
+						}
+					]
+				}
+			}
+		},
+		{
+			"name": "Get Active Students",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-WP-Nonce",
+						"value": "9d99f36f3a",
+						"description": "Replace with fresh nonce from terminal"
+					}
+				],
+				"url": {
+					"raw": "http://localhost/devrix-test-project/?rest_route=/students/v1/students/active",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"devrix-test-project",
+						"",
+						"rest_route",
+						"students",
+						"v1",
+						"students",
+						"active"
+					],
+					"query": [
+						{
+							"key": "rest_route",
+							"value": "/students/v1/students/active"
+						}
+					]
+				}
+			}
+		},
+		{
+			"name": "Update Student",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "X-WP-Nonce",
+						"value": "9d99f36f3a",
+						"description": "Replace with fresh nonce from terminal"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"Updated Postman Student\",\n    \"student_is_active\": \"inactive\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost/devrix-test-project/?rest_route=/students/v1/students/168",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"devrix-test-project",
+						"",
+						"rest_route",
+						"students",
+						"v1",
+						"students",
+						"168"
+					],
+					"query": [
+						{
+							"key": "rest_route",
+							"value": "/students/v1/students/168"
+						}
+					]
+				}
+			}
+		},
+		{
+			"name": "Delete Student",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "X-WP-Nonce",
+						"value": "9d99f36f3a",
+						"description": "Replace with fresh nonce from terminal"
+					}
+				],
+				"url": {
+					"raw": "http://localhost/devrix-test-project/?rest_route=/students/v1/students/168",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"devrix-test-project",
+						"",
+						"rest_route",
+						"students",
+						"v1",
+						"students",
+						"168"
+					],
+					"query": [
+						{
+							"key": "rest_route",
+							"value": "/students/v1/students/168"
+						}
+					]
+				}
+			}
+		},
+		{
+			"name": "Get Single Student",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-WP-Nonce",
+						"value": "9d99f36f3a",
+						"description": "Replace with fresh nonce from terminal"
+					}
+				],
+				"url": {
+					"raw": "http://localhost/devrix-test-project/?rest_route=/students/v1/students/168",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"devrix-test-project",
+						"",
+						"rest_route",
+						"students",
+						"v1",
+						"students",
+						"168"
+					],
+					"query": [
+						{
+							"key": "rest_route",
+							"value": "/students/v1/students/168"
+						}
+					]
+				}
+			}
+		}
+	]
+}
