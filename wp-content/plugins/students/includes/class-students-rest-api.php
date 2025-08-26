@@ -434,6 +434,65 @@ class Students_REST_API {
         $courses = $request->get_param( 'courses' );
         $grade_levels = $request->get_param( 'grade_levels' );
 
+        // Enhanced validation with detailed error messages
+        $validation_errors = array();
+
+        // Required field validation
+        if ( empty( $title ) ) {
+            $validation_errors[] = 'Student name is required';
+        }
+
+        if ( empty( $student_id ) ) {
+            $validation_errors[] = 'Student ID is required';
+        }
+
+        // Student ID format validation
+        if ( ! empty( $student_id ) && ! preg_match( '/^[A-Z0-9_-]+$/', $student_id ) ) {
+            $validation_errors[] = 'Student ID must contain only uppercase letters, numbers, hyphens, and underscores';
+        }
+
+        // Email validation
+        if ( ! empty( $student_email ) && ! is_email( $student_email ) ) {
+            $validation_errors[] = 'Invalid email format';
+        }
+
+        // Date of birth validation
+        if ( ! empty( $student_dob ) ) {
+            $dob_date = DateTime::createFromFormat( 'Y-m-d', $student_dob );
+            if ( ! $dob_date || $dob_date->format( 'Y-m-d' ) !== $student_dob ) {
+                $validation_errors[] = 'Date of birth must be in YYYY-MM-DD format';
+            } else {
+                $today = new DateTime();
+                $age = $today->diff( $dob_date )->y;
+                if ( $age < 5 || $age > 100 ) {
+                    $validation_errors[] = 'Date of birth must represent an age between 5 and 100 years';
+                }
+            }
+        }
+
+        // Status validation
+        if ( ! empty( $student_is_active ) && ! in_array( $student_is_active, array( 'active', 'inactive' ) ) ) {
+            $validation_errors[] = 'Status must be either "active" or "inactive"';
+        }
+
+        // Phone number validation (basic)
+        if ( ! empty( $student_phone ) && ! preg_match( '/^[\d\s\-\+\(\)]+$/', $student_phone ) ) {
+            $validation_errors[] = 'Phone number contains invalid characters';
+        }
+
+        // Return validation errors if any
+        if ( ! empty( $validation_errors ) ) {
+            return new WP_Error(
+                'validation_failed',
+                __( 'Validation failed', 'students' ),
+                array(
+                    'status' => 400,
+                    'errors' => $validation_errors,
+                    'message' => 'Please correct the following errors: ' . implode( ', ', $validation_errors )
+                )
+            );
+        }
+
         // Check if student ID already exists
         $existing_student = get_posts( array(
             'post_type' => Students_Config::POST_TYPE,
@@ -452,7 +511,11 @@ class Students_REST_API {
             return new WP_Error(
                 'student_id_exists',
                 __( 'Student ID already exists', 'students' ),
-                array( 'status' => 400 )
+                array( 
+                    'status' => 409,
+                    'existing_student_id' => $existing_student[0]->ID,
+                    'message' => sprintf( 'A student with ID "%s" already exists (ID: %d)', $student_id, $existing_student[0]->ID )
+                )
             );
         }
 
@@ -519,13 +582,45 @@ class Students_REST_API {
     public function update_student( $request ) {
         $post_id = $request->get_param( 'id' );
 
+        // Enhanced validation for student ID
+        if ( ! is_numeric( $post_id ) || $post_id <= 0 ) {
+            return new WP_Error(
+                'invalid_student_id',
+                __( 'Invalid student ID', 'students' ),
+                array(
+                    'status' => 400,
+                    'message' => 'Student ID must be a positive integer',
+                    'provided_id' => $post_id,
+                    'suggestion' => 'Please provide a valid numeric student ID'
+                )
+            );
+        }
+
         // Check if student exists
         $student = get_post( $post_id );
-        if ( ! $student || $student->post_type !== Students_Config::POST_TYPE ) {
+        if ( ! $student ) {
             return new WP_Error(
                 'student_not_found',
                 __( 'Student not found', 'students' ),
-                array( 'status' => 404 )
+                array(
+                    'status' => 404,
+                    'message' => sprintf( 'No student found with ID %d', $post_id ),
+                    'provided_id' => $post_id,
+                    'suggestion' => 'Please check the student ID or try listing all students first'
+                )
+            );
+        }
+
+        if ( $student->post_type !== Students_Config::POST_TYPE ) {
+            return new WP_Error(
+                'invalid_post_type',
+                __( 'Invalid post type', 'students' ),
+                array(
+                    'status' => 400,
+                    'message' => sprintf( 'Post ID %d is not a student (type: %s)', $post_id, $student->post_type ),
+                    'provided_id' => $post_id,
+                    'post_type' => $student->post_type
+                )
             );
         }
 
@@ -567,7 +662,13 @@ class Students_REST_API {
                     return new WP_Error(
                         'student_id_exists',
                         __( 'Student ID already exists', 'students' ),
-                        array( 'status' => 400 )
+                        array(
+                            'status' => 409,
+                            'existing_student_id' => $existing_student[0]->ID,
+                            'message' => sprintf( 'A student with ID "%s" already exists (ID: %d)', $student_id, $existing_student[0]->ID ),
+                            'current_student_id' => $post_id,
+                            'suggestion' => 'Please choose a different student ID or update the existing student instead'
+                        )
                     );
                 }
             }
@@ -646,13 +747,45 @@ class Students_REST_API {
         $post_id = $request->get_param( 'id' );
         $force = $request->get_param( 'force' );
 
+        // Enhanced validation for student ID
+        if ( ! is_numeric( $post_id ) || $post_id <= 0 ) {
+            return new WP_Error(
+                'invalid_student_id',
+                __( 'Invalid student ID', 'students' ),
+                array(
+                    'status' => 400,
+                    'message' => 'Student ID must be a positive integer',
+                    'provided_id' => $post_id,
+                    'suggestion' => 'Please provide a valid numeric student ID'
+                )
+            );
+        }
+
         // Check if student exists
         $student = get_post( $post_id );
-        if ( ! $student || $student->post_type !== Students_Config::POST_TYPE ) {
+        if ( ! $student ) {
             return new WP_Error(
                 'student_not_found',
                 __( 'Student not found', 'students' ),
-                array( 'status' => 404 )
+                array(
+                    'status' => 404,
+                    'message' => sprintf( 'No student found with ID %d', $post_id ),
+                    'provided_id' => $post_id,
+                    'suggestion' => 'Please check the student ID or try listing all students first'
+                )
+            );
+        }
+
+        if ( $student->post_type !== Students_Config::POST_TYPE ) {
+            return new WP_Error(
+                'invalid_post_type',
+                __( 'Invalid post type', 'students' ),
+                array(
+                    'status' => 400,
+                    'message' => sprintf( 'Post ID %d is not a student (type: %s)', $post_id, $student->post_type ),
+                    'provided_id' => $post_id,
+                    'post_type' => $student->post_type
+                )
             );
         }
 
@@ -717,6 +850,42 @@ class Students_REST_API {
         $course     = $request->get_param( 'course' );
         $grade_level = $request->get_param( 'grade_level' );
         $status     = $request->get_param( 'status' );
+
+        // Enhanced parameter validation
+        $validation_errors = array();
+
+        // Validate per_page
+        if ( $per_page < 1 || $per_page > 100 ) {
+            $validation_errors[] = 'per_page must be between 1 and 100';
+        }
+
+        // Validate page
+        if ( $page < 1 ) {
+            $validation_errors[] = 'page must be a positive integer';
+        }
+
+        // Validate status
+        if ( ! empty( $status ) && ! in_array( $status, array( 'active', 'inactive' ) ) ) {
+            $validation_errors[] = 'status must be either "active" or "inactive"';
+        }
+
+        // Return validation errors if any
+        if ( ! empty( $validation_errors ) ) {
+            return new WP_Error(
+                'invalid_parameters',
+                __( 'Invalid parameters', 'students' ),
+                array(
+                    'status' => 400,
+                    'errors' => $validation_errors,
+                    'message' => 'Please correct the following parameters: ' . implode( ', ', $validation_errors ),
+                    'provided_parameters' => array(
+                        'per_page' => $per_page,
+                        'page' => $page,
+                        'status' => $status
+                    )
+                )
+            );
+        }
 
         // Build query args
         $args = array(
@@ -805,14 +974,46 @@ class Students_REST_API {
     public function get_student( $request ) {
         $student_id = $request->get_param( 'id' );
 
+        // Enhanced validation for student ID
+        if ( ! is_numeric( $student_id ) || $student_id <= 0 ) {
+            return new WP_Error(
+                'invalid_student_id',
+                __( 'Invalid student ID', 'students' ),
+                array(
+                    'status' => 400,
+                    'message' => 'Student ID must be a positive integer',
+                    'provided_id' => $student_id,
+                    'suggestion' => 'Please provide a valid numeric student ID'
+                )
+            );
+        }
+
         // Get the student post
         $student = get_post( $student_id );
 
-        if ( ! $student || $student->post_type !== Students_Config::POST_TYPE ) {
+        if ( ! $student ) {
             return new WP_Error(
                 'student_not_found',
                 __( 'Student not found', 'students' ),
-                array( 'status' => 404 )
+                array(
+                    'status' => 404,
+                    'message' => sprintf( 'No student found with ID %d', $student_id ),
+                    'provided_id' => $student_id,
+                    'suggestion' => 'Please check the student ID or try listing all students first'
+                )
+            );
+        }
+
+        if ( $student->post_type !== Students_Config::POST_TYPE ) {
+            return new WP_Error(
+                'invalid_post_type',
+                __( 'Invalid post type', 'students' ),
+                array(
+                    'status' => 400,
+                    'message' => sprintf( 'Post ID %d is not a student (type: %s)', $student_id, $student->post_type ),
+                    'provided_id' => $student_id,
+                    'post_type' => $student->post_type
+                )
             );
         }
 
@@ -820,7 +1021,13 @@ class Students_REST_API {
             return new WP_Error(
                 'student_not_accessible',
                 __( 'Student is not accessible', 'students' ),
-                array( 'status' => 403 )
+                array(
+                    'status' => 403,
+                    'message' => sprintf( 'Student ID %d exists but is not published (status: %s)', $student_id, $student->post_status ),
+                    'provided_id' => $student_id,
+                    'post_status' => $student->post_status,
+                    'suggestion' => 'Only published students are accessible via the public API'
+                )
             );
         }
 

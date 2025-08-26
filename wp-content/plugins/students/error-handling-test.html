@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Students API Error Handling Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #007cba;
+        }
+        .test-section h3 {
+            margin: 0 0 15px 0;
+            color: #007cba;
+        }
+        .btn {
+            background: #007cba;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        .btn:hover {
+            background: #005a87;
+        }
+        .btn.danger {
+            background: #dc3545;
+        }
+        .btn.danger:hover {
+            background: #c82333;
+        }
+        .btn.warning {
+            background: #ffc107;
+            color: #212529;
+        }
+        .btn.warning:hover {
+            background: #e0a800;
+        }
+        .result {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 4px solid #6c757d;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .result.success {
+            border-left-color: #28a745;
+            background: #d4edda;
+        }
+        .result.error {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+        }
+        .result.warning {
+            border-left-color: #ffc107;
+            background: #fff3cd;
+        }
+        .form-group {
+            margin: 10px 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Students API Error Handling Test</h1>
+        
+        <div class="info">
+            <strong>🎯 Purpose:</strong> This page tests all the error handling scenarios in the Students API to ensure proper error messages are returned.
+        </div>
+
+        <div class="grid">
+            <!-- GET Students Errors -->
+            <div class="test-section">
+                <h3>📋 GET Students - Parameter Errors</h3>
+                <p>Test invalid parameters for getting students:</p>
+                
+                <button onclick="testInvalidPerPage()" class="btn danger">Test Invalid per_page</button>
+                <button onclick="testInvalidPage()" class="btn danger">Test Invalid page</button>
+                <button onclick="testInvalidStatus()" class="btn danger">Test Invalid status</button>
+                <button onclick="testValidParams()" class="btn">Test Valid Parameters</button>
+                
+                <div id="get-students-result" class="result" style="display: none;"></div>
+            </div>
+
+            <!-- GET Single Student Errors -->
+            <div class="test-section">
+                <h3>👤 GET Single Student - Not Found Errors</h3>
+                <p>Test getting non-existent students:</p>
+                
+                <div class="form-group">
+                    <label for="student-id">Student ID:</label>
+                    <input type="text" id="student-id" value="99999" placeholder="Enter student ID">
+                </div>
+                
+                <button onclick="testGetStudent()" class="btn danger">Test Get Student</button>
+                <button onclick="testInvalidStudentId()" class="btn danger">Test Invalid ID Format</button>
+                <button onclick="testGetExistingStudent()" class="btn">Test Get Existing Student</button>
+                
+                <div id="get-student-result" class="result" style="display: none;"></div>
+            </div>
+
+            <!-- CREATE Student Errors -->
+            <div class="test-section">
+                <h3>➕ CREATE Student - Validation Errors</h3>
+                <p>Test creating students with invalid data:</p>
+                
+                <button onclick="testMissingRequiredFields()" class="btn danger">Test Missing Required Fields</button>
+                <button onclick="testInvalidEmail()" class="btn danger">Test Invalid Email</button>
+                <button onclick="testInvalidStudentId()" class="btn danger">Test Invalid Student ID</button>
+                <button onclick="testInvalidDateOfBirth()" class="btn danger">Test Invalid DOB</button>
+                <button onclick="testInvalidStatus()" class="btn danger">Test Invalid Status</button>
+                <button onclick="testDuplicateStudentId()" class="btn warning">Test Duplicate Student ID</button>
+                
+                <div id="create-student-result" class="result" style="display: none;"></div>
+            </div>
+
+            <!-- UPDATE Student Errors -->
+            <div class="test-section">
+                <h3>✏️ UPDATE Student - Not Found & Validation</h3>
+                <p>Test updating non-existent students:</p>
+                
+                <div class="form-group">
+                    <label for="update-student-id">Student ID to Update:</label>
+                    <input type="text" id="update-student-id" value="99999" placeholder="Enter student ID">
+                </div>
+                
+                <button onclick="testUpdateNonExistent()" class="btn danger">Test Update Non-existent</button>
+                <button onclick="testUpdateInvalidId()" class="btn danger">Test Update Invalid ID</button>
+                <button onclick="testUpdateWithInvalidData()" class="btn warning">Test Update Invalid Data</button>
+                
+                <div id="update-student-result" class="result" style="display: none;"></div>
+            </div>
+
+            <!-- DELETE Student Errors -->
+            <div class="test-section">
+                <h3>🗑️ DELETE Student - Not Found Errors</h3>
+                <p>Test deleting non-existent students:</p>
+                
+                <div class="form-group">
+                    <label for="delete-student-id">Student ID to Delete:</label>
+                    <input type="text" id="delete-student-id" value="99999" placeholder="Enter student ID">
+                </div>
+                
+                <button onclick="testDeleteNonExistent()" class="btn danger">Test Delete Non-existent</button>
+                <button onclick="testDeleteInvalidId()" class="btn danger">Test Delete Invalid ID</button>
+                
+                <div id="delete-student-result" class="result" style="display: none;"></div>
+            </div>
+
+            <!-- Authentication Errors -->
+            <div class="test-section">
+                <h3>🔐 Authentication Errors</h3>
+                <p>Test authentication and permission errors:</p>
+                
+                <button onclick="testWithoutNonce()" class="btn danger">Test Without Nonce</button>
+                <button onclick="testWithInvalidNonce()" class="btn danger">Test Invalid Nonce</button>
+                <button onclick="testWithExpiredNonce()" class="btn warning">Test Expired Nonce</button>
+                
+                <div id="auth-result" class="result" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost/devrix-test-project/?rest_route=/students/v1';
+
+        // Helper function to show results
+        function showResult(elementId, data, isSuccess = true) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.className = `result ${isSuccess ? 'success' : 'error'}`;
+            element.textContent = JSON.stringify(data, null, 2);
+        }
+
+        // GET Students Error Tests
+        async function testInvalidPerPage() {
+            try {
+                const response = await fetch(`${API_BASE}/students&per_page=150`);
+                const data = await response.json();
+                showResult('get-students-result', data, response.ok);
+            } catch (error) {
+                showResult('get-students-result', { error: error.message }, false);
+            }
+        }
+
+        async function testInvalidPage() {
+            try {
+                const response = await fetch(`${API_BASE}/students&page=0`);
+                const data = await response.json();
+                showResult('get-students-result', data, response.ok);
+            } catch (error) {
+                showResult('get-students-result', { error: error.message }, false);
+            }
+        }
+
+        async function testInvalidStatus() {
+            try {
+                const response = await fetch(`${API_BASE}/students&status=invalid`);
+                const data = await response.json();
+                showResult('get-students-result', data, response.ok);
+            } catch (error) {
+                showResult('get-students-result', { error: error.message }, false);
+            }
+        }
+
+        async function testValidParams() {
+            try {
+                const response = await fetch(`${API_BASE}/students&per_page=2&page=1&status=active`);
+                const data = await response.json();
+                showResult('get-students-result', data, response.ok);
+            } catch (error) {
+                showResult('get-students-result', { error: error.message }, false);
+            }
+        }
+
+        // GET Single Student Error Tests
+        async function testGetStudent() {
+            const studentId = document.getElementById('student-id').value;
+            try {
+                const response = await fetch(`${API_BASE}/students/${studentId}`);
+                const data = await response.json();
+                showResult('get-student-result', data, response.ok);
+            } catch (error) {
+                showResult('get-student-result', { error: error.message }, false);
+            }
+        }
+
+        async function testInvalidStudentId() {
+            try {
+                const response = await fetch(`${API_BASE}/students/abc`);
+                const data = await response.json();
+                showResult('get-student-result', data, response.ok);
+            } catch (error) {
+                showResult('get-student-result', { error: error.message }, false);
+            }
+        }
+
+        async function testGetExistingStudent() {
+            try {
+                const response = await fetch(`${API_BASE}/students/65`);
+                const data = await response.json();
+                showResult('get-student-result', data, response.ok);
+            } catch (error) {
+                showResult('get-student-result', { error: error.message }, false);
+            }
+        }
+
+        // CREATE Student Error Tests
+        async function testMissingRequiredFields() {
+            try {
+                const response = await fetch(`${API_BASE}/students`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-WP-Nonce': 'test-nonce'
+                    },
+                    body: JSON.stringify({
+                        // Missing title and student_id
+                        'student_email': 'test@example.com'
+                    })
+                });
+                const data = await response.json();
+                showResult('create-student-result', data, response.ok);
+            } catch (error) {
+                showResult('create-student-result', { error: error.message }, false);
+            }
+        }
+
+        async function testInvalidEmail() {
+            try {
+                const response = await fetch(`${API_BASE}/students`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-WP-Nonce': 'test-nonce'
+                    },
+                    body: JSON.stringify({
+                        'title': 'Test Student',
+                        'student_id': 'TEST001',
+                        'student_email': 'invalid-email'
+                    })
+                });
+                const data = await response.json();
+                showResult('create-student-result', data, response.ok);
+            } catch (error) {
+                showResult('create-student-result', { error: error.message }, false);
+            }
+        }
+
+        async function testInvalidStudentId() {
+            try {
+                const response = await fetch(`${API_BASE}/students`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-WP-Nonce': 'test-nonce'
+                    },
+                    body: JSON.stringify({
+                        'title': 'Test Student',
+                        'student_id': 'test@123', // Invalid format
+                        'student_email': 'test@example.com'
+                    })
+                });
+                const data = await response.json();
+                showResult('create-student-result', data, response.ok);
+            } catch (error) {
+                showResult('create-student-result', { error: error.message }, false);
+            }
+        }
+
+        async function testInvalidDateOfBirth() {
+            try {
+                const response = await fetch(`${API_BASE}/students`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-WP-Nonce': 'test-nonce'
+                    },
+                    body: JSON.stringify({
+                        'title': 'Test Student',
+                        'student_id': 'TEST001',
+                        'student_email': 'test@example.com',
+                        'student_dob': 'invalid-date'
+                    })
+                });
+                const data = await response.json();
+                showResult('create-student-result', data, response.ok);
+            } catch (error) {
+                showResult('create-student-result', { error: error.message }, false);
+            }
+        }
+
+        async function testInvalidStatus() {
+            try {
+                const response = await fetch(`${API_BASE}/students`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-WP-Nonce': 'test-nonce'
+                    },
+                    body: JSON.stringify({
+                        'title': 'Test Student',
+                        'student_id': 'TEST001',
+                        'student_email': 'test@example.com',
+                        'student_is_active': 'invalid-status'
+                    })
+                });
+                const data = await response.json();
+                showResult('create-student-result', data, response.ok);
+            } catch (error) {
+                showResult('create-student-result', { error: error.message }, false);
+            }
+        }
+
+        async function testDuplicateStudentId() {
+            try {
+                const response = await fetch(`${API_BASE}/students`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-WP-Nonce': 'test-nonce'
+                    },
+                    body: JSON.stringify({
+                        'title': 'Test Student',
+                        'student_id': 'STU2025386', // Existing ID
+                        'student_email': 'test@example.com'
+                    })
+                });
+                const data = await response.json();
+                showResult('create-student-result', data, response.ok);
+            } catch (error) {
+                showResult('create-student-result', { error: error.message }, false);
+            }
+        }
+
+        // UPDATE Student Error Tests
+        async function testUpdateNonExistent() {
+            const studentId = document.getElementById('update-student-id').value;
+            try {
+                const response = await fetch(`${API_BASE}/students/${studentId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-WP-Nonce': 'test-nonce'
+                    },
+                    body: JSON.stringify({
+                        'title': 'Updated Student'
+                    })
+                });
+                const data = await response.json();
+                showResult('update-student-result', data, response.ok);
+            } catch (error) {
+                showResult('update-student-result', { error: error.message }, false);
+            }
+        }
+
+        async function testUpdateInvalidId() {
+            try {
+                const response = await fetch(`${API_BASE}/students/abc`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-WP-Nonce': 'test-nonce'
+                    },
+                    body: JSON.stringify({
+                        'title': 'Updated Student'
+                    })
+                });
+                const data = await response.json();
+                showResult('update-student-result', data, response.ok);
+            } catch (error) {
+                showResult('update-student-result', { error: error.message }, false);
+            }
+        }
+
+        async function testUpdateWithInvalidData() {
+            try {
+                const response = await fetch(`${API_BASE}/students/65`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-WP-Nonce': 'test-nonce'
+                    },
+                    body: JSON.stringify({
+                        'student_email': 'invalid-email',
+                        'student_is_active': 'invalid-status'
+                    })
+                });
+                const data = await response.json();
+                showResult('update-student-result', data, response.ok);
+            } catch (error) {
+                showResult('update-student-result', { error: error.message }, false);
+            }
+        }
+
+        // DELETE Student Error Tests
+        async function testDeleteNonExistent() {
+            const studentId = document.getElementById('delete-student-id').value;
+            try {
+                const response = await fetch(`${API_BASE}/students/${studentId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-WP-Nonce': 'test-nonce'
+                    }
+                });
+                const data = await response.json();
+                showResult('delete-student-result', data, response.ok);
+            } catch (error) {
+                showResult('delete-student-result', { error: error.message }, false);
+            }
+        }
+
+        async function testDeleteInvalidId() {
+            try {
+                const response = await fetch(`${API_BASE}/students/abc`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-WP-Nonce': 'test-nonce'
+                    }
+                });
+                const data = await response.json();
+                showResult('delete-student-result', data, response.ok);
+            } catch (error) {
+                showResult('delete-student-result', { error: error.message }, false);
+            }
+        }
+
+        // Authentication Error Tests
+        async function testWithoutNonce() {
+            try {
+                const response = await fetch(`${API_BASE}/students`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        'title': 'Test Student',
+                        'student_id': 'TEST001'
+                    })
+                });
+                const data = await response.json();
+                showResult('auth-result', data, response.ok);
+            } catch (error) {
+                showResult('auth-result', { error: error.message }, false);
+            }
+        }
+
+        async function testWithInvalidNonce() {
+            try {
+                const response = await fetch(`${API_BASE}/students`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-WP-Nonce': 'invalid-nonce'
+                    },
+                    body: JSON.stringify({
+                        'title': 'Test Student',
+                        'student_id': 'TEST001'
+                    })
+                });
+                const data = await response.json();
+                showResult('auth-result', data, response.ok);
+            } catch (error) {
+                showResult('auth-result', { error: error.message }, false);
+            }
+        }
+
+        async function testWithExpiredNonce() {
+            try {
+                const response = await fetch(`${API_BASE}/students`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-WP-Nonce': 'expired-nonce-123'
+                    },
+                    body: JSON.stringify({
+                        'title': 'Test Student',
+                        'student_id': 'TEST001'
+                    })
+                });
+                const data = await response.json();
+                showResult('auth-result', data, response.ok);
+            } catch (error) {
+                showResult('auth-result', { error: error.message }, false);
+            }
+        }
+    </script>
+</body>
+</html>
