@@ -110,6 +110,7 @@ class Students_Plugin {
         require_once STUDENTS_PLUGIN_DIR . 'includes/class-students-ajax.php';
         require_once STUDENTS_PLUGIN_DIR . 'includes/class-students-dictionary.php';
         require_once STUDENTS_PLUGIN_DIR . 'includes/class-students-shortcodes.php';
+        require_once STUDENTS_PLUGIN_DIR . 'includes/class-students-rest-api.php';
     }
 
     /**
@@ -130,6 +131,9 @@ class Students_Plugin {
         
         // Initialize shortcodes
         new Students_Shortcodes();
+        
+        // Initialize REST API
+        new Students_REST_API();
     }
 
     /**

@@ -15,3 +15,13 @@
 [25-Aug-2025 15:30:55 UTC]   Automatic plugin updates starting...
 [25-Aug-2025 15:30:55 UTC]   Automatic plugin updates complete.
 [25-Aug-2025 15:30:56 UTC] Automatic updates complete.
+[26-Aug-2025 08:51:13 UTC] Automatic updates starting...
+[26-Aug-2025 08:51:14 UTC]   Automatic plugin updates starting...
+[26-Aug-2025 08:51:14 UTC]   Automatic plugin updates complete.
+[26-Aug-2025 08:51:14 UTC] Automatic updates complete.
+[26-Aug-2025 09:46:44 UTC] Output detected before JSON response: <h2>Students REST API Test Results</h2>
+<h3>1. Testing Route Registration</h3>
+✅ Students_REST_API class exists<br>
+
+[26-Aug-2025 09:46:44 UTC] PHP Warning:  Undefined array key "id" in /var/www/html/devrix-test-project/wp-content/plugins/students/test-rest-api.php on line 126
+[26-Aug-2025 09:46:44 UTC] PHP Warning:  Undefined array key "title" in /var/www/html/devrix-test-project/wp-content/plugins/students/test-rest-api.php on line 127
