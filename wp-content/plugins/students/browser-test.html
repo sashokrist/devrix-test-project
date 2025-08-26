@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Students API Browser Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: #fafafa;
+        }
+        .section h2 {
+            color: #007cba;
+            margin-top: 0;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="text"], input[type="email"], select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #007cba;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background: #005a87;
+        }
+        button.secondary {
+            background: #6c757d;
+        }
+        button.secondary:hover {
+            background: #545b62;
+        }
+        button.danger {
+            background: #dc3545;
+        }
+        button.danger:hover {
+            background: #c82333;
+        }
+        .response {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .response.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .response.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .response.info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .status.connected {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status.disconnected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .student-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            background: white;
+        }
+        .student-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+        .student-item:hover {
+            background: #f8f9fa;
+        }
+        .student-item:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎓 Students API Browser Test</h1>
+        
+        <div id="status" class="status disconnected">
+            🔍 Checking connection...
+        </div>
+
+        <div class="grid">
+            <!-- Create Student Section -->
+            <div class="section">
+                <h2>➕ Create New Student</h2>
+                <form id="createForm">
+                    <div class="form-group">
+                        <label for="title">Student Name *</label>
+                        <input type="text" id="title" name="title" required placeholder="Enter student name">
+                    </div>
+                    <div class="form-group">
+                        <label for="student_id">Student ID *</label>
+                        <input type="text" id="student_id" name="student_id" required placeholder="Enter unique student ID">
+                    </div>
+                    <div class="form-group">
+                        <label for="student_email">Email</label>
+                        <input type="email" id="student_email" name="student_email" placeholder="Enter email address">
+                    </div>
+                    <div class="form-group">
+                        <label for="student_phone">Phone</label>
+                        <input type="text" id="student_phone" name="student_phone" placeholder="Enter phone number">
+                    </div>
+                    <div class="form-group">
+                        <label for="student_is_active">Status</label>
+                        <select id="student_is_active" name="student_is_active">
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+                    <button type="submit">Create Student</button>
+                </form>
+                <div id="createResponse" class="response" style="display: none;"></div>
+            </div>
+
+            <!-- Update Student Section -->
+            <div class="section">
+                <h2>✏️ Update Student</h2>
+                <form id="updateForm">
+                    <div class="form-group">
+                        <label for="update_id">Student ID *</label>
+                        <input type="number" id="update_id" name="update_id" required placeholder="Enter student ID to update">
+                    </div>
+                    <div class="form-group">
+                        <label for="update_title">New Name</label>
+                        <input type="text" id="update_title" name="update_title" placeholder="Enter new name">
+                    </div>
+                    <div class="form-group">
+                        <label for="update_email">New Email</label>
+                        <input type="email" id="update_email" name="update_email" placeholder="Enter new email">
+                    </div>
+                    <div class="form-group">
+                        <label for="update_status">New Status</label>
+                        <select id="update_status" name="update_status">
+                            <option value="">Keep current</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+                    <button type="submit">Update Student</button>
+                </form>
+                <div id="updateResponse" class="response" style="display: none;"></div>
+            </div>
+
+            <!-- Delete Student Section -->
+            <div class="section">
+                <h2>🗑️ Delete Student</h2>
+                <form id="deleteForm">
+                    <div class="form-group">
+                        <label for="delete_id">Student ID *</label>
+                        <input type="number" id="delete_id" name="delete_id" required placeholder="Enter student ID to delete">
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="force_delete" name="force_delete">
+                            Force delete (permanent)
+                        </label>
+                    </div>
+                    <button type="submit" class="danger">Delete Student</button>
+                </form>
+                <div id="deleteResponse" class="response" style="display: none;"></div>
+            </div>
+
+            <!-- Get Students Section -->
+            <div class="section">
+                <h2>📋 Get Students</h2>
+                <div class="form-group">
+                    <label for="per_page">Students per page</label>
+                    <select id="per_page" name="per_page">
+                        <option value="5">5</option>
+                        <option value="10" selected>10</option>
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="status_filter">Status filter</label>
+                    <select id="status_filter" name="status_filter">
+                        <option value="">All</option>
+                        <option value="active">Active only</option>
+                        <option value="inactive">Inactive only</option>
+                    </select>
+                </div>
+                <button onclick="getStudents()">Get Students</button>
+                <button onclick="getActiveStudents()" class="secondary">Get Active Only</button>
+                <div id="getResponse" class="response" style="display: none;"></div>
+            </div>
+        </div>
+
+        <!-- Students List -->
+        <div class="section full-width">
+            <h2>📚 Current Students</h2>
+            <button onclick="refreshStudentsList()">Refresh List</button>
+            <div id="studentsList" class="student-list">
+                Loading students...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/?rest_route=/students/v1/students';
+        let currentNonce = '';
+
+        // Check connection and get nonce on page load
+        window.addEventListener('load', async function() {
+            await checkConnection();
+            await refreshStudentsList();
+        });
+
+        async function checkConnection() {
+            try {
+                const response = await fetch('/wp-json/');
+                if (response.ok) {
+                    const data = await response.json();
+                    currentNonce = data.nonce;
+                    document.getElementById('status').className = 'status connected';
+                    document.getElementById('status').innerHTML = '✅ Connected to WordPress API';
+                } else {
+                    throw new Error('API not accessible');
+                }
+            } catch (error) {
+                document.getElementById('status').className = 'status disconnected';
+                document.getElementById('status').innerHTML = '❌ Not connected to WordPress API. Please log in to WordPress admin first.';
+            }
+        }
+
+        async function makeRequest(url, options = {}) {
+            if (!currentNonce) {
+                throw new Error('No nonce available. Please log in to WordPress admin.');
+            }
+
+            const defaultOptions = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-WP-Nonce': currentNonce
+                }
+            };
+
+            const response = await fetch(url, { ...defaultOptions, ...options });
+            const data = await response.json();
+            
+            return { response, data };
+        }
+
+        // Create Student
+        document.getElementById('createForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            
+            try {
+                const { response, data: result } = await makeRequest(API_BASE, {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                });
+
+                showResponse('createResponse', result, response.ok);
+                if (response.ok) {
+                    this.reset();
+                    refreshStudentsList();
+                }
+            } catch (error) {
+                showResponse('createResponse', { error: error.message }, false);
+            }
+        });
+
+        // Update Student
+        document.getElementById('updateForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            const studentId = data.update_id;
+            
+            // Remove empty fields
+            const updateData = {};
+            if (data.update_title) updateData.title = data.update_title;
+            if (data.update_email) updateData.student_email = data.update_email;
+            if (data.update_status) updateData.student_is_active = data.update_status;
+
+            try {
+                const { response, data: result } = await makeRequest(`${API_BASE}/${studentId}`, {
+                    method: 'PUT',
+                    body: JSON.stringify(updateData)
+                });
+
+                showResponse('updateResponse', result, response.ok);
+                if (response.ok) {
+                    this.reset();
+                    refreshStudentsList();
+                }
+            } catch (error) {
+                showResponse('updateResponse', { error: error.message }, false);
+            }
+        });
+
+        // Delete Student
+        document.getElementById('deleteForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            const studentId = data.delete_id;
+            const force = data.force_delete ? '?force=true' : '';
+
+            if (!confirm(`Are you sure you want to delete student ID ${studentId}?`)) {
+                return;
+            }
+
+            try {
+                const { response, data: result } = await makeRequest(`${API_BASE}/${studentId}${force}`, {
+                    method: 'DELETE'
+                });
+
+                showResponse('deleteResponse', result, response.ok);
+                if (response.ok) {
+                    this.reset();
+                    refreshStudentsList();
+                }
+            } catch (error) {
+                showResponse('deleteResponse', { error: error.message }, false);
+            }
+        });
+
+        // Get Students
+        async function getStudents() {
+            const perPage = document.getElementById('per_page').value;
+            const statusFilter = document.getElementById('status_filter').value;
+            
+            let url = `${API_BASE}?per_page=${perPage}`;
+            if (statusFilter) {
+                url += `&status=${statusFilter}`;
+            }
+
+            try {
+                const { response, data: result } = await makeRequest(url);
+                showResponse('getResponse', result, response.ok);
+            } catch (error) {
+                showResponse('getResponse', { error: error.message }, false);
+            }
+        }
+
+        // Get Active Students
+        async function getActiveStudents() {
+            try {
+                const { response, data: result } = await makeRequest(`${API_BASE}/active`);
+                showResponse('getResponse', result, response.ok);
+            } catch (error) {
+                showResponse('getResponse', { error: error.message }, false);
+            }
+        }
+
+        // Refresh Students List
+        async function refreshStudentsList() {
+            try {
+                const { response, data: result } = await makeRequest(`${API_BASE}?per_page=50`);
+                if (response.ok && result.data) {
+                    displayStudentsList(result.data);
+                }
+            } catch (error) {
+                document.getElementById('studentsList').innerHTML = 'Error loading students: ' + error.message;
+            }
+        }
+
+        function displayStudentsList(students) {
+            const container = document.getElementById('studentsList');
+            if (students.length === 0) {
+                container.innerHTML = '<p>No students found.</p>';
+                return;
+            }
+
+            const html = students.map(student => `
+                <div class="student-item" onclick="selectStudent(${student.id})">
+                    <strong>ID: ${student.id}</strong> - ${student.title}<br>
+                    <small>Email: ${student.meta.student_email || 'N/A'} | Status: ${student.meta.student_is_active || 'N/A'}</small>
+                </div>
+            `).join('');
+            
+            container.innerHTML = html;
+        }
+
+        function selectStudent(id) {
+            document.getElementById('update_id').value = id;
+            document.getElementById('delete_id').value = id;
+        }
+
+        function showResponse(elementId, data, isSuccess) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.className = `response ${isSuccess ? 'success' : 'error'}`;
+            element.textContent = JSON.stringify(data, null, 2);
+        }
+    </script>
+</body>
+</html>

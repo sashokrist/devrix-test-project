@@ -125,6 +125,546 @@ class Students_REST_API {
                 ),
             )
         );
+
+        // Add new student endpoint (authenticated)
+        register_rest_route(
+            'students/v1',
+            '/students',
+            array(
+                'methods'             => WP_REST_Server::CREATABLE,
+                'callback'            => array( $this, 'create_student' ),
+                'permission_callback' => array( $this, 'check_admin_permissions' ),
+                'args'                => array(
+                    'title' => array(
+                        'required'          => true,
+                        'sanitize_callback' => 'sanitize_text_field',
+                        'validate_callback' => function( $param ) {
+                            return ! empty( $param ) && strlen( $param ) <= 200;
+                        },
+                    ),
+                    'content' => array(
+                        'required'          => false,
+                        'sanitize_callback' => 'wp_kses_post',
+                        'default'           => '',
+                    ),
+                    'excerpt' => array(
+                        'required'          => false,
+                        'sanitize_callback' => 'sanitize_textarea_field',
+                        'default'           => '',
+                    ),
+                    'student_id' => array(
+                        'required'          => true,
+                        'sanitize_callback' => 'sanitize_text_field',
+                        'validate_callback' => function( $param ) {
+                            return ! empty( $param ) && strlen( $param ) <= 50;
+                        },
+                    ),
+                    'student_email' => array(
+                        'required'          => false,
+                        'sanitize_callback' => 'sanitize_email',
+                        'validate_callback' => function( $param ) {
+                            return empty( $param ) || is_email( $param );
+                        },
+                    ),
+                    'student_phone' => array(
+                        'required'          => false,
+                        'sanitize_callback' => 'sanitize_text_field',
+                        'default'           => '',
+                    ),
+                    'student_dob' => array(
+                        'required'          => false,
+                        'sanitize_callback' => 'sanitize_text_field',
+                        'validate_callback' => function( $param ) {
+                            return empty( $param ) || preg_match( '/^\d{4}-\d{2}-\d{2}$/', $param );
+                        },
+                    ),
+                    'student_address' => array(
+                        'required'          => false,
+                        'sanitize_callback' => 'sanitize_textarea_field',
+                        'default'           => '',
+                    ),
+                    'student_country' => array(
+                        'required'          => false,
+                        'sanitize_callback' => 'sanitize_text_field',
+                        'default'           => '',
+                    ),
+                    'student_city' => array(
+                        'required'          => false,
+                        'sanitize_callback' => 'sanitize_text_field',
+                        'default'           => '',
+                    ),
+                    'student_class_grade' => array(
+                        'required'          => false,
+                        'sanitize_callback' => 'sanitize_text_field',
+                        'default'           => '',
+                    ),
+                    'student_is_active' => array(
+                        'required'          => false,
+                        'sanitize_callback' => 'sanitize_text_field',
+                        'validate_callback' => function( $param ) {
+                            return in_array( $param, array( 'active', 'inactive' ) );
+                        },
+                        'default'           => 'active',
+                    ),
+                    'courses' => array(
+                        'required'          => false,
+                        'type'              => 'array',
+                        'items'             => array(
+                            'type' => 'string',
+                        ),
+                        'default'           => array(),
+                    ),
+                    'grade_levels' => array(
+                        'required'          => false,
+                        'type'              => 'array',
+                        'items'             => array(
+                            'type' => 'string',
+                        ),
+                        'default'           => array(),
+                    ),
+                ),
+            )
+        );
+
+        // Update student endpoint (authenticated)
+        register_rest_route(
+            'students/v1',
+            '/students/(?P<id>\d+)',
+            array(
+                'methods'             => WP_REST_Server::EDITABLE,
+                'callback'            => array( $this, 'update_student' ),
+                'permission_callback' => array( $this, 'check_admin_permissions' ),
+                'args'                => array(
+                    'id' => array(
+                        'validate_callback' => function( $param ) {
+                            return is_numeric( $param ) && $param > 0;
+                        },
+                    ),
+                    'title' => array(
+                        'required'          => false,
+                        'sanitize_callback' => 'sanitize_text_field',
+                        'validate_callback' => function( $param ) {
+                            return empty( $param ) || strlen( $param ) <= 200;
+                        },
+                    ),
+                    'content' => array(
+                        'required'          => false,
+                        'sanitize_callback' => 'wp_kses_post',
+                    ),
+                    'excerpt' => array(
+                        'required'          => false,
+                        'sanitize_callback' => 'sanitize_textarea_field',
+                    ),
+                    'student_id' => array(
+                        'required'          => false,
+                        'sanitize_callback' => 'sanitize_text_field',
+                        'validate_callback' => function( $param ) {
+                            return empty( $param ) || strlen( $param ) <= 50;
+                        },
+                    ),
+                    'student_email' => array(
+                        'required'          => false,
+                        'sanitize_callback' => 'sanitize_email',
+                        'validate_callback' => function( $param ) {
+                            return empty( $param ) || is_email( $param );
+                        },
+                    ),
+                    'student_phone' => array(
+                        'required'          => false,
+                        'sanitize_callback' => 'sanitize_text_field',
+                    ),
+                    'student_dob' => array(
+                        'required'          => false,
+                        'sanitize_callback' => 'sanitize_text_field',
+                        'validate_callback' => function( $param ) {
+                            return empty( $param ) || preg_match( '/^\d{4}-\d{2}-\d{2}$/', $param );
+                        },
+                    ),
+                    'student_address' => array(
+                        'required'          => false,
+                        'sanitize_callback' => 'sanitize_textarea_field',
+                    ),
+                    'student_country' => array(
+                        'required'          => false,
+                        'sanitize_callback' => 'sanitize_text_field',
+                    ),
+                    'student_city' => array(
+                        'required'          => false,
+                        'sanitize_callback' => 'sanitize_text_field',
+                    ),
+                    'student_class_grade' => array(
+                        'required'          => false,
+                        'sanitize_callback' => 'sanitize_text_field',
+                    ),
+                    'student_is_active' => array(
+                        'required'          => false,
+                        'sanitize_callback' => 'sanitize_text_field',
+                        'validate_callback' => function( $param ) {
+                            return empty( $param ) || in_array( $param, array( 'active', 'inactive' ) );
+                        },
+                    ),
+                    'courses' => array(
+                        'required'          => false,
+                        'type'              => 'array',
+                        'items'             => array(
+                            'type' => 'string',
+                        ),
+                    ),
+                    'grade_levels' => array(
+                        'required'          => false,
+                        'type'              => 'array',
+                        'items'             => array(
+                            'type' => 'string',
+                        ),
+                    ),
+                ),
+            )
+        );
+
+        // Delete student endpoint (authenticated)
+        register_rest_route(
+            'students/v1',
+            '/students/(?P<id>\d+)',
+            array(
+                'methods'             => WP_REST_Server::DELETABLE,
+                'callback'            => array( $this, 'delete_student' ),
+                'permission_callback' => array( $this, 'check_admin_permissions' ),
+                'args'                => array(
+                    'id' => array(
+                        'validate_callback' => function( $param ) {
+                            return is_numeric( $param ) && $param > 0;
+                        },
+                    ),
+                    'force' => array(
+                        'required'          => false,
+                        'type'              => 'boolean',
+                        'default'           => false,
+                    ),
+                ),
+            )
+        );
+    }
+
+    /**
+     * Check admin permissions for authenticated endpoints
+     *
+     * @param WP_REST_Request $request The request object
+     * @return bool|WP_Error
+     */
+    public function check_admin_permissions( $request ) {
+        // Check if user is logged in
+        if ( ! is_user_logged_in() ) {
+            return new WP_Error(
+                'rest_forbidden',
+                __( 'Authentication required', 'students' ),
+                array( 'status' => 401 )
+            );
+        }
+
+        // Check if user has administrator capabilities
+        if ( ! current_user_can( 'manage_options' ) ) {
+            return new WP_Error(
+                'rest_forbidden',
+                __( 'Administrator privileges required', 'students' ),
+                array( 'status' => 403 )
+            );
+        }
+
+        return true;
+    }
+
+    /**
+     * Create a new student
+     *
+     * @param WP_REST_Request $request The request object
+     * @return WP_REST_Response|WP_Error
+     */
+    public function create_student( $request ) {
+        // Get sanitized data
+        $title = $request->get_param( 'title' );
+        $content = $request->get_param( 'content' );
+        $excerpt = $request->get_param( 'excerpt' );
+        $student_id = $request->get_param( 'student_id' );
+        $student_email = $request->get_param( 'student_email' );
+        $student_phone = $request->get_param( 'student_phone' );
+        $student_dob = $request->get_param( 'student_dob' );
+        $student_address = $request->get_param( 'student_address' );
+        $student_country = $request->get_param( 'student_country' );
+        $student_city = $request->get_param( 'student_city' );
+        $student_class_grade = $request->get_param( 'student_class_grade' );
+        $student_is_active = $request->get_param( 'student_is_active' );
+        $courses = $request->get_param( 'courses' );
+        $grade_levels = $request->get_param( 'grade_levels' );
+
+        // Check if student ID already exists
+        $existing_student = get_posts( array(
+            'post_type' => Students_Config::POST_TYPE,
+            'meta_query' => array(
+                array(
+                    'key' => '_student_id',
+                    'value' => $student_id,
+                    'compare' => '=',
+                ),
+            ),
+            'post_status' => array( 'publish', 'draft', 'pending' ),
+            'posts_per_page' => 1,
+        ) );
+
+        if ( ! empty( $existing_student ) ) {
+            return new WP_Error(
+                'student_id_exists',
+                __( 'Student ID already exists', 'students' ),
+                array( 'status' => 400 )
+            );
+        }
+
+        // Create post data
+        $post_data = array(
+            'post_title'   => $title,
+            'post_content' => $content,
+            'post_excerpt' => $excerpt,
+            'post_status'  => 'publish',
+            'post_type'    => Students_Config::POST_TYPE,
+        );
+
+        // Insert the post
+        $post_id = wp_insert_post( $post_data );
+
+        if ( is_wp_error( $post_id ) ) {
+            return new WP_Error(
+                'create_failed',
+                __( 'Failed to create student', 'students' ),
+                array( 'status' => 500 )
+            );
+        }
+
+        // Save meta fields
+        $this->save_student_meta( $post_id, array(
+            'student_id' => $student_id,
+            'student_email' => $student_email,
+            'student_phone' => $student_phone,
+            'student_dob' => $student_dob,
+            'student_address' => $student_address,
+            'student_country' => $student_country,
+            'student_city' => $student_city,
+            'student_class_grade' => $student_class_grade,
+            'student_is_active' => $student_is_active,
+        ) );
+
+        // Save taxonomies
+        if ( ! empty( $courses ) ) {
+            wp_set_object_terms( $post_id, $courses, Students_Config::TAXONOMY_COURSE );
+        }
+        if ( ! empty( $grade_levels ) ) {
+            wp_set_object_terms( $post_id, $grade_levels, Students_Config::TAXONOMY_GRADE_LEVEL );
+        }
+
+        // Get the created student
+        $student = get_post( $post_id );
+        $student_data = $this->format_student_data( $student );
+
+        $response = array(
+            'success' => true,
+            'message' => __( 'Student created successfully', 'students' ),
+            'data'    => $student_data,
+        );
+
+        return new WP_REST_Response( $response, 201 );
+    }
+
+    /**
+     * Update an existing student
+     *
+     * @param WP_REST_Request $request The request object
+     * @return WP_REST_Response|WP_Error
+     */
+    public function update_student( $request ) {
+        $post_id = $request->get_param( 'id' );
+
+        // Check if student exists
+        $student = get_post( $post_id );
+        if ( ! $student || $student->post_type !== Students_Config::POST_TYPE ) {
+            return new WP_Error(
+                'student_not_found',
+                __( 'Student not found', 'students' ),
+                array( 'status' => 404 )
+            );
+        }
+
+        // Get sanitized data
+        $title = $request->get_param( 'title' );
+        $content = $request->get_param( 'content' );
+        $excerpt = $request->get_param( 'excerpt' );
+        $student_id = $request->get_param( 'student_id' );
+        $student_email = $request->get_param( 'student_email' );
+        $student_phone = $request->get_param( 'student_phone' );
+        $student_dob = $request->get_param( 'student_dob' );
+        $student_address = $request->get_param( 'student_address' );
+        $student_country = $request->get_param( 'student_country' );
+        $student_city = $request->get_param( 'student_city' );
+        $student_class_grade = $request->get_param( 'student_class_grade' );
+        $student_is_active = $request->get_param( 'student_is_active' );
+        $courses = $request->get_param( 'courses' );
+        $grade_levels = $request->get_param( 'grade_levels' );
+
+        // Check if student ID already exists (if changed)
+        if ( ! empty( $student_id ) ) {
+            $current_student_id = get_post_meta( $post_id, '_student_id', true );
+            if ( $student_id !== $current_student_id ) {
+                $existing_student = get_posts( array(
+                    'post_type' => Students_Config::POST_TYPE,
+                    'meta_query' => array(
+                        array(
+                            'key' => '_student_id',
+                            'value' => $student_id,
+                            'compare' => '=',
+                        ),
+                    ),
+                    'post_status' => array( 'publish', 'draft', 'pending' ),
+                    'posts_per_page' => 1,
+                    'post__not_in' => array( $post_id ),
+                ) );
+
+                if ( ! empty( $existing_student ) ) {
+                    return new WP_Error(
+                        'student_id_exists',
+                        __( 'Student ID already exists', 'students' ),
+                        array( 'status' => 400 )
+                    );
+                }
+            }
+        }
+
+        // Update post data
+        $post_data = array(
+            'ID' => $post_id,
+        );
+
+        if ( ! empty( $title ) ) {
+            $post_data['post_title'] = $title;
+        }
+        if ( ! empty( $content ) ) {
+            $post_data['post_content'] = $content;
+        }
+        if ( ! empty( $excerpt ) ) {
+            $post_data['post_excerpt'] = $excerpt;
+        }
+
+        // Update the post
+        $updated_post_id = wp_update_post( $post_data );
+
+        if ( is_wp_error( $updated_post_id ) ) {
+            return new WP_Error(
+                'update_failed',
+                __( 'Failed to update student', 'students' ),
+                array( 'status' => 500 )
+            );
+        }
+
+        // Update meta fields
+        $meta_data = array();
+        if ( ! empty( $student_id ) ) $meta_data['student_id'] = $student_id;
+        if ( ! empty( $student_email ) ) $meta_data['student_email'] = $student_email;
+        if ( ! empty( $student_phone ) ) $meta_data['student_phone'] = $student_phone;
+        if ( ! empty( $student_dob ) ) $meta_data['student_dob'] = $student_dob;
+        if ( ! empty( $student_address ) ) $meta_data['student_address'] = $student_address;
+        if ( ! empty( $student_country ) ) $meta_data['student_country'] = $student_country;
+        if ( ! empty( $student_city ) ) $meta_data['student_city'] = $student_city;
+        if ( ! empty( $student_class_grade ) ) $meta_data['student_class_grade'] = $student_class_grade;
+        if ( ! empty( $student_is_active ) ) $meta_data['student_is_active'] = $student_is_active;
+
+        if ( ! empty( $meta_data ) ) {
+            $this->save_student_meta( $post_id, $meta_data );
+        }
+
+        // Update taxonomies
+        if ( ! empty( $courses ) ) {
+            wp_set_object_terms( $post_id, $courses, Students_Config::TAXONOMY_COURSE );
+        }
+        if ( ! empty( $grade_levels ) ) {
+            wp_set_object_terms( $post_id, $grade_levels, Students_Config::TAXONOMY_GRADE_LEVEL );
+        }
+
+        // Get the updated student
+        $updated_student = get_post( $post_id );
+        $student_data = $this->format_student_data( $updated_student );
+
+        $response = array(
+            'success' => true,
+            'message' => __( 'Student updated successfully', 'students' ),
+            'data'    => $student_data,
+        );
+
+        return new WP_REST_Response( $response, 200 );
+    }
+
+    /**
+     * Delete a student
+     *
+     * @param WP_REST_Request $request The request object
+     * @return WP_REST_Response|WP_Error
+     */
+    public function delete_student( $request ) {
+        $post_id = $request->get_param( 'id' );
+        $force = $request->get_param( 'force' );
+
+        // Check if student exists
+        $student = get_post( $post_id );
+        if ( ! $student || $student->post_type !== Students_Config::POST_TYPE ) {
+            return new WP_Error(
+                'student_not_found',
+                __( 'Student not found', 'students' ),
+                array( 'status' => 404 )
+            );
+        }
+
+        // Delete the post
+        $deleted = wp_delete_post( $post_id, $force );
+
+        if ( ! $deleted ) {
+            return new WP_Error(
+                'delete_failed',
+                __( 'Failed to delete student', 'students' ),
+                array( 'status' => 500 )
+            );
+        }
+
+        $response = array(
+            'success' => true,
+            'message' => $force ? __( 'Student permanently deleted', 'students' ) : __( 'Student moved to trash', 'students' ),
+            'data'    => array(
+                'id' => $post_id,
+                'deleted' => true,
+            ),
+        );
+
+        return new WP_REST_Response( $response, 200 );
+    }
+
+    /**
+     * Save student meta fields
+     *
+     * @param int   $post_id The post ID
+     * @param array $meta_data The meta data to save
+     */
+    private function save_student_meta( $post_id, $meta_data ) {
+        $meta_fields = Students_Config::get_meta_field_names();
+
+        foreach ( $meta_data as $field_name => $value ) {
+            if ( in_array( $field_name, $meta_fields ) ) {
+                $field_config = Students_Config::get_meta_field_config( $field_name );
+                if ( $field_config ) {
+                    $meta_key = $field_config['meta_key'];
+                    
+                    // Handle special cases
+                    if ( $field_name === 'student_is_active' ) {
+                        $value = ( $value === 'active' ) ? '1' : '0';
+                    }
+                    
+                    update_post_meta( $post_id, $meta_key, $value );
+                }
+            }
+        }
     }
 
     /**

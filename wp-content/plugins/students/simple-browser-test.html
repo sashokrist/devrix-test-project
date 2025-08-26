@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Students API Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: #fafafa;
+        }
+        .section h2 {
+            color: #007cba;
+            margin-top: 0;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="text"], input[type="email"], select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #007cba;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background: #005a87;
+        }
+        button.danger {
+            background: #dc3545;
+        }
+        button.danger:hover {
+            background: #c82333;
+        }
+        .response {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .response.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .response.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .instructions {
+            background: #e7f3ff;
+            border: 1px solid #b3d9ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .instructions h3 {
+            margin-top: 0;
+            color: #005a87;
+        }
+        .instructions ol {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .instructions li {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎓 Simple Students API Test</h1>
+        
+        <div class="instructions">
+            <h3>📋 Setup Instructions:</h3>
+            <ol>
+                <li><strong>First, run this command in terminal:</strong><br>
+                    <code>./api-test-helper.sh</code></li>
+                <li><strong>Copy the nonce from the output</strong> (e.g., <code>573082ce41</code>)</li>
+                <li><strong>Paste it in the "Nonce" field below</strong></li>
+                <li><strong>Start testing the API!</strong></li>
+            </ol>
+            <p><strong>💡 Tip:</strong> If you get errors, run the helper script again to get a fresh nonce.</p>
+        </div>
+
+        <div class="grid">
+            <!-- Create Student Section -->
+            <div class="section">
+                <h2>➕ Create New Student</h2>
+                <form id="createForm">
+                    <div class="form-group">
+                        <label for="create_nonce">Nonce *</label>
+                        <input type="text" id="create_nonce" name="nonce" required placeholder="Paste nonce from terminal">
+                    </div>
+                    <div class="form-group">
+                        <label for="title">Student Name *</label>
+                        <input type="text" id="title" name="title" required placeholder="Enter student name">
+                    </div>
+                    <div class="form-group">
+                        <label for="student_id">Student ID *</label>
+                        <input type="text" id="student_id" name="student_id" required placeholder="Enter unique student ID">
+                    </div>
+                    <div class="form-group">
+                        <label for="student_email">Email</label>
+                        <input type="email" id="student_email" name="student_email" placeholder="Enter email address">
+                    </div>
+                    <div class="form-group">
+                        <label for="student_is_active">Status</label>
+                        <select id="student_is_active" name="student_is_active">
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+                    <button type="submit">Create Student</button>
+                </form>
+                <div id="createResponse" class="response" style="display: none;"></div>
+            </div>
+
+            <!-- Update Student Section -->
+            <div class="section">
+                <h2>✏️ Update Student</h2>
+                <form id="updateForm">
+                    <div class="form-group">
+                        <label for="update_nonce">Nonce *</label>
+                        <input type="text" id="update_nonce" name="nonce" required placeholder="Paste nonce from terminal">
+                    </div>
+                    <div class="form-group">
+                        <label for="update_id">Student ID *</label>
+                        <input type="number" id="update_id" name="update_id" required placeholder="Enter student ID to update">
+                    </div>
+                    <div class="form-group">
+                        <label for="update_title">New Name</label>
+                        <input type="text" id="update_title" name="update_title" placeholder="Enter new name">
+                    </div>
+                    <div class="form-group">
+                        <label for="update_email">New Email</label>
+                        <input type="email" id="update_email" name="update_email" placeholder="Enter new email">
+                    </div>
+                    <div class="form-group">
+                        <label for="update_status">New Status</label>
+                        <select id="update_status" name="update_status">
+                            <option value="">Keep current</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+                    <button type="submit">Update Student</button>
+                </form>
+                <div id="updateResponse" class="response" style="display: none;"></div>
+            </div>
+
+            <!-- Delete Student Section -->
+            <div class="section">
+                <h2>🗑️ Delete Student</h2>
+                <form id="deleteForm">
+                    <div class="form-group">
+                        <label for="delete_nonce">Nonce *</label>
+                        <input type="text" id="delete_nonce" name="nonce" required placeholder="Paste nonce from terminal">
+                    </div>
+                    <div class="form-group">
+                        <label for="delete_id">Student ID *</label>
+                        <input type="number" id="delete_id" name="delete_id" required placeholder="Enter student ID to delete">
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="force_delete" name="force_delete">
+                            Force delete (permanent)
+                        </label>
+                    </div>
+                    <button type="submit" class="danger">Delete Student</button>
+                </form>
+                <div id="deleteResponse" class="response" style="display: none;"></div>
+            </div>
+
+            <!-- Get Students Section -->
+            <div class="section">
+                <h2>📋 Get Students</h2>
+                <form id="getForm">
+                    <div class="form-group">
+                        <label for="get_nonce">Nonce *</label>
+                        <input type="text" id="get_nonce" name="nonce" required placeholder="Paste nonce from terminal">
+                    </div>
+                    <div class="form-group">
+                        <label for="per_page">Students per page</label>
+                        <select id="per_page" name="per_page">
+                            <option value="5">5</option>
+                            <option value="10" selected>10</option>
+                            <option value="20">20</option>
+                            <option value="50">50</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="status_filter">Status filter</label>
+                        <select id="status_filter" name="status_filter">
+                            <option value="">All</option>
+                            <option value="active">Active only</option>
+                            <option value="inactive">Inactive only</option>
+                        </select>
+                    </div>
+                    <button type="submit">Get Students</button>
+                    <button type="button" onclick="getActiveStudents()">Get Active Only</button>
+                </form>
+                <div id="getResponse" class="response" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/?rest_route=/students/v1/students';
+
+        // Create Student
+        document.getElementById('createForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            const nonce = data.nonce;
+            
+            try {
+                const response = await fetch(API_BASE, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-WP-Nonce': nonce
+                    },
+                    body: JSON.stringify({
+                        title: data.title,
+                        student_id: data.student_id,
+                        student_email: data.student_email,
+                        student_is_active: data.student_is_active
+                    })
+                });
+
+                const result = await response.json();
+                showResponse('createResponse', result, response.ok);
+                if (response.ok) {
+                    this.reset();
+                }
+            } catch (error) {
+                showResponse('createResponse', { error: error.message }, false);
+            }
+        });
+
+        // Update Student
+        document.getElementById('updateForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            const nonce = data.nonce;
+            const studentId = data.update_id;
+            
+            const updateData = {};
+            if (data.update_title) updateData.title = data.update_title;
+            if (data.update_email) updateData.student_email = data.update_email;
+            if (data.update_status) updateData.student_is_active = data.update_status;
+
+            try {
+                const response = await fetch(`${API_BASE}/${studentId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-WP-Nonce': nonce
+                    },
+                    body: JSON.stringify(updateData)
+                });
+
+                const result = await response.json();
+                showResponse('updateResponse', result, response.ok);
+                if (response.ok) {
+                    this.reset();
+                }
+            } catch (error) {
+                showResponse('updateResponse', { error: error.message }, false);
+            }
+        });
+
+        // Delete Student
+        document.getElementById('deleteForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            const nonce = data.nonce;
+            const studentId = data.delete_id;
+            const force = data.force_delete ? '?force=true' : '';
+
+            if (!confirm(`Are you sure you want to delete student ID ${studentId}?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/${studentId}${force}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-WP-Nonce': nonce
+                    }
+                });
+
+                const result = await response.json();
+                showResponse('deleteResponse', result, response.ok);
+                if (response.ok) {
+                    this.reset();
+                }
+            } catch (error) {
+                showResponse('deleteResponse', { error: error.message }, false);
+            }
+        });
+
+        // Get Students
+        document.getElementById('getForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            const nonce = data.nonce;
+            const perPage = data.per_page;
+            const statusFilter = data.status_filter;
+            
+            let url = `${API_BASE}?per_page=${perPage}`;
+            if (statusFilter) {
+                url += `&status=${statusFilter}`;
+            }
+
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        'X-WP-Nonce': nonce
+                    }
+                });
+
+                const result = await response.json();
+                showResponse('getResponse', result, response.ok);
+            } catch (error) {
+                showResponse('getResponse', { error: error.message }, false);
+            }
+        });
+
+        // Get Active Students
+        async function getActiveStudents() {
+            const nonce = document.getElementById('get_nonce').value;
+            if (!nonce) {
+                alert('Please enter a nonce first');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/active`, {
+                    headers: {
+                        'X-WP-Nonce': nonce
+                    }
+                });
+
+                const result = await response.json();
+                showResponse('getResponse', result, response.ok);
+            } catch (error) {
+                showResponse('getResponse', { error: error.message }, false);
+            }
+        }
+
+        function showResponse(elementId, data, isSuccess) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.className = `response ${isSuccess ? 'success' : 'error'}`;
+            element.textContent = JSON.stringify(data, null, 2);
+        }
+    </script>
+</body>
+</html>
