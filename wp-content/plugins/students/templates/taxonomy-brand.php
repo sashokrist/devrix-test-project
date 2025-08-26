@@ -136,6 +136,7 @@ get_header(); ?>
                 'format' => '?paged=%#%',
                 'current' => max( 1, get_query_var( 'paged' ) ),
                 'total' => $cars_query->max_num_pages,
+                'mid_size' => 3,
                 'prev_text' => __( '&laquo; Previous', 'students' ),
                 'next_text' => __( 'Next &raquo;', 'students' ),
             ) );

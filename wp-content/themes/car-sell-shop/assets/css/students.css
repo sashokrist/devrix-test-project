@@ -246,60 +246,228 @@
     margin: 0 auto;
 }
 
-/* Pagination */
+/* Enhanced Pagination Styles */
+.pagination,
 .wp-block-query-pagination,
-.pagination {
+.navigation.pagination {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.75rem;
     margin: 3rem 0;
+    padding: 2rem 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border-radius: 12px;
+    border: 1px solid #e9ecef;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
-.wp-block-query-pagination .wp-block-query-pagination-previous,
-.wp-block-query-pagination .wp-block-query-pagination-next,
-.pagination .prev,
-.pagination .next {
-    padding: 0.5rem 1rem;
-    background: #0073aa;
-    color: #fff;
-    text-decoration: none;
-    border-radius: 4px;
-    transition: background-color 0.3s ease;
-}
-
-.wp-block-query-pagination .wp-block-query-pagination-previous:hover,
-.wp-block-query-pagination .wp-block-query-pagination-next:hover,
-.pagination .prev:hover,
-.pagination .next:hover {
-    background: #005a87;
-}
-
-.wp-block-query-pagination-numbers,
-.pagination .page-numbers {
+/* Navigation Links Container */
+.nav-links {
     display: flex;
-    gap: 0.25rem;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
-.wp-block-query-pagination-numbers .wp-block-query-pagination-numbers__number,
-.pagination .page-numbers {
-    padding: 0.5rem 0.75rem;
-    background: #f8f9fa;
-    color: #333;
+/* Page Numbers */
+.page-numbers,
+.wp-block-query-pagination-numbers__number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    height: 44px;
+    padding: 0.75rem 1rem;
+    margin: 0;
+    background: #ffffff;
+    color: #333333;
     text-decoration: none;
-    border-radius: 4px;
-    transition: background-color 0.3s ease;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    line-height: 1;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    position: relative;
+    overflow: hidden;
 }
 
-.wp-block-query-pagination-numbers .wp-block-query-pagination-numbers__number:hover,
-.pagination .page-numbers:hover {
-    background: #e9ecef;
-}
-
-.wp-block-query-pagination-numbers .wp-block-query-pagination-numbers__number.is-current,
-.pagination .current {
+.page-numbers:hover,
+.wp-block-query-pagination-numbers__number:hover {
     background: #0073aa;
-    color: #fff;
+    color: #ffffff;
+    border-color: #0073aa;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 115, 170, 0.3);
+    text-decoration: none;
+}
+
+/* Current Page */
+.page-numbers.current,
+.wp-block-query-pagination-numbers__number.is-current {
+    background: #0073aa;
+    color: #ffffff;
+    border-color: #0073aa;
+    box-shadow: 0 4px 12px rgba(0, 115, 170, 0.25);
+    font-weight: 600;
+}
+
+/* Previous/Next Buttons */
+.prev,
+.next,
+.wp-block-query-pagination-previous,
+.wp-block-query-pagination-next {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    height: 44px;
+    padding: 0.75rem 1.25rem;
+    background: #0073aa;
+    color: #ffffff;
+    text-decoration: none;
+    border: 2px solid #0073aa;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    line-height: 1;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 4px rgba(0, 115, 170, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.prev:hover,
+.next:hover,
+.wp-block-query-pagination-previous:hover,
+.wp-block-query-pagination-next:hover {
+    background: #005a87;
+    border-color: #005a87;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 115, 170, 0.4);
+    color: #ffffff;
+    text-decoration: none;
+}
+
+/* Dots Styling */
+.page-numbers.dots {
+    background: transparent;
+    border-color: transparent;
+    color: #6c757d;
+    font-weight: bold;
+    cursor: default;
+    min-width: auto;
+    padding: 0.75rem 0.5rem;
+}
+
+.page-numbers.dots:hover {
+    background: transparent;
+    border-color: transparent;
+    color: #6c757d;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Previous/Next Button Enhancements */
+.prev.page-numbers,
+.next.page-numbers {
+    background: #0073aa;
+    color: #ffffff;
+    border-color: #0073aa;
+    font-weight: 600;
+    position: relative;
+}
+
+.prev.page-numbers:hover,
+.next.page-numbers:hover {
+    background: #005a87;
+    border-color: #005a87;
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 115, 170, 0.4);
+}
+
+/* Add subtle arrows to prev/next buttons */
+.prev.page-numbers::before {
+    content: "←";
+    margin-right: 0.25rem;
+    font-weight: bold;
+}
+
+.next.page-numbers::after {
+    content: "→";
+    margin-left: 0.25rem;
+    font-weight: bold;
+}
+
+/* Responsive Pagination */
+@media (max-width: 768px) {
+    .pagination,
+    .wp-block-query-pagination,
+    .navigation.pagination {
+        gap: 0.5rem;
+        margin: 2rem 0;
+        padding: 1.5rem 0;
+    }
+    
+    .nav-links {
+        gap: 0.5rem;
+    }
+    
+    .page-numbers,
+    .prev,
+    .next,
+    .wp-block-query-pagination-numbers__number,
+    .wp-block-query-pagination-previous,
+    .wp-block-query-pagination-next {
+        min-width: 40px;
+        height: 40px;
+        padding: 0.6rem 0.8rem;
+        font-size: 0.85rem;
+    }
+    
+    /* Hide some page numbers on mobile for better UX */
+    .page-numbers:not(.current):not(.prev):not(.next):not(.dots) {
+        display: none;
+    }
+    
+    .page-numbers.current,
+    .page-numbers.prev,
+    .page-numbers.next,
+    .page-numbers.dots {
+        display: inline-flex;
+    }
+}
+
+@media (max-width: 480px) {
+    .pagination,
+    .wp-block-query-pagination,
+    .navigation.pagination {
+        gap: 0.25rem;
+        margin: 1.5rem 0;
+        padding: 1rem 0;
+    }
+    
+    .nav-links {
+        gap: 0.25rem;
+    }
+    
+    .page-numbers,
+    .prev,
+    .next,
+    .wp-block-query-pagination-numbers__number,
+    .wp-block-query-pagination-previous,
+    .wp-block-query-pagination-next {
+        min-width: 36px;
+        height: 36px;
+        padding: 0.5rem 0.6rem;
+        font-size: 0.8rem;
+        border-radius: 6px;
+    }
 }
 
 /* Buttons */
@@ -835,4 +1003,61 @@
         font-size: 0.9rem;
         min-width: 35px;
     }
+}
+
+/* Enhanced Focus States for Accessibility */
+.page-numbers:focus,
+.prev:focus,
+.next:focus {
+    outline: 2px solid #0073aa;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgba(0, 115, 170, 0.1);
+}
+
+/* Smooth scrolling for pagination */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Pagination container with better spacing */
+.pagination-container {
+    margin: 3rem 0;
+    padding: 2rem;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border-radius: 16px;
+    border: 1px solid #e9ecef;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Enhanced hover effects with micro-interactions */
+.page-numbers::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(0, 115, 170, 0.1) 0%, rgba(0, 115, 170, 0.05) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: 6px;
+    pointer-events: none;
+}
+
+.page-numbers:hover::before {
+    opacity: 1;
+}
+
+/* Active state enhancement */
+.page-numbers.current::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 3px;
+    background: #0073aa;
+    border-radius: 2px;
+    box-shadow: 0 2px 4px rgba(0, 115, 170, 0.3);
 }

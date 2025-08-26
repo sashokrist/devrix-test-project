@@ -190,6 +190,9 @@ class Students_Public {
                     'format' => '?paged=%#%',
                     'current' => max( 1, get_query_var( 'paged' ) ),
                     'total' => $students->max_num_pages,
+                    'mid_size' => 3,
+                    'prev_text' => __( 'Previous', 'students' ),
+                    'next_text' => __( 'Next', 'students' ),
                 ) );
                 ?>
             <?php else : ?>
