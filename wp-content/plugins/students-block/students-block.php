@@ -100,15 +100,7 @@ class Students_Block_Plugin {
         add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_block_editor_assets' ) );
         add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_frontend_assets' ) );
         
-        // Load test page
-        require_once STUDENTS_BLOCK_PLUGIN_DIR . 'test-block-page.php';
-        
-        // Load demo page
-        require_once STUDENTS_BLOCK_PLUGIN_DIR . 'demo-page.php';
-        
-        // Load test registration file
-        // Load test files only when accessed directly
-        // require_once STUDENTS_BLOCK_PLUGIN_DIR . 'test-registration.php';
+        // Test files removed - no longer needed
         
         // REST API test file temporarily disabled
         // require_once STUDENTS_BLOCK_PLUGIN_DIR . 'rest-api-test.php';
