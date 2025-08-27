@@ -93,9 +93,6 @@ class Students_Block_Plugin {
         // REST API registration temporarily disabled to prevent errors
         // add_action( 'rest_api_init', array( $this, 'register_rest_api' ) );
         
-        // Ensure block is registered with WordPress
-        add_action( 'init', array( $this, 'ensure_block_registration' ), 20 );
-        
         // Enqueue block assets
         add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_block_editor_assets' ) );
         add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_frontend_assets' ) );
@@ -115,40 +112,6 @@ class Students_Block_Plugin {
             'editor_style'  => 'students-block-editor-style',
             'style'         => 'students-block-style',
             'render_callback' => array( $this, 'render_block' ),
-            'attributes' => array(
-                'numberOfStudents' => array(
-                    'type' => 'number',
-                    'default' => 4,
-                ),
-                'status' => array(
-                    'type' => 'string',
-                    'default' => 'active',
-                ),
-                'showSpecificStudent' => array(
-                    'type' => 'boolean',
-                    'default' => false,
-                ),
-                'specificStudentId' => array(
-                    'type' => 'number',
-                    'default' => 0,
-                ),
-                'orderBy' => array(
-                    'type' => 'string',
-                    'default' => 'title',
-                ),
-                'order' => array(
-                    'type' => 'string',
-                    'default' => 'ASC',
-                ),
-                'className' => array(
-                    'type' => 'string',
-                    'default' => '',
-                ),
-            ),
-            'supports' => array(
-                'html' => false,
-                'align' => array( 'wide', 'full' ),
-            ),
         ) );
     }
 
@@ -285,6 +248,7 @@ class Students_Block_Plugin {
      * @return string HTML output
      */
     public function render_block( $attributes ) {
+        // Parse and validate attributes
         $number_of_students = isset( $attributes['numberOfStudents'] ) ? intval( $attributes['numberOfStudents'] ) : 4;
         $status = isset( $attributes['status'] ) ? sanitize_text_field( $attributes['status'] ) : 'active';
         $show_specific_student = isset( $attributes['showSpecificStudent'] ) ? (bool) $attributes['showSpecificStudent'] : false;
@@ -292,6 +256,22 @@ class Students_Block_Plugin {
         $order_by = isset( $attributes['orderBy'] ) ? sanitize_text_field( $attributes['orderBy'] ) : 'title';
         $order = isset( $attributes['order'] ) ? sanitize_text_field( $attributes['order'] ) : 'ASC';
         $className = isset( $attributes['className'] ) ? sanitize_text_field( $attributes['className'] ) : '';
+
+        // Validate inputs
+        if ( $number_of_students < 1 ) {
+            $number_of_students = 4;
+        }
+        if ( $number_of_students > 20 ) {
+            $number_of_students = 20;
+        }
+
+        if ( ! in_array( $status, array( 'active', 'inactive', 'all' ) ) ) {
+            $status = 'active';
+        }
+
+        if ( ! in_array( $order, array( 'ASC', 'DESC' ) ) ) {
+            $order = 'ASC';
+        }
 
         // Build query arguments
         $args = array(
@@ -308,7 +288,7 @@ class Students_Block_Plugin {
             $args['p'] = $specific_student_id;
             $args['posts_per_page'] = 1;
         } else {
-            // Add status filter
+            // Add status filter for multiple students
             if ( 'active' === $status ) {
                 $args['meta_query'][] = array(
                     'key' => '_student_is_active',
@@ -322,6 +302,7 @@ class Students_Block_Plugin {
                     'compare' => '='
                 );
             }
+            // 'all' status doesn't add any meta query
         }
 
         // If no meta query, remove the array
@@ -415,15 +396,23 @@ class Students_Block_Plugin {
                             );
                             ?>
                         </p>
-                        <a href="<?php echo esc_url( get_post_type_archive_link( 'student' ) ); ?>" class="view-all-students">
-                            <?php esc_html_e( 'View All Students', 'students-block' ); ?>
-                        </a>
+                        <?php if ( get_post_type_archive_link( 'student' ) ) : ?>
+                            <a href="<?php echo esc_url( get_post_type_archive_link( 'student' ) ); ?>" class="view-all-students">
+                                <?php esc_html_e( 'View All Students', 'students-block' ); ?>
+                            </a>
+                        <?php endif; ?>
                     </div>
                 <?php endif; ?>
                 
             <?php else : ?>
                 <div class="no-students">
-                    <p><?php esc_html_e( 'No students found.', 'students-block' ); ?></p>
+                    <p><?php 
+                    if ( $show_specific_student && $specific_student_id > 0 ) {
+                        esc_html_e( 'The selected student was not found or is not published.', 'students-block' );
+                    } else {
+                        esc_html_e( 'No students found matching the current filters.', 'students-block' );
+                    }
+                    ?></p>
                 </div>
             <?php endif; ?>
         </div>
