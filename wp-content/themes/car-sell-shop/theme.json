@@ -3,6 +3,7 @@
   "version": 2,
   "title": "Car Sell Shop",
   "description": "A block theme for showcasing and selling cars.",
+
   "settings": {
     "layout": { "contentSize": "720px", "wideSize": "1200px" },
     "typography": { "fluid": true },
@@ -37,6 +38,11 @@
     {
       "name": "page-my-custom",
       "title": "My Custom Template",
+      "postTypes": ["page"]
+    },
+    {
+      "name": "page-simple",
+      "title": "Simple Page Template",
       "postTypes": ["page"]
     },
     {

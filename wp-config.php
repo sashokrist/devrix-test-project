@@ -67,6 +67,13 @@ define('WP_TEMP_DIR', __DIR__ . '/wp-content/tmp');
 define('FS_CHMOD_DIR',  0775);
 define('FS_CHMOD_FILE', 0664);
 
+if ( ! defined( 'WP_USE_THEMES' ) ) {
+	define( 'WP_USE_THEMES', true );
+}
+if ( ! defined( 'WP_BLOCK_THEME' ) ) {
+	define( 'WP_BLOCK_THEME', true );
+}
+
 /**#@-*/
 
 /**

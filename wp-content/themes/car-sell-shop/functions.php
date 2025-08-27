@@ -31,6 +31,27 @@ function car_sell_shop_load_textdomain() {
 add_action( 'after_setup_theme', 'car_sell_shop_load_textdomain' );
 
 /**
+ * Add theme support for block templates
+ */
+function car_sell_shop_theme_support() {
+    // Add support for block templates
+    add_theme_support( 'wp-block-styles' );
+    add_theme_support( 'editor-styles' );
+    add_theme_support( 'responsive-embeds' );
+    add_theme_support( 'align-wide' );
+    
+    // Add support for block template parts
+    add_theme_support( 'block-template-parts' );
+    
+    // Force block theme mode
+    add_theme_support( 'block-templates' );
+    
+    // Add support for custom block templates
+    add_theme_support( 'custom-block-templates' );
+}
+add_action( 'after_setup_theme', 'car_sell_shop_theme_support' );
+
+/**
  * Log when a Car is saved (create/update)
  */
 function car_sell_shop_log_car_saved( $post_id, $post, $is_update ) {
