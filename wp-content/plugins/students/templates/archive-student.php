@@ -46,6 +46,16 @@ get_header(); ?>
                             $student_meta = Students_Sanitizer::get_student_meta_safely( get_the_ID() );
                             $courses = get_the_terms( get_the_ID(), 'course' );
                             $grade_levels = get_the_terms( get_the_ID(), 'grade_level' );
+                            
+                            // Get ACF fields
+                            $student_age = '';
+                            $student_school = '';
+                            if ( function_exists( 'get_field' ) ) {
+                                $student_age = get_field( 'age', get_the_ID() );
+                                $student_school = get_field( 'school', get_the_ID() );
+                            }
+                            
+
                             ?>
 
                             <div class="student-meta">
@@ -97,6 +107,18 @@ get_header(); ?>
                                         ?>
                                     </div>
                                 <?php endif; ?>
+
+                                <?php if ( ! empty( $student_age ) ) : ?>
+                                    <div class="meta-item">
+                                        <strong><?php esc_html_e( 'Age:', 'students' ); ?></strong> <?php echo esc_html( $student_age ); ?>
+                                    </div>
+                                <?php endif; ?>
+
+                                <?php if ( ! empty( $student_school ) ) : ?>
+                                    <div class="meta-item">
+                                        <strong><?php esc_html_e( 'School:', 'students' ); ?></strong> <?php echo esc_html( $student_school ); ?>
+                                    </div>
+                                <?php endif; ?>
                             </div>
 
                             <div class="entry-summary">
@@ -114,17 +136,36 @@ get_header(); ?>
             </div>
 
             <?php
-            // Pagination
-            $big = 999999999;
-            echo paginate_links( array(
-                'base' => str_replace( $big, '%#%', esc_url( get_pagenum_link( $big ) ) ),
-                'format' => '?paged=%#%',
-                'current' => max( 1, get_query_var( 'paged' ) ),
-                'total' => $wp_query->max_num_pages,
-                'mid_size' => 3,
-                'prev_text' => __( 'Previous', 'students' ),
-                'next_text' => __( 'Next', 'students' ),
-            ) );
+            // Custom pagination for Students archive
+            $current_page = max( 1, get_query_var( 'paged' ) );
+            $total_pages = $wp_query->max_num_pages;
+            
+            if ( $total_pages > 1 ) {
+                echo '<div class="pagination-wrapper">';
+                echo '<div class="nav-links">';
+                
+                // Previous link
+                if ( $current_page > 1 ) {
+                    $prev_url = $current_page == 2 ? get_post_type_archive_link('student') : get_post_type_archive_link('student') . 'page/' . ($current_page - 1) . '/';
+                    echo '<a class="prev page-numbers" href="' . esc_url($prev_url) . '">' . __('Previous', 'students') . '</a>';
+                }
+                
+                // Page numbers
+                for ( $i = 1; $i <= $total_pages; $i++ ) {
+                    $page_url = $i == 1 ? get_post_type_archive_link('student') : get_post_type_archive_link('student') . 'page/' . $i . '/';
+                    $class = $i == $current_page ? 'current' : '';
+                    echo '<a class="page-numbers ' . $class . '" href="' . esc_url($page_url) . '">' . $i . '</a>';
+                }
+                
+                // Next link
+                if ( $current_page < $total_pages ) {
+                    $next_url = get_post_type_archive_link('student') . 'page/' . ($current_page + 1) . '/';
+                    echo '<a class="next page-numbers" href="' . esc_url($next_url) . '">' . __('Next', 'students') . '</a>';
+                }
+                
+                echo '</div>';
+                echo '</div>';
+            }
             ?>
 
         <?php else : ?>

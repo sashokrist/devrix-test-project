@@ -130,7 +130,12 @@ define( 'WP_HOME', 'http://localhost/devrix-test-project' );
 define( 'WP_HTTP_BLOCK_EXTERNAL', true );
 define( 'WP_HTTP_BLOCK_EXTERNAL_HOSTS', 'api.wordpress.org' );
 
-
+// PHP Upload Settings for WordPress
+@ini_set( 'upload_max_filesize', '64M' );
+@ini_set( 'post_max_size', '64M' );
+@ini_set( 'memory_limit', '256M' );
+@ini_set( 'max_execution_time', '300' );
+@ini_set( 'max_input_time', '300' );
 
 /* That's all, stop editing! Happy publishing. */
 

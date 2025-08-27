@@ -64,12 +64,18 @@ export default function StudentsDisplayEdit({ attributes, setAttributes }) {
                                 <p className="student-details-preview">
                                     {__('Class/Grade:', 'students-block')} {__('Sample Grade', 'students-block')}
                                 </p>
-                                <p className="student-details-preview">
-                                    {__('Email:', 'students-block')} {__('student@example.com', 'students-block')}
-                                </p>
-                                <div className="status-indicator-preview active">
-                                    {__('Active', 'students-block')}
-                                </div>
+                                                                        <p className="student-details-preview">
+                                            {__('Email:', 'students-block')} {__('student@example.com', 'students-block')}
+                                        </p>
+                                        <p className="student-details-preview">
+                                            {__('Age:', 'students-block')} {__('16', 'students-block')}
+                                        </p>
+                                        <p className="student-details-preview">
+                                            {__('School:', 'students-block')} {__('Sample School', 'students-block')}
+                                        </p>
+                                        <div className="status-indicator-preview active">
+                                            {__('Active', 'students-block')}
+                                        </div>
                             </div>
                         </div>
                     ) : (
@@ -89,6 +95,12 @@ export default function StudentsDisplayEdit({ attributes, setAttributes }) {
                                         </p>
                                         <p className="student-details-preview">
                                             {__('Email:', 'students-block')} {__('student@example.com', 'students-block')}
+                                        </p>
+                                        <p className="student-details-preview">
+                                            {__('Age:', 'students-block')} {__('16', 'students-block')}
+                                        </p>
+                                        <p className="student-details-preview">
+                                            {__('School:', 'students-block')} {__('Sample School', 'students-block')}
                                         </p>
                                         <div className="status-indicator-preview active">
                                             {statusText}

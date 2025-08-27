@@ -4,8 +4,6 @@ RewriteBase /devrix-test-project/
 # Redirect taxonomy-archive to working handler
 RewriteRule ^taxonomy-archive/?$ taxonomy-archive/index.php [QSA,L]
 
-
-
 # BEGIN WordPress
 # The directives (lines) between "BEGIN WordPress" and "END WordPress" are
 # dynamically generated, and should only be modified via WordPress filters.

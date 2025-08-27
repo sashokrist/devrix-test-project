@@ -328,6 +328,14 @@ class Students_Block_Plugin {
                         $student_email = get_post_meta( $student_id, '_student_email', true );
                         $student_phone = get_post_meta( $student_id, '_student_phone', true );
                         
+                        // Get ACF fields
+                        $student_age = '';
+                        $student_school = '';
+                        if ( function_exists( 'get_field' ) ) {
+                            $student_age = get_field( 'age', $student_id );
+                            $student_school = get_field( 'school', $student_id );
+                        }
+                        
                         // Default image if no featured image
                         if ( ! $student_picture ) {
                             $student_picture = 'data:image/svg+xml;base64,' . base64_encode( '<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><rect width="200" height="200" fill="#f8f9fa"/><circle cx="100" cy="80" r="30" fill="#dee2e6"/><path d="M50 180 Q100 140 150 180" stroke="#dee2e6" stroke-width="3" fill="none"/><text x="100" y="195" text-anchor="middle" font-family="Arial" font-size="12" fill="#6c757d">No Image</text></svg>' );
@@ -371,6 +379,20 @@ class Students_Block_Plugin {
                                     <div class="student-phone">
                                         <span class="label"><?php esc_html_e( 'Phone:', 'students-block' ); ?></span>
                                         <span class="value"><?php echo esc_html( $student_phone ); ?></span>
+                                    </div>
+                                <?php endif; ?>
+
+                                <?php if ( ! empty( $student_age ) ) : ?>
+                                    <div class="student-age">
+                                        <span class="label"><?php esc_html_e( 'Age:', 'students-block' ); ?></span>
+                                        <span class="value"><?php echo esc_html( $student_age ); ?></span>
+                                    </div>
+                                <?php endif; ?>
+
+                                <?php if ( ! empty( $student_school ) ) : ?>
+                                    <div class="student-school">
+                                        <span class="label"><?php esc_html_e( 'School:', 'students-block' ); ?></span>
+                                        <span class="value"><?php echo esc_html( $student_school ); ?></span>
                                     </div>
                                 <?php endif; ?>
                                 

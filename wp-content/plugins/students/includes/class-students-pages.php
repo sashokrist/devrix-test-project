@@ -77,6 +77,10 @@ class Students_Pages {
      * Handle students pagination
      */
     public function handle_students_pagination() {
+        // DISABLED: This function was causing redirect loops
+        // The pagination now works directly with clean URLs
+        return;
+        
         // Check if this is a students pagination request
         if (isset($_SERVER['REQUEST_URI'])) {
             $request_uri = $_SERVER['REQUEST_URI'];
@@ -184,6 +188,10 @@ class Students_Pages {
      * Handle custom page requests
      */
     public function handle_custom_pages() {
+        // DISABLED: This function was causing redirect loops
+        // Let WordPress handle the routing naturally
+        return;
+        
         $request_uri = $_SERVER['REQUEST_URI'];
         
         // Remove the base directory from the path
@@ -396,6 +404,10 @@ class Students_Pages {
      * Handle pagination page requests
      */
     private function handle_pagination_page($path_parts) {
+        // DISABLED: This function was causing redirect loops
+        // The pagination now works directly with clean URLs
+        return;
+        
         if ( count($path_parts) >= 2 && is_numeric($path_parts[1]) ) {
             $page_number = intval($path_parts[1]);
             
