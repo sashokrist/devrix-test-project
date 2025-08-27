@@ -1,0 +1,5 @@
+
+[27-Aug-2025 10:33:56 UTC] PHP Warning:  chmod(): Operation not permitted in /var/www/html/devrix-test-project/wp-admin/includes/class-wp-filesystem-direct.php on line 173
+[27-Aug-2025 10:33:56 UTC] PHP Warning:  chmod(): Operation not permitted in /var/www/html/devrix-test-project/wp-admin/includes/class-wp-filesystem-direct.php on line 173
+[27-Aug-2025 10:35:31 UTC] PHP Warning:  chmod(): Operation not permitted in /var/www/html/devrix-test-project/wp-admin/includes/class-wp-filesystem-direct.php on line 173
+[27-Aug-2025 10:35:31 UTC] PHP Warning:  chmod(): Operation not permitted in /var/www/html/devrix-test-project/wp-admin/includes/class-wp-filesystem-direct.php on line 173

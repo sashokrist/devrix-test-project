@@ -114,6 +114,22 @@ define( 'SAVEQUERIES', true );
 @ini_set( 'log_errors', 1 );
 @ini_set( 'error_log', __DIR__ . '/wp-content/debug.log' );
 
+// Fix connectivity issues
+define( 'WP_AUTO_UPDATE_CORE', false );
+define( 'AUTOMATIC_UPDATER_DISABLED', true );
+
+// Disable WordPress.org API checks that might cause "offline" errors
+define( 'WP_CACHE', false );
+define( 'DISABLE_WP_CRON', false );
+
+// Force WordPress to use local URLs and prevent external API calls
+define( 'WP_SITEURL', 'http://localhost/devrix-test-project' );
+define( 'WP_HOME', 'http://localhost/devrix-test-project' );
+
+// Disable external API calls that might cause "offline" errors
+define( 'WP_HTTP_BLOCK_EXTERNAL', true );
+define( 'WP_HTTP_BLOCK_EXTERNAL_HOSTS', 'api.wordpress.org' );
+
 
 
 /* That's all, stop editing! Happy publishing. */
