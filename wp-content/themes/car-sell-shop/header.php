@@ -13,6 +13,16 @@
 <div id="page" class="site">
     <a class="skip-link screen-reader-text" href="#primary"><?php esc_html_e( 'Skip to content', 'car-sell-shop' ); ?></a>
 
+    <?php
+    // Check if header should be hidden based on ACF options
+    $hide_header = false;
+    if ( function_exists( 'get_field' ) && class_exists( 'ACF' ) ) {
+    $hide_header_field = get_field( 'hide_header', 'option' );
+        $hide_header = $hide_header_field && in_array( 'hide header', $hide_header_field );
+    }
+    
+    if ( ! $hide_header ) :
+    ?>
     <header id="masthead" class="site-header">
         <div class="site-branding">
             <?php if ( has_custom_logo() ) : ?>
@@ -54,3 +64,4 @@
         </nav>
         <hr class="nav-separator">
     </header>
+    <?php endif; ?>

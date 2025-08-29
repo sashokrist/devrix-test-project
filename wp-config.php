@@ -105,6 +105,23 @@ $table_prefix = 'wp_';
 define( 'WP_DEBUG', true );
 define( 'WP_DEBUG_LOG', true );
 define( 'WP_DEBUG_DISPLAY', false );
+
+// Suppress chmod warnings from WPForms and ACF translation errors
+@ini_set( 'log_errors', 1 );
+@ini_set( 'error_log', '/var/www/html/devrix-test-project/wp-content/debug.log' );
+
+// Suppress ACF translation loading errors (WordPress 6.7.0+ issue)
+if ( ! function_exists( 'suppress_acf_translation_errors' ) ) {
+    function suppress_acf_translation_errors( $error_level, $error_message, $error_file, $error_line ) {
+        // Suppress ACF translation loading errors
+        if ( strpos( $error_message, '_load_textdomain_just_in_time was called incorrectly' ) !== false && 
+             strpos( $error_message, 'acf domain was triggered too early' ) !== false ) {
+            return true;
+        }
+        return false;
+    }
+    set_error_handler( 'suppress_acf_translation_errors' );
+}
 define( 'SCRIPT_DEBUG', true );
 define( 'SAVEQUERIES', true );
 
@@ -114,9 +131,9 @@ define( 'SAVEQUERIES', true );
 @ini_set( 'log_errors', 1 );
 @ini_set( 'error_log', __DIR__ . '/wp-content/debug.log' );
 
-// Fix connectivity issues
-define( 'WP_AUTO_UPDATE_CORE', false );
-define( 'AUTOMATIC_UPDATER_DISABLED', true );
+// Enable updates and connectivity
+define( 'WP_AUTO_UPDATE_CORE', true );
+define( 'AUTOMATIC_UPDATER_DISABLED', false );
 
 // Disable WordPress.org API checks that might cause "offline" errors
 define( 'WP_CACHE', false );
@@ -126,9 +143,9 @@ define( 'DISABLE_WP_CRON', false );
 define( 'WP_SITEURL', 'http://localhost/devrix-test-project' );
 define( 'WP_HOME', 'http://localhost/devrix-test-project' );
 
-// Disable external API calls that might cause "offline" errors
-define( 'WP_HTTP_BLOCK_EXTERNAL', true );
-define( 'WP_HTTP_BLOCK_EXTERNAL_HOSTS', 'api.wordpress.org' );
+// Allow external API calls for updates and plugin functionality
+// define( 'WP_HTTP_BLOCK_EXTERNAL', true );
+// define( 'WP_HTTP_BLOCK_EXTERNAL_HOSTS', 'api.wordpress.org' );
 
 // PHP Upload Settings for WordPress
 @ini_set( 'upload_max_filesize', '64M' );

@@ -157,6 +157,62 @@ get_header(); ?>
                     </div>
                 </div>
 
+                <!-- Linked Students Section -->
+                <?php if ( function_exists( 'get_field' ) ) : ?>
+                    <?php
+                    $linked_students = get_field( 'linked_students', get_the_ID() );
+                    if ( $linked_students && is_array( $linked_students ) && ! empty( $linked_students ) ) :
+                    ?>
+                        <div class="linked-students-section">
+                            <h3>Linked Students</h3>
+                            <div class="linked-students-grid">
+                                <?php foreach ( $linked_students as $linked_student_item ) : ?>
+                                    <?php
+                                    $linked_student = $linked_student_item['linked_student'];
+                                    if ( $linked_student && is_object( $linked_student ) ) :
+                                    ?>
+                                        <div class="linked-student-card">
+                                            <div class="linked-student-photo">
+                                                <a href="<?php echo esc_url( get_permalink( $linked_student->ID ) ); ?>">
+                                                    <?php if ( has_post_thumbnail( $linked_student->ID ) ) : ?>
+                                                        <?php echo get_the_post_thumbnail( $linked_student->ID, 'medium', array( 'class' => 'student-photo' ) ); ?>
+                                                    <?php else : ?>
+                                                        <div class="no-photo-placeholder">
+                                                            <span>📷</span>
+                                                        </div>
+                                                    <?php endif; ?>
+                                                </a>
+                                            </div>
+                                            
+                                            <div class="linked-student-info">
+                                                <h4>
+                                                    <a href="<?php echo esc_url( get_permalink( $linked_student->ID ) ); ?>">
+                                                        <?php echo esc_html( $linked_student->post_title ); ?>
+                                                    </a>
+                                                </h4>
+                                                
+                                                <?php if ( ! empty( $linked_student->post_excerpt ) ) : ?>
+                                                    <p class="student-excerpt"><?php echo esc_html( $linked_student->post_excerpt ); ?></p>
+                                                <?php else : ?>
+                                                    <p class="student-excerpt"><?php echo esc_html( wp_trim_words( $linked_student->post_content, 20, '...' ) ); ?></p>
+                                                <?php endif; ?>
+                                                
+                                                <?php
+                                                // Display student ID if available
+                                                $student_id = get_post_meta( $linked_student->ID, '_student_id', true );
+                                                if ( ! empty( $student_id ) ) :
+                                                ?>
+                                                    <p class="student-id"><strong>ID:</strong> <?php echo esc_html( $student_id ); ?></p>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                <?php endif; ?>
+
                 <!-- Related Students -->
                 <div class="related-students">
                     <h3>Other Students</h3>

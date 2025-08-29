@@ -328,13 +328,17 @@ class Students_Block_Plugin {
                         $student_email = get_post_meta( $student_id, '_student_email', true );
                         $student_phone = get_post_meta( $student_id, '_student_phone', true );
                         
-                        // Get ACF fields
-                        $student_age = '';
-                        $student_school = '';
-                        if ( function_exists( 'get_field' ) ) {
-                            $student_age = get_field( 'age', $student_id );
-                            $student_school = get_field( 'school', $student_id );
-                        }
+                                    // Get ACF fields
+            $student_age = '';
+            $student_school = '';
+            $student_how_many = '';
+            $student_test = '';
+            if ( function_exists( 'get_field' ) ) {
+                $student_age = get_field( 'age', $student_id );
+                $student_school = get_field( 'school', $student_id );
+                $student_how_many = get_field( 'how many', $student_id );
+                $student_test = get_field( 'test', $student_id );
+            }
                         
                         // Default image if no featured image
                         if ( ! $student_picture ) {
@@ -389,12 +393,26 @@ class Students_Block_Plugin {
                                     </div>
                                 <?php endif; ?>
 
-                                <?php if ( ! empty( $student_school ) ) : ?>
-                                    <div class="student-school">
-                                        <span class="label"><?php esc_html_e( 'School:', 'students-block' ); ?></span>
-                                        <span class="value"><?php echo esc_html( $student_school ); ?></span>
-                                    </div>
-                                <?php endif; ?>
+                                            <?php if ( ! empty( $student_school ) ) : ?>
+                <div class="student-school">
+                    <span class="label"><?php esc_html_e( 'School:', 'students-block' ); ?></span>
+                    <span class="value"><?php echo esc_html( $student_school ); ?></span>
+                </div>
+            <?php endif; ?>
+            
+            <?php if ( ! empty( $student_how_many ) ) : ?>
+                <div class="student-how-many">
+                    <span class="label"><?php esc_html_e( 'How Many:', 'students-block' ); ?></span>
+                    <span class="value"><?php echo esc_html( $student_how_many ); ?></span>
+                </div>
+            <?php endif; ?>
+            
+            <?php if ( ! empty( $student_test ) ) : ?>
+                <div class="student-test">
+                    <span class="label"><?php esc_html_e( 'Test:', 'students-block' ); ?></span>
+                    <span class="value"><?php echo esc_html( $student_test ); ?></span>
+                </div>
+            <?php endif; ?>
                                 
                                 <div class="student-status">
                                     <span class="status-indicator <?php echo esc_attr( $status_class ); ?>">

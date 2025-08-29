@@ -73,6 +73,12 @@ export default function StudentsDisplayEdit({ attributes, setAttributes }) {
                                         <p className="student-details-preview">
                                             {__('School:', 'students-block')} {__('Sample School', 'students-block')}
                                         </p>
+                                        <p className="student-details-preview">
+                                            {__('How Many:', 'students-block')} {__('5', 'students-block')}
+                                        </p>
+                                        <p className="student-details-preview">
+                                            {__('Test:', 'students-block')} {__('Sample Test', 'students-block')}
+                                        </p>
                                         <div className="status-indicator-preview active">
                                             {__('Active', 'students-block')}
                                         </div>
@@ -101,6 +107,12 @@ export default function StudentsDisplayEdit({ attributes, setAttributes }) {
                                         </p>
                                         <p className="student-details-preview">
                                             {__('School:', 'students-block')} {__('Sample School', 'students-block')}
+                                        </p>
+                                        <p className="student-details-preview">
+                                            {__('How Many:', 'students-block')} {__('5', 'students-block')}
+                                        </p>
+                                        <p className="student-details-preview">
+                                            {__('Test:', 'students-block')} {__('Sample Test', 'students-block')}
                                         </p>
                                         <div className="status-indicator-preview active">
                                             {statusText}

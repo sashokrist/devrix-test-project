@@ -1,3 +1,13 @@
+    <?php
+    // Check if footer should be hidden based on ACF options
+    $hide_footer = false;
+    if ( function_exists( 'get_field' ) && class_exists( 'ACF' ) ) {
+    $hide_footer_field = get_field( 'hide_footer', 'option' );
+        $hide_footer = $hide_footer_field && in_array( 'hide footer', $hide_footer_field );
+    }
+    
+    if ( ! $hide_footer ) :
+    ?>
     <footer id="colophon" class="site-footer">
         <div class="site-info">
             <?php
@@ -16,6 +26,7 @@
             ?>
         </div>
     </footer>
+    <?php endif; ?>
 </div><!-- #page -->
 
 <?php wp_footer(); ?>

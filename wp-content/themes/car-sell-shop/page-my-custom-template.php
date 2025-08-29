@@ -14,6 +14,11 @@
 
 get_header(); ?>
 
+<!-- Template Debug Info -->
+<div style="background: #f0f0f0; border: 2px solid #0073aa; padding: 10px; margin: 10px; font-family: monospace; font-size: 14px;">
+    <strong>🔍 Template Debug:</strong> This page is using the file: <code><?php echo get_template_directory(); ?>/page-my-custom-template.php</code>
+</div>
+
 <main class="wp-block-group" style="margin-top:var(--wp--preset--spacing--60)">
     <div class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--60);padding-bottom:var(--wp--preset--spacing--60)">
         

@@ -50,9 +50,13 @@ get_header(); ?>
                             // Get ACF fields
                             $student_age = '';
                             $student_school = '';
+                            $student_how_many = '';
+                            $student_test = '';
                             if ( function_exists( 'get_field' ) ) {
                                 $student_age = get_field( 'age', get_the_ID() );
                                 $student_school = get_field( 'school', get_the_ID() );
+                                $student_how_many = get_field( 'how many', get_the_ID() );
+                                $student_test = get_field( 'test', get_the_ID() );
                             }
                             
 
@@ -117,6 +121,18 @@ get_header(); ?>
                                 <?php if ( ! empty( $student_school ) ) : ?>
                                     <div class="meta-item">
                                         <strong><?php esc_html_e( 'School:', 'students' ); ?></strong> <?php echo esc_html( $student_school ); ?>
+                                    </div>
+                                <?php endif; ?>
+                                
+                                <?php if ( ! empty( $student_how_many ) ) : ?>
+                                    <div class="meta-item">
+                                        <strong><?php esc_html_e( 'How Many:', 'students' ); ?></strong> <?php echo esc_html( $student_how_many ); ?>
+                                    </div>
+                                <?php endif; ?>
+                                
+                                <?php if ( ! empty( $student_test ) ) : ?>
+                                    <div class="meta-item">
+                                        <strong><?php esc_html_e( 'Test:', 'students' ); ?></strong> <?php echo esc_html( $student_test ); ?>
                                     </div>
                                 <?php endif; ?>
                             </div>
