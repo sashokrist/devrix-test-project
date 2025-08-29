@@ -168,7 +168,7 @@ get_header(); ?>
                             <div class="linked-students-grid">
                                 <?php foreach ( $linked_students as $linked_student_item ) : ?>
                                     <?php
-                                    $linked_student = $linked_student_item['linked_student'];
+                                    $linked_student = $linked_student_item['select_student'];
                                     if ( $linked_student && is_object( $linked_student ) ) :
                                     ?>
                                         <div class="linked-student-card">

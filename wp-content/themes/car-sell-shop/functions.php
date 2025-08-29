@@ -612,3 +612,39 @@ function car_sell_shop_filter_block_template_parts( $template_part, $area, $args
     return $template_part;
 }
 add_filter( 'get_block_template_part', 'car_sell_shop_filter_block_template_parts', 10, 3 );
+
+/**
+ * Register ACF Students Display Block
+ */
+function car_sell_shop_register_acf_blocks() {
+    if ( function_exists( 'acf_register_block_type' ) ) {
+        acf_register_block_type( array(
+            'name'              => 'students-display-block',
+            'title'             => __( 'Students Display', 'car-sell-shop' ),
+            'description'       => __( 'Display students with filtering options', 'car-sell-shop' ),
+            'render_template'   => 'template-parts/blocks/students-display-block.php',
+            'category'          => 'widgets',
+            'icon'              => 'groups',
+            'keywords'          => array( 'students', 'display', 'filter' ),
+            'supports'          => array(
+                'align' => array( 'left', 'center', 'right' ),
+                'mode' => false,
+                'jsx' => true,
+            ),
+            'example'           => array(
+                'attributes' => array(
+                    'mode' => 'preview',
+                    'data' => array(
+                        'number_of_students' => 6,
+                        'order_by' => 'date',
+                        'order_direction' => 'DESC',
+                        'show_student_id' => true,
+                        'show_courses' => true,
+                        'show_grade_level' => true,
+                    ),
+                ),
+            ),
+        ) );
+    }
+}
+add_action( 'acf/init', 'car_sell_shop_register_acf_blocks' );
